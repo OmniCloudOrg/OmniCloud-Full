@@ -1,0 +1,3 @@
+[submodule "OmniMicro"]
+	path = OmniMicro
+	url = https://github.com/Omni-Forge/OmniMicro
