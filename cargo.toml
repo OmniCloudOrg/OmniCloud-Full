@@ -1,0 +1,36 @@
+[workspace]
+members = [
+    "Omni-CLI",
+    "OmniAgent",
+    "OmniDirector",
+    "OmniForge",
+]
+
+[profile.dev]
+rpath = false
+panic = "abort"
+lto = "off"
+opt-level = 0
+debug = false
+overflow-checks = false
+incremental = true
+codegen-units = 512
+
+strip = "symbols"
+debug-assertions = false
+
+[profile.dev.package."*"]   
+opt-level = 0
+debug = false
+overflow-checks = false
+incremental = true
+codegen-units = 512
+
+strip = "symbols"
+debug-assertions = false
+[profile.dev.build-override]
+opt-level = 0
+debug = false
+overflow-checks = false
+incremental = true
+codegen-units = 512
