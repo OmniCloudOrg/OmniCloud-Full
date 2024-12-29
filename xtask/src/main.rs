@@ -1,3 +1,5 @@
+use std::process::Stdio;
+
 use clap::Parser;
 use clap::Subcommand;
 use futures::future::join_all;
@@ -96,6 +98,9 @@ fn handle_run(app: App) {
                 .arg("run")
                 .arg("--bin")
                 .arg("omni-orchestrator")
+                .stdin(Stdio::piped())
+                .stdout(Stdio::piped())
+                .stderr(Stdio::piped())
                 .spawn().expect("Failed to spawn orchestrator");
             },
         }
