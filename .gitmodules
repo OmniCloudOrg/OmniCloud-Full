@@ -28,4 +28,4 @@
 
 [submodule "OmniOrchestrator"]
 	path = OmniOrchestrator
-	url =
+	url = https://github.com/Omni-Forge/OmniOrchestrator
