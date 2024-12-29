@@ -38,61 +38,64 @@ enum Commands {
     Test,
     Build,
 }
+fn handle_run(app: App) {
+
+        match app {
+            App::Forge => {
+                std::process::Command::new("cargo")
+                    .arg("run")
+                    .arg("--bin")
+                    .arg("omniforge");
+                
+            }
+            App::Director => {
+                std::process::Command::new("cargo")
+                    .arg("run")
+                    .arg("--bin")
+                    .arg("omnidirector");
+            }
+            App::Agent => {
+                std::process::Command::new("cargo")
+                    .arg("run")
+                    .arg("--bin")
+                    .arg("omniagent");
+            }
+            App::All => {
+                futures::executor::block_on(run_all());
+            }
+            App::Docker => {
+                let output = std::process::Command::new("docker-compose")
+                    .arg("up")
+                    .arg("-d")
+                    .current_dir("./docker")
+                    .output()
+                    
+                    .expect("Failed to run docker stack");
+                if !output.status.success() {
+                    println!("An error has occurred");
+                    println!("{}",String::from_utf8_lossy(&output.stderr));
+                }
+                if output.stdout.is_empty() {
+                    println!("Docker did not give any output");
+                    return
+                }
+                println!("Command output: {:?}", String::from_utf8_lossy(&output.stdout))
+            },
+            App::Orchestrator => {
+                std::process::Command::new("cargo")
+                .arg("run")
+                .arg("--bin")
+                .arg("omniorchestrator")
+                .output().expect("Failed to run orchestrator");
+            },
+        }
+    }
+}
 fn handle_commands(command: Commands) {
     println!("{}",command);
     match command {
 
-        Commands::Run { app } => {
-            match app {
-                App::Forge => {
-                    std::process::Command::new("cargo")
-                        .arg("run")
-                        .arg("--bin")
-                        .arg("omniforge");
-                    
-                }
-                App::Director => {
-                    std::process::Command::new("cargo")
-                        .arg("run")
-                        .arg("--bin")
-                        .arg("omnidirector");
-                }
-                App::Agent => {
-                    std::process::Command::new("cargo")
-                        .arg("run")
-                        .arg("--bin")
-                        .arg("omniagent");
-                }
-                App::All => {
-                    futures::executor::block_on(run_all());
-                }
-                App::Docker => {
-                    let output = std::process::Command::new("docker-compose")
-                        .arg("up")
-                        .arg("-d")
-                        .current_dir("./docker")
-                        .output()
-                        
-                        .expect("Failed to run docker stack");
-                    if !output.status.success() {
-                        println!("An error has occurred");
-                        println!("{}",String::from_utf8_lossy(&output.stderr));
-                    }
-                    if output.stdout.is_empty() {
-                        println!("Docker did not give any output");
-                        return
-                    }
-                    println!("Command output: {:?}", String::from_utf8_lossy(&output.stdout))
-                },
-                App::Orchestrator => {
-                    std::process::Command::new("cargo")
-                    .arg("run")
-                    .arg("--bin")
-                    .arg("omniorchestrator")
-                    .output().expect("Failed to run orchestrator");
-                },
-            }
-        }
+
         Commands::Test => {
             println!("Testing");
         }
