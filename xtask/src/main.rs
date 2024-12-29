@@ -98,9 +98,6 @@ fn handle_run(app: App) {
                 .arg("run")
                 .arg("--bin")
                 .arg("omni-orchestrator")
-                .stdin(Stdio::piped())
-                .stdout(Stdio::piped())
-                .stderr(Stdio::piped())
                 .spawn().expect("Failed to spawn orchestrator");
             },
         }
