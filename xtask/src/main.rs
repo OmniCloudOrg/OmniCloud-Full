@@ -95,8 +95,8 @@ fn handle_run(app: App) {
                 std::process::Command::new("cargo")
                 .arg("run")
                 .arg("--bin")
-                .arg("omniorchestrator")
-                .output().expect("Failed to run orchestrator");
+                .arg("omni-orchestrator")
+                .spawn().expect("Failed to spawn orchestrator");
             },
         }
     }
