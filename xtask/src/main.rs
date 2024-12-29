@@ -1,6 +1,3 @@
-
-use std::process::ExitStatus;
-
 use clap::Parser;
 use clap::Subcommand;
 use futures::future::join_all;
@@ -34,9 +31,10 @@ impl std::fmt::Display for App {
         let txt = match self {
             Self::Agent => "Agent",
             Self::Orchestrator => "Orchestrator",
-            
+            Self::Director => "Director",
+            Self:: Docker => "Docker",
+            Self::All => "All",
             Self::Forge => "Forge",
-            _ => todo!()
         };
         write!(f,"{}", txt)
     }
@@ -51,7 +49,7 @@ enum Commands {
     Build,
 }
 fn handle_run(app: App) {
-        println!("{app}");
+        println!("Running {app}");
         match app {
             App::Forge => {
                 std::process::Command::new("cargo")
