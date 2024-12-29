@@ -1,3 +1,28 @@
 [submodule "OmniMicro"]
 	path = OmniMicro
 	url = https://github.com/Omni-Forge/OmniMicro
+
+[submodule "OmniAgent"]
+	path = OmniAgent
+	url = https://github.com/Omni-Forge/OmniAgent
+
+[submodule "OmniForge"]
+	path = OmniForge
+	url = https://github.com/Omni-Forge/OmniForge
+
+[submodule "OmniDirector"]
+	path = OmniDirector
+	url = https://github.com/Omni-Forge/OmniDirector
+
+[submodule "OmniOrchestrator"]
+	path = OmniOrchestrator
+	url = https://github.com/Omni-Forge/OmniOrchestrator
+
+[submodule "OmniCosmos"]
+	path = OmniCosmos
+	url = https://github.com/Omni-Forge/OmniForge-Dashboard
+
+[submodule "Omni-CLI"]
+	path = Omni-CLI
+	url = https://github.com/Omni-Forge/Omni-CLI
+

@@ -29,6 +29,18 @@ enum App {
     All,
     Docker,
 }
+impl std::fmt::Display for App {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        let txt = match self {
+            Self::Agent => "Agent",
+            Self::Orchestrator => "Orchestrator",
+            
+            Self::Forge => "Forge",
+            _ => todo!()
+        };
+        write!(f,"{}", txt)
+    }
+}
 #[derive(Clone,Subcommand)]
 enum Commands {
     #[command(alias = "start")]
@@ -39,7 +51,7 @@ enum Commands {
     Build,
 }
 fn handle_run(app: App) {
-
+        println!("{app}");
         match app {
             App::Forge => {
                 std::process::Command::new("cargo")
@@ -90,9 +102,7 @@ fn handle_run(app: App) {
             },
         }
     }
-}
 fn handle_commands(command: Commands) {
-    println!("{}",command);
     match command {
 
 
@@ -100,6 +110,7 @@ fn handle_commands(command: Commands) {
             println!("Testing");
         }
         Commands::Build => todo!(),
+        Commands::Run { app } => handle_run(app),
     }
 }
 fn main() {
