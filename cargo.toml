@@ -4,6 +4,8 @@ members = [
     "OmniAgent",
     "OmniDirector",
     "OmniForge",
+    "OmniOrchestrator",
+    "xtask",
 ]
 
 [profile.dev]
