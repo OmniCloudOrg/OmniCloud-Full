@@ -29,3 +29,6 @@
 [submodule "OmniOrchestrator"]
 	path = OmniOrchestrator
 	url = https://github.com/Omni-Forge/OmniOrchestrator
+[submodule "OmniEditor"]
+	path = OmniEditor
+	url = https://github.com/Omni-Forge/OmniEditor
