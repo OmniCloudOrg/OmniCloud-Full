@@ -1,0 +1,59 @@
+version: '3.8'
+
+services:
+  agent:
+    build:
+      context: ./OmniAgent/
+      dockerfile: ./Dockerfile
+    ports:
+      - "5670:8080"
+    environment:
+      - NODE_ENV=development
+
+  orchestrator:
+    build:
+      context: ./OmniOrchestrator/
+      dockerfile: ./Dockerfile
+    ports:
+      - "5671:8080"
+    environment:
+      - NODE_ENV=development
+
+  forge:
+    build:
+      context: ./OmniForge/
+      dockerfile: ./Dockerfile
+    ports:
+      - "5672:8080"
+    environment:
+      - NODE_ENV=development
+
+  cosmos:
+    build:
+      context: ./OmniCosmos/
+      dockerfile: ./Dockerfile
+    ports:
+      - "5673:8080"
+    environment:
+      - NODE_ENV=development
+
+  editor:
+    build:
+      context: ./OmniEditor/
+      dockerfile: ./Dockerfile
+    ports:
+      - "5674:8080"
+    environment:
+      - NODE_ENV=development
+
+  director:
+    build:
+      context: ./OmniDirector/
+      dockerfile: ./Dockerfile
+    ports:
+      - "5675:8080"
+    environment:
+      - NODE_ENV=development
+
+volumes:
+  db_data:
