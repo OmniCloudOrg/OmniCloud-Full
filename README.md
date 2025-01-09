@@ -31,6 +31,7 @@ provider: aws         # Force specific provider
 resources:
   cpu: 2
   memory: 512Mi
+```
 
 ## 🚀 Quick Start
 
