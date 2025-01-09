@@ -42,7 +42,7 @@ resources:
 grip install omni-cli
 
 # Or download the binary
-curl -L https://get.omniforge.dev | sh
+curl -L https://omni-forge.github.io/get | sh
 ```
 
 ### Your First Deployment
