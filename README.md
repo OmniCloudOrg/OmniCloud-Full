@@ -1,3 +1,6 @@
+🚧 Under Construction
+This project is actively being developed. Nothing should yet be assumed stable
+
 # Omniforge
 
 🚀 Zero-config platform for deploying microservices anywhere - VMs, containers, or bare metal - with just 24MB RAM overhead.
