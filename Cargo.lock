@@ -2432,6 +2432,7 @@ dependencies = [
  "debug_print",
  "ez_logging",
  "libomni",
+ "regex",
  "reqwest 0.12.12",
  "rocket",
  "serde",
