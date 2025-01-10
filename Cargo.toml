@@ -1,6 +1,5 @@
 [workspace]
 members = [
-    "Omni-CLI",
     "OmniAgent",
     "OmniDirector",
     "OmniForge",
