@@ -2,3 +2,4 @@
 /docker/**
 *.exe
 *.zip
+*.glue
