@@ -32,3 +32,6 @@
 [submodule "OmniEditor"]
 	path = OmniEditor
 	url = https://github.com/Omni-Forge/OmniEditor
+[submodule "Lodestone"]
+	path = Lodestone
+	url = https://github.com/Omni-Forge/Lodestone
