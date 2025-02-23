@@ -1,4 +1,5 @@
 [workspace]
+workspace.resolver = "1"
 members = [
     "OmniAgent",
     "OmniDirector",
