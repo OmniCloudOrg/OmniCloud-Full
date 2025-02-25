@@ -5,6 +5,7 @@ members = [
     "OmniDirector",
     "OmniForge",
     "OmniOrchestrator",
+    "Lodestone",
     "xtask",
 ]
 
