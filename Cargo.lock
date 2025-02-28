@@ -3176,6 +3176,7 @@ dependencies = [
  "colored",
  "debug_print",
  "ez_logging",
+ "lazy_static",
  "libomni",
  "regex",
  "reqwest 0.12.12",
