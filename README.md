@@ -1,7 +1,7 @@
 # 🚧 Under Construction
 This project is actively being developed. Nothing should yet be assumed stable
 
-# Omniforge
+# OmniCloud
 
 🚀 Zero-config platform for deploying microservices anywhere - VMs, containers, or bare metal - with just 24MB RAM overhead.
 
@@ -14,7 +14,7 @@ This project is actively being developed. Nothing should yet be assumed stable
 # Deploy directly from your project directory
 omni up
 
-# Omniforge automatically:
+# OmniCloud automatically:
 # - Bundles your package
 # - Detects your project type
 # - Builds optimized container image
@@ -28,7 +28,7 @@ omni up
 Override automatic settings when needed:
 
 ```yaml
-# omniforge.yaml
+# OmniCloud.yaml
 runtime: docker        # Override auto-detected runtime
 provider: aws         # Force specific provider
 resources:
@@ -62,13 +62,13 @@ cd my-service
 omni push
 ```
 
-That's it! Omniforge automatically detects your project type and deploys it to your configured provider, if there is no configuration Omni will select everything automatically.
+That's it! OmniCloud automatically detects your project type and deploys it to your configured provider, if there is no configuration Omni will select everything automatically.
 
 ## 📚 Core Concepts
 
 ### Cloud Provider Interfaces (CPIs)
 
-CPIs are JSON files that define how Omniforge interacts with infrastructure providers. They specify commands, parameters, and output parsing rules.
+CPIs are JSON files that define how OmniCloud interacts with infrastructure providers. They specify commands, parameters, and output parsing rules.
 
 Example VirtualBox CPI:
 ```json
@@ -113,7 +113,7 @@ See [Providers.md](./providers.md)
 
 ### Dynamic Build System
 
-Omniforge automatically creates optimized container images based on your project's file extensions:
+OmniCloud automatically creates optimized container images based on your project's file extensions:
 
 ```plaintext
 my-project/
@@ -149,7 +149,7 @@ spec:
 Configure multiple runtimes for different use cases:
 
 ```yaml
-# omniforge.yaml
+# OmniCloud.yaml
 runtimes:
   production:
     provider: aws
@@ -189,7 +189,7 @@ runtimes:
 Create custom build steps:
 
 ```bash
-# .omniforge/hooks/pre-build
+# .OmniCloud/hooks/pre-build
 #!/bin/bash
 npm run build
 ```
@@ -237,7 +237,7 @@ See [CONTRIBUTING.md](CONTRIBUTING.md) for detailed guidelines.
 
 1. **Permission Denied**
    ```bash
-   sudo chown -R $(whoami) ~/.omniforge
+   sudo chown -R $(whoami) ~/.OmniCloud
    ```
 
 2. **Provider Not Found**
@@ -259,4 +259,4 @@ MIT License - see [LICENSE](LICENSE) for details.
 
 ---
 
-Built with ❤️ using Rust. Star us on GitHub if you like Omniforge!
+Built with ❤️ using Rust. Star us on GitHub if you like OmniCloud!
