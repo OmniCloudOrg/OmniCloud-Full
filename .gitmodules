@@ -24,7 +24,7 @@
 
 [submodule "Omni-CLI"]
 	path = Omni-CLI
-	url = https://github.com/Omni-Forge/Omni-CLI
+	url = https://github.com/OmniCloudOrg/Omni-CLI
 
 [submodule "OmniOrchestrator"]
 	path = OmniOrchestrator
