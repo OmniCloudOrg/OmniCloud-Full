@@ -105,15 +105,20 @@ graph TD
     Registry -->|Can be| InternalReg[Internal Registry]
     Registry -->|Or| ExternalReg[User-specified Registry]
     Registry -->|Makes image available to| Agents[Omni Agents]
+    Orchestrator[Orchestrator] -->|Manages| Registry
     
     style Image fill:#4CAF50,stroke:#333,stroke-width:1px,color:white
     style Registry fill:#6495ED,stroke:#333,stroke-width:1px,color:white
     style InternalReg fill:#6495ED,stroke:#333,stroke-width:1px,color:white
     style ExternalReg fill:#6495ED,stroke:#333,stroke-width:1px,color:white
     style Agents fill:#FF9800,stroke:#333,stroke-width:1px,color:white
+    style Orchestrator fill:#4CAF50,stroke:#333,stroke-width:1px,color:white
 ```
 
-The image registry serves as the central repository from which Agents pull images during deployment. Omni supports both its internal registry and external user-specified registries.
+The image registry serves as the central repository from which Agents pull images during deployment. Omni's internal registry is managed by the Orchestrator and runs as an application alongside OmniForge and other system services. The system supports both this internal registry and external user-specified registries.
+
+> [!NOTE]
+> When using the internal registry, images are automatically managed throughout their lifecycle. The Orchestrator handles cleanup of unused images and can enforce image retention policies based on tags, age, or usage patterns.
 
 ### 5. Deployment Orchestration
 
@@ -261,6 +266,7 @@ graph TD
         %% Control relationships (across boundaries)
         OrchestratorContainer -.Controls.-> Director
         OrchestratorContainer -.Deployment Commands.-> ForgeContainer
+        OrchestratorContainer -.Manages.-> RegistryContainer
         ForgeContainer -.Reports To.-> OrchestratorContainer
         ForgeContainer -.Pushes Images.-> RegistryContainer
         Director -.Manages.-> VM
@@ -290,9 +296,9 @@ The architecture diagram shows the entire Omni application ecosystem:
 
 - **Directors** run on VMs and manage all VM operations
 - **Agents** run inside worker VMs and manage all containers
-- **Orchestrator** runs as a container but controls Directors and the overall system
+- **Orchestrator** runs as a container but controls Directors and manages both OmniForge and the Image Registry
 - **OmniForge** runs as a container for building application images
-- **Registry** stores and serves container images
+- **Image Registry** runs as a container managed by the Orchestrator that stores and serves container images
 - **Application containers** run the actual user workloads
 
 ## OmniForge Deep Dive
@@ -337,7 +343,9 @@ OmniForge implements several optimization techniques to improve build efficiency
 
 ## Registry Integration
 
-Omni provides flexible container registry integration to suit various operational requirements. The platform includes an internal registry that runs as a container within the Omni cluster, offering a pre-configured solution that requires no additional setup. For environments with existing registry infrastructure, Omni supports external registries including Docker Hub, AWS ECR, Azure ACR, and other compatible services. Registry authentication is handled securely through the platform's credential management system. The platform maintains comprehensive image metadata for auditing, versioning, and compliance purposes, making it easier to track image lineage and deployment history.
+Omni provides flexible container registry integration to suit various operational requirements. The platform includes an internal registry that runs as a container application within the Omni cluster, deployed and managed by the Orchestrator just like OmniForge and other system applications. This internal registry offers a pre-configured solution that requires no additional setup, while still benefiting from Omni's container management capabilities.
+
+For environments with existing registry infrastructure, Omni supports external registries including Docker Hub, AWS ECR, Azure ACR, and other compatible services. Registry authentication is handled securely through the platform's credential management system. The platform maintains comprehensive image metadata for auditing, versioning, and compliance purposes, making it easier to track image lineage and deployment history.
 
 > [!IMPORTANT]
 > In air-gapped environments, you will need to leverage Omni's internal registry or a self-deployed container image registry that all Omni services can access. External registries requiring internet connectivity will not be available in such environments.
