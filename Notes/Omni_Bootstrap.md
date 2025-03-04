@@ -292,11 +292,3 @@ Verify VM image availability, check resource allocation settings, and confirm ne
 
 ### Orchestrator Registration Problems
 Examine cluster networking configuration, check service discovery functionality, and review logs from both Directors and Orchestrators.
-
-## Next Steps
-
-After successful initialization:
-1. Deploy your applications to the Omni cluster
-2. Configure additional services as needed
-3. Scale by adding more nodes
-4. Set up monitoring and alerting
