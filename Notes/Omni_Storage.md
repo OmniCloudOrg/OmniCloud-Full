@@ -58,7 +58,7 @@
 
 ## Introduction
 
-OmniCloud provides a comprehensive and flexible storage system designed to support the diverse requirements of modern containerized applications. As a fully open source solution, OmniCloud storage can be deployed on virtually any infrastructure—from on-premises hardware to public cloud virtual machines—offering consistency and portability across environments. This means that organizations can avoid vendor lock-in while maintaining unified storage management practices regardless of where their workloads run.
+OmniCloud provides a comprehensive and flexible storage system designed to support the diverse requirements of modern containerized applications. OmniCloud storage can be deployed on virtually any infrastructure—from on-premises hardware to public cloud virtual machines—offering consistency and portability across environments. This means that organizations can avoid vendor lock-in while maintaining unified storage management practices regardless of where their workloads run.
 
 The storage subsystem in OmniCloud has been architected with several key principles in mind: performance, reliability, flexibility, and simplicity. These principles guide the implementation of all storage features, ensuring that users can rely on their storage infrastructure even as their requirements evolve over time. Unlike proprietary alternatives that may limit your control or impose artificial restrictions, OmniCloud's open source nature means that every aspect of the system can be inspected, modified, and extended to suit specific organizational needs.
 
