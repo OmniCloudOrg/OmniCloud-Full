@@ -3,6 +3,9 @@
 > [!CAUTION]
 > Storage has not yet been implemented, everything in this document is here for design purposes only
 
+> [!NOTE]
+> As OmniCloud advances into it's development most of the configs here will become entirely optional overrides as Omni will be able to configure itself in the vast majority of deployments
+
 # Contents
 
 - [OmniCloud Storage Solutions](#omnicloud-storage-solutions)
