@@ -3,12 +3,14 @@
 GitHub Wiki Generator
 
 This script generates a GitHub wiki from markdown files found in the docs and/or notes directories.
-It creates an organized index on the homepage and preserves the directory structure.
+It creates an organized index with a clean file tree structure on the homepage and preserves
+the directory hierarchy in the sidebar.
 """
 
 import os
 import re
 import shutil
+import datetime
 from pathlib import Path
 
 def sanitize_filename(title):
@@ -56,12 +58,21 @@ def process_internal_links(content, path_to_wiki):
     pattern = r'\[([^\]]+)\]\(([^)]+)\)'
     return re.sub(pattern, replace_link, content)
 
+def get_file_last_modified(file_path):
+    """Get the last modified date of a file."""
+    try:
+        mtime = os.path.getmtime(file_path)
+        return datetime.datetime.fromtimestamp(mtime)
+    except:
+        return datetime.datetime.now()
+
 def main():
     """Main function to generate wiki content."""
     wiki_dir = Path("wiki")
     source_dirs = []
     total_files = 0
     processed_dirs = 0
+    recently_updated = []  # Track recently updated files
 
     print("Starting Wiki Generator")
 
@@ -76,13 +87,10 @@ def main():
         print("No docs or notes directories found. Exiting.")
         return
 
-    # Start creating Home.md with a prettier format
+    # Start creating Home.md focusing on the file tree
     with open(wiki_dir / "Home.md", "w") as home_file:
         home_file.write("# Wiki Index\n\n")
         home_file.write("*This wiki is auto-generated from repository markdown files*\n\n")
-        
-        # Add a table of contents
-        home_file.write("## Table of Contents\n\n")
         
         # Create a table for top-level directories
         home_file.write("| Category | Description |\n")
@@ -90,36 +98,17 @@ def main():
         
         for source_dir in source_dirs:
             dir_name = source_dir.capitalize()
-            desc = "Documentation from this directory"
-            
-            # Try to get a description from the README if available
-            readme_path = os.path.join(source_dir, "README.md")
-            if os.path.exists(readme_path):
-                try:
-                    with open(readme_path, "r", encoding="utf-8") as readme_file:
-                        content = readme_file.read()
-                        # Try to extract a brief description from the beginning
-                        desc_match = re.search(r'^# .+?\n\n(.+?)(?=\n\n|\Z)', content, re.DOTALL)
-                        if desc_match:
-                            desc = desc_match.group(1).strip()
-                            # Truncate if too long
-                            if len(desc) > 100:
-                                desc = desc[:97] + "..."
-                except Exception:
-                    pass  # Continue if readme can't be read
-            
-            home_file.write(f"| **[{dir_name}](#{dir_name.lower()})** | {desc} |\n")
+            home_file.write(f"| **[{dir_name}](#{dir_name.lower()})** | Documentation from `{source_dir}` directory |\n")
         
         home_file.write("\n---\n\n")
         
-        # Process each source directory with enhanced formatting
+        # Process each source directory focusing on file structure
         for source_dir in source_dirs:
             print(f"Processing directory: {source_dir}")
             home_file.write(f"<h2 id='{source_dir.lower()}'>{source_dir.capitalize()}</h2>\n\n")
             
             # Get all markdown files with their paths relative to the source dir
             md_files = []
-            subdirectory_files = {}  # Map to track files by their parent directory
             
             for root, dirs, files in os.walk(source_dir):
                 rel_path = os.path.relpath(root, source_dir)
@@ -134,15 +123,11 @@ def main():
                         full_path = os.path.join(root, file)
                         md_files.append((full_path, rel_path))
                         
-                        # Track files by their immediate parent directory
-                        parent_dir = os.path.basename(root)
-                        if parent_dir not in subdirectory_files and rel_path:
-                            subdirectory_files[parent_dir] = []
-                        if rel_path:
-                            subdirectory_files[parent_dir].append((full_path, rel_path))
+                        # Track file modification time for recently updated
+                        last_modified = get_file_last_modified(full_path)
+                        recently_updated.append((full_path, rel_path, last_modified))
             
-            # Process directory structure more intelligently
-            # Identify parent-child relationships
+            # Process directory structure - build hierarchy
             directory_hierarchy = {}
             # First, identify all directories
             for _, rel_path in md_files:
@@ -174,7 +159,7 @@ def main():
                 if rel_path in directory_hierarchy:
                     directory_hierarchy[rel_path]['files'].append((file_path, filename))
             
-            # Get all directories for structure
+            # Get all directories
             directories = set(directory_hierarchy.keys())
             
             # First, get top-level directories (no parent or parent is empty)
@@ -183,107 +168,80 @@ def main():
                 if not directory_hierarchy[dir_path]['parent']:
                     top_level_dirs.append(dir_path)
             
-            # Build a table of contents that reflects the actual directory structure
-            if directories:
-                home_file.write("### Directory Structure\n\n")
-                
-                # Create a collapsible directory tree with better formatting
-                home_file.write("<details>\n")
-                home_file.write("<summary>Click to expand directory structure</summary>\n\n")
-                
-                # Build directory tree using more appealing formatting
-                home_file.write("```\n")
-                home_file.write(f"{source_dir}/\n")
-                
-                # Helper function to recursively print directory tree
-                def print_directory_tree(dir_path, prefix=""):
-                    dir_info = directory_hierarchy[dir_path]
-                    
-                    # Print files in this directory
-                    files = [f[1] for f in dir_info['files']]
-                    sorted_files = sorted(files)
-                    
-                    for i, file in enumerate(sorted_files):
-                        is_last_file = (i == len(sorted_files) - 1) and not dir_info['children']
-                        file_prefix = "└── " if is_last_file else "├── "
-                        home_file.write(f"{prefix}{file_prefix}{file}\n")
-                    
-                    # Print subdirectories
-                    children = sorted(dir_info['children'])
-                    for i, child in enumerate(children):
-                        is_last = i == len(children) - 1
-                        child_name = directory_hierarchy[child]['name']
+            # Create expanded directory tree - always visible by default
+            home_file.write("### Directory Structure\n\n")
+            
+            # Build directory tree
+            home_file.write("```\n")
+            home_file.write(f"{source_dir}/\n")
+            
+            # Find README files for directories
+            dir_to_readme = {}  # Map directories to their README files
+            dir_to_wiki = {}    # Map directories to their wiki files
+            
+            for file_path, rel_path in md_files:
+                filename = os.path.basename(file_path)
+                if filename.lower() == "readme.md":
+                    try:
+                        with open(file_path, "r", encoding="utf-8") as f:
+                            content = f.read()
+                        title = extract_title(content, os.path.basename(file_path)[:-3])
+                        wiki_filename = sanitize_filename(title)
+                        if not wiki_filename:
+                            wiki_filename = sanitize_filename(os.path.basename(file_path)[:-3])
                         
-                        if is_last:
-                            home_file.write(f"{prefix}└── {child_name}/\n")
-                            # Recursively print the child directory
-                            print_directory_tree(child, prefix + "    ")
+                        if rel_path:
+                            # This is a README for a subdirectory
+                            dir_to_readme[rel_path] = file_path
+                            dir_to_wiki[rel_path] = wiki_filename
                         else:
-                            home_file.write(f"{prefix}├── {child_name}/\n")
-                            # Recursively print the child directory
-                            print_directory_tree(child, prefix + "│   ")
+                            # Root README
+                            dir_to_readme[source_dir] = file_path
+                            dir_to_wiki[source_dir] = wiki_filename
+                    except Exception as e:
+                        print(f"Error processing README mapping: {file_path}: {str(e)}")
+            
+            # Helper function to recursively print directory tree
+            def print_directory_tree(dir_path, prefix=""):
+                dir_info = directory_hierarchy[dir_path]
                 
-                # Print top-level directories
-                for i, dir_path in enumerate(sorted(top_level_dirs)):
-                    dir_name = directory_hierarchy[dir_path]['name']
-                    is_last = i == len(top_level_dirs) - 1
+                # Print files in this directory
+                files = [f[1] for f in dir_info['files']]
+                sorted_files = sorted(files)
+                
+                for i, file in enumerate(sorted_files):
+                    is_last_file = (i == len(sorted_files) - 1) and not dir_info['children']
+                    file_prefix = "└── " if is_last_file else "├── "
+                    home_file.write(f"{prefix}{file_prefix}{file}\n")
+                
+                # Print subdirectories
+                children = sorted(dir_info['children'])
+                for i, child in enumerate(children):
+                    is_last = i == len(children) - 1
+                    child_name = directory_hierarchy[child]['name']
                     
                     if is_last:
-                        home_file.write(f"└── {dir_name}/\n")
-                        print_directory_tree(dir_path, "    ")
+                        home_file.write(f"{prefix}└── {child_name}/\n")
+                        # Recursively print the child directory
+                        print_directory_tree(child, prefix + "    ")
                     else:
-                        home_file.write(f"├── {dir_name}/\n")
-                        print_directory_tree(dir_path, "│   ")
-                
-                home_file.write("```\n\n")
-                home_file.write("</details>\n\n")
+                        home_file.write(f"{prefix}├── {child_name}/\n")
+                        # Recursively print the child directory
+                        print_directory_tree(child, prefix + "│   ")
             
-            # Create a path to files map for grouped display
-            path_to_files = {}
-            for file_path, rel_path in sorted(md_files):
-                if rel_path not in path_to_files:
-                    path_to_files[rel_path] = []
-                path_to_files[rel_path].append(file_path)
-            
-            # First show files in the root of this directory
-            if "" in path_to_files:
-                home_file.write("<div class='content-section'>\n\n")
-                home_file.write("#### Main Documents\n\n")
+            # Print top-level directories
+            for i, dir_path in enumerate(sorted(top_level_dirs)):
+                dir_name = directory_hierarchy[dir_path]['name']
+                is_last = i == len(top_level_dirs) - 1
                 
-                # Skip if only contains a README which is used for the directory description
-                non_readme_files = [f for f in path_to_files[""] if os.path.basename(f).lower() != "readme.md"]
-                
-                if non_readme_files:
-                    home_file.write("| Document | Description |\n")
-                    home_file.write("|:---------|:------------|\n")
-                    
-                    for file_path in sorted(path_to_files[""]):
-                        try:
-                            filename = os.path.basename(file_path)
-                            with open(file_path, "r", encoding="utf-8") as f:
-                                content = f.read()
-                            
-                            title = extract_title(content, filename[:-3])
-                            wiki_filename = sanitize_filename(title)
-                            if not wiki_filename:
-                                wiki_filename = sanitize_filename(filename[:-3])
-                            
-                            # Try to extract a brief description
-                            desc = "Documentation"
-                            desc_match = re.search(r'^# .+?\n\n(.+?)(?=\n\n|\Z)', content, re.DOTALL)
-                            if desc_match:
-                                desc = desc_match.group(1).strip()
-                                # Truncate if too long
-                                if len(desc) > 100:
-                                    desc = desc[:97] + "..."
-                            
-                            home_file.write(f"| [{title}]({wiki_filename}) | {desc} |\n")
-                        except Exception as e:
-                            print(f"Error processing file for table: {file_path}: {str(e)}")
+                if is_last:
+                    home_file.write(f"└── {dir_name}/\n")
+                    print_directory_tree(dir_path, "    ")
                 else:
-                    home_file.write("*No documents at root level*\n")
-                
-                home_file.write("\n</div>\n\n")
+                    home_file.write(f"├── {dir_name}/\n")
+                    print_directory_tree(dir_path, "│   ")
+            
+            home_file.write("```\n\n")
             
             # Create a dictionary to store all files by their paths
             path_to_wiki = {}
@@ -341,61 +299,49 @@ def main():
                 except Exception as e:
                     print(f"Error updating content for {file_path}: {str(e)}")
             
-            # Process each subdirectory
-            for rel_path in sorted([p for p in path_to_files.keys() if p != ""]):
-                subdir_name = os.path.basename(rel_path)
-                readme_file = None
-                
-                # Check if this directory has a README
-                for file_path in path_to_files[rel_path]:
-                    if os.path.basename(file_path).lower() == "readme.md":
-                        readme_file = file_path
-                        break
-                
-                home_file.write(f"<div class='content-section' id='{sanitize_filename(subdir_name)}'>\n\n")
-                home_file.write(f"#### {subdir_name.capitalize()}\n\n")
-                
-                # If there's a README, include its description
-                if readme_file:
-                    try:
-                        with open(readme_file, "r", encoding="utf-8") as f:
-                            content = f.read()
-                        # Try to extract a brief description from the beginning
-                        desc_match = re.search(r'^# .+?\n\n(.+?)(?=\n\n|\Z)', content, re.DOTALL)
-                        if desc_match:
-                            home_file.write(f"{desc_match.group(1).strip()}\n\n")
-                    except Exception:
-                        pass  # Continue if readme can't be read
-                
-                home_file.write("| Document | Description |\n")
-                home_file.write("|:---------|:------------|\n")
-                
-                for file_path in sorted(path_to_files[rel_path]):
-                    try:
-                        with open(file_path, "r", encoding="utf-8") as f:
-                            content = f.read()
-                        
-                        title = extract_title(content, os.path.basename(file_path)[:-3])
-                        wiki_filename = sanitize_filename(title)
-                        if not wiki_filename:
-                            wiki_filename = sanitize_filename(os.path.basename(file_path)[:-3])
-                        
-                        # Try to extract a brief description
-                        desc = "Documentation"
-                        desc_match = re.search(r'^# .+?\n\n(.+?)(?=\n\n|\Z)', content, re.DOTALL)
-                        if desc_match:
-                            desc = desc_match.group(1).strip()
-                            # Truncate if too long
-                            if len(desc) > 100:
-                                desc = desc[:97] + "..."
-                        
-                        home_file.write(f"| [{title}]({wiki_filename}) | {desc} |\n")
-                    except Exception as e:
-                        print(f"Error processing file for table: {file_path}: {str(e)}")
-                
-                home_file.write("\n</div>\n\n")
+            # Create an interactive file browser with links
+            home_file.write("### Document Browser\n\n")
             
-            home_file.write("<hr>\n\n")  # Add separator between sections
+            # Recursive function to print directory structure with links
+            def print_linked_tree(dir_path, indent=0):
+                indent_str = "  " * indent
+                dir_name = directory_hierarchy[dir_path]['name'] if dir_path in directory_hierarchy else os.path.basename(dir_path)
+                
+                # Check if directory has a README to link to
+                if dir_path in dir_to_wiki:
+                    wiki_link = dir_to_wiki[dir_path]
+                    home_file.write(f"{indent_str}- **[{dir_name}]({wiki_link})**\n")
+                else:
+                    home_file.write(f"{indent_str}- **{dir_name}**\n")
+                
+                # Print files in this directory
+                if dir_path in directory_hierarchy:
+                    # Sort files to ensure predictable order
+                    files = sorted(directory_hierarchy[dir_path]['files'], key=lambda x: x[1].lower())
+                    
+                    for file_path, filename in files:
+                        if filename.lower() != "readme.md":  # Skip READMEs as they're linked to the directory
+                            try:
+                                with open(file_path, "r", encoding="utf-8") as f:
+                                    content = f.read()
+                                title = extract_title(content, os.path.basename(file_path)[:-3])
+                                wiki_filename = sanitize_filename(title)
+                                if not wiki_filename:
+                                    wiki_filename = sanitize_filename(os.path.basename(file_path)[:-3])
+                                
+                                home_file.write(f"{indent_str}  - [{title}]({wiki_filename})\n")
+                            except Exception as e:
+                                print(f"Error creating link for file: {file_path}: {str(e)}")
+                    
+                    # Print subdirectories recursively
+                    for child in sorted(directory_hierarchy[dir_path]['children']):
+                        print_linked_tree(child, indent + 1)
+            
+            # Print each top-level directory
+            for dir_path in sorted(top_level_dirs):
+                print_linked_tree(dir_path)
+            
+            home_file.write("\n<hr>\n\n")  # Add separator between sections
     
     # Add custom styling for better appearance
     with open(wiki_dir / "custom-styling.md", "w") as style_file:
@@ -438,20 +384,6 @@ def main():
   margin: 30px 0;
 }
 
-details summary {
-  cursor: pointer;
-  color: #0366d6;
-  font-weight: bold;
-  padding: 8px;
-  background-color: #f1f8ff;
-  border-radius: 3px;
-  margin-bottom: 8px;
-}
-
-details summary:hover {
-  background-color: #dbedff;
-}
-
 h2 {
   padding-bottom: 8px;
   border-bottom: 1px solid #eaecef;
@@ -470,127 +402,50 @@ h4 {
   border-left: 3px solid #0366d6;
   padding-left: 8px;
 }
+
+.recently-updated {
+  background-color: #f1f8ff;
+  padding: 10px;
+  border-radius: 5px;
+  margin-top: 10px;
+  border-left: 3px solid #0366d6;
+}
+
+.recently-updated h4 {
+  margin-top: 0;
+  border-left: none;
+  padding-left: 0;
+}
 </style>
 
 [Return to Home](Home)
-""")
-
-    # Add custom CSS for better sidebar appearance
-    with open(wiki_dir / "_Sidebar-custom.md", "w") as sidebar_style_file:
-        sidebar_style_file.write("""<!-- Custom styling for sidebar -->
-<style>
-.wiki-sidebar .markdown-body h1 {
-  font-size: 24px;
-  margin-bottom: 16px;
-  padding-bottom: 8px;
-  border-bottom: 1px solid #eaecef;
-}
-
-.wiki-sidebar .markdown-body h2 {
-  font-size: 18px;
-  margin-top: 24px;
-  margin-bottom: 8px;
-  padding: 4px 0;
-  background-color: #f1f8ff;
-  padding-left: 8px;
-  border-radius: 3px;
-}
-
-.wiki-sidebar .markdown-body ul {
-  margin-bottom: 16px;
-}
-
-.wiki-sidebar .markdown-body li {
-  margin: 3px 0;
-}
-
-.wiki-sidebar strong {
-  color: #24292e;
-}
-
-.wiki-sidebar a {
-  color: #0366d6;
-}
-
-.wiki-sidebar a:hover {
-  text-decoration: underline;
-}
-</style>
-
-[[include:_Sidebar]]
-""")
-        
-    # Create a custom home page with better styling
-    with open(wiki_dir / "_Home-custom.md", "w") as home_style_file:
-        home_style_file.write("""<!-- Custom styling for homepage -->
-<style>
-.markdown-body h1 {
-  font-size: 32px;
-  margin-bottom: 16px;
-  padding-bottom: 8px;
-  border-bottom: 1px solid #eaecef;
-}
-
-.markdown-body h2 {
-  font-size: 24px;
-  margin-top: 24px;
-  margin-bottom: 16px;
-  padding-bottom: 8px;
-  border-bottom: 1px solid #eaecef;
-}
-
-.markdown-body table {
-  border: 1px solid #dfe2e5;
-  border-radius: 3px;
-  margin-bottom: 16px;
-}
-
-.markdown-body th {
-  background-color: #f6f8fa;
-  padding: 8px 13px;
-  border-bottom: 1px solid #dfe2e5;
-}
-
-.markdown-body td {
-  padding: 8px 13px;
-  border-bottom: 1px solid #dfe2e5;
-}
-
-.markdown-body tr:last-child td {
-  border-bottom: none;
-}
-
-.content-category {
-  background-color: #f1f8ff;
-  padding: 16px;
-  border-radius: 3px;
-  margin-bottom: 24px;
-  border-left: 4px solid #0366d6;
-}
-
-.content-section {
-  background-color: #f6f8fa;
-  border: 1px solid #eaecef;
-  border-radius: 3px;
-  padding: 16px;
-  margin-bottom: 16px;
-}
-
-.content-section h4 {
-  margin-top: 0;
-  color: #24292e;
-  border-bottom: 1px solid #eaecef;
-  padding-bottom: 8px;
-  margin-bottom: 16px;
-}
-</style>
-
-[[include:Home]]
 """)
     
     # Create sidebar with proper directory hierarchy
     with open(wiki_dir / "_Sidebar.md", "w") as sidebar_file:
         sidebar_file.write("# Wiki\n\n")
+        
+        # Add recently updated section to sidebar
+        sidebar_file.write("## 🕒 Recently Updated\n\n")
+        # Sort by most recent first
+        recently_updated.sort(key=lambda x: x[2], reverse=True)
+        # Show the 5 most recent files
+        for i, (file_path, rel_path, timestamp) in enumerate(recently_updated[:5]):
+            try:
+                with open(file_path, "r", encoding="utf-8") as f:
+                    content = f.read()
+                title = extract_title(content, os.path.basename(file_path)[:-3])
+                wiki_filename = sanitize_filename(title)
+                if not wiki_filename:
+                    wiki_filename = sanitize_filename(os.path.basename(file_path)[:-3])
+                
+                # Format the date
+                date_str = timestamp.strftime("%Y-%m-%d")
+                sidebar_file.write(f"- [{title}]({wiki_filename}) *({date_str})*\n")
+            except Exception as e:
+                print(f"Error adding recent file to sidebar: {file_path}: {str(e)}")
+        
+        sidebar_file.write("\n")
         
         # Add a cleaner sidebar with emoji icons
         for source_dir in source_dirs:
@@ -743,8 +598,8 @@ h4 {
                             except Exception:
                                 pass
                     
-                        if not readme_used:
-                            doc_icon = "📄"
+                    if not readme_used:
+                        doc_icon = "📄"
                         if "readme" in title.lower():
                             doc_icon = "ℹ️"
                         elif "cli" in title.lower() or "command" in title.lower():
