@@ -744,7 +744,7 @@ h4 {
                                 pass
                     
                         if not readme_used:
-                        doc_icon = "📄"
+                            doc_icon = "📄"
                         if "readme" in title.lower():
                             doc_icon = "ℹ️"
                         elif "cli" in title.lower() or "command" in title.lower():
