@@ -120,6 +120,44 @@ Whenever an administrator wants to, for example, create an instance from the Omn
 
 ![API Request Screenshot](https://github.com/user-attachments/assets/ec752af5-ef04-45d7-8947-b336d137cf9b)
 
+In this case we are asking the api to tell us what parameters the `aws` CPI requires for the create_instance method. We can back this response up by looking at the implementation of the method show below. Close examination of the `create_instance` action block in the JSON shows us that the AWS CPI does indeed require `region`, `image_id`, `instance_type`, `security_group`, and `ssh_key_name`.
+
+```json
+{
+    "name": "aws",
+    "type": "command",
+    "default_settings": {
+      "region": "us-east-1",
+      "instance_type": "t2.micro",
+      "image_id": "ami-0c55b159cbfafe1f0",
+      "ssh_key_name": "default-key",
+      "security_group": "default",
+      "volume_type": "gp2"
+    },
+    "actions": {
+      "create_instance": {
+        "command": "aws ec2 run-instances --region {region} --image-id {image_id} --instance-type {instance_type} --key-name {ssh_key_name} --security-group-ids {security_group} --output json",
+        "params": [
+          "region",
+          "image_id",
+          "instance_type",
+          "ssh_key_name",
+          "security_group"
+        ],
+        "parse_rules": {
+          "type": "object",
+          "patterns": {
+            "instance_id": {
+              "regex": "\"InstanceId\":\\s*\"([^\"]+)\"",
+              "group": 1
+            }
+          }
+        }
+      }
+    }
+  }
+```
+
 ### 4.1 Parameter Substitution
 
 Parameters are referenced in command templates using curly braces:
