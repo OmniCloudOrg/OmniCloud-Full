@@ -77,6 +77,10 @@ Each action defines a command to execute and how to parse its output:
 
 ## 4. Parameter Handling
 
+> [!WARNING]
+> Below are parameters that OmniCloud natively supports and will request from administrators during setup or when commands are executed, depending on parameter type. These parameters will always be available to you.
+While Omni services allow you to add custom parameters and will prompt users for additional information as needed, it's recommended to use these predefined parameters when possible for consistency.
+
 ### 4.1 Parameter Substitution
 
 Parameters are referenced in command templates using curly braces:
@@ -102,7 +106,6 @@ Parameters can be constructed conditionally by using separate parameters:
 ```
 
 This allows parameters to be included only when needed.
-
 
 
 ### 4.4 Global Parameters
