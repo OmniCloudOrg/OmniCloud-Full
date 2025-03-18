@@ -118,8 +118,7 @@ In order to tell OmniCloud we would like the user to provide the `region` parame
 
 Whenever an administrator wants to, for example, create an instance from the OmniCloud Dashboard the dashboard can query our api to see what parameters the method required for a given CPI. The request we make is shown below:
 
-
-
+![image](https://github.com/user-attachments/assets/ec752af5-ef04-45d7-8947-b336d137cf9b)
 
 ### 4.1 Parameter Substitution
 
