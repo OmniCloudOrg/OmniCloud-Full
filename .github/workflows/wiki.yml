@@ -32,6 +32,7 @@ jobs:
       - name: Run Wiki Generator
         run: |
           # Ensure the script has execution permissions
+          ls -lah
           chmod +x .github/workflows/scripts/gen-docs.py
           python .github/workflows/scripts/gen-docs.py
 
