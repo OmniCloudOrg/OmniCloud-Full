@@ -19,7 +19,7 @@ jobs:
         uses: actions/checkout@v3
         with:
           fetch-depth: 0  # We need the full history for accurate timestamps
-
+      
       # No Python dependencies needed for shell script
 
       - name: Clone Wiki Repository
@@ -30,158 +30,133 @@ jobs:
 
       - name: Generate Wiki Content
         run: |
-          # Enable error tracing
-          set -x
-
+          # Create simple script file
+          cat > generate-wiki.sh << 'EOF'
+          #!/bin/bash
+          
+          # Stop on errors
+          set -e
+          
           echo "Starting Wiki Generator..."
           
           # Find source directories (case insensitive)
-          declare -a source_dirs
-          for dir in docs notes Docs Notes; do
-            if [ -d "$dir" ]; then
-              source_dirs+=("$dir")
-              echo "Found source directory: $dir"
-              # List contents of directory to verify structure
-              echo "Contents of $dir:"
-              ls -la "$dir"
+          DIRS=()
+          for DIR in docs notes Docs Notes; do
+            if [ -d "$DIR" ]; then
+              DIRS+=("$DIR")
+              echo "Found directory: $DIR"
             fi
           done
           
-          if [ ${#source_dirs[@]} -eq 0 ]; then
+          if [ ${#DIRS[@]} -eq 0 ]; then
             echo "No docs or notes directories found. Exiting."
             exit 0
           fi
           
-          # Initialize index content
-          index_content="# Wiki Index\\n\\n"
-          total_files=0
-
-          echo "Setting up shell options"
-          # Set shell options for safer file handling
-          shopt -s nullglob
-
-          echo "Defining process_directory function"
-          # Define the process_directory function outside the loop
-          process_directory() {
-            echo "Processing directory: $1 (path: $2, indent: $3)"
-            local dir="$1"
-            local rel_path="$2"
-            local indent="$3"
+          TOTAL_FILES=0
+          
+          # Create Home.md with header
+          echo "# Wiki Index" > wiki/Home.md
+          echo "" >> wiki/Home.md
+          
+          # Process each directory
+          for SOURCE_DIR in "${DIRS[@]}"; do
+            DIR_NAME=$(basename "$SOURCE_DIR")
+            echo "Processing directory: $DIR_NAME"
             
-            echo "Looking for .md files in $dir"
-            # Process files in the current directory
-            for file in "$dir"/*.md; do
-              if [ ! -f "$file" ]; then
-                echo "No .md files found in $dir"
-                break
-              fi
-              
-              echo "Processing file: $file"
-              # Skip files starting with underscore or dot
-              local filename=$(basename "$file")
-              if [[ "$filename" == _* || "$filename" == .* ]]; then
-                echo "Skipping file with underscore/dot prefix: $filename"
+            # Add section header to Home.md
+            echo "## ${DIR_NAME^}" >> wiki/Home.md
+            echo "" >> wiki/Home.md
+            
+            # Create a temporary directory list file
+            find "$SOURCE_DIR" -type d | sort > temp_dir_list.txt
+            
+            # Process each directory
+            while read -r DIR; do
+              # Skip the root source directory itself (already processed)
+              if [ "$DIR" = "$SOURCE_DIR" ]; then
                 continue
-              fi
-              
-              # Extract the title
-              echo "Extracting title from $file"
-              local title=$(grep -m 1 "^# " "$file" | sed 's/^# //')
-              if [ -z "$title" ]; then
-                title=$(basename "$file" .md | sed 's/-/ /g' | sed 's/_/ /g' | awk '{for(i=1;i<=NF;i++) $i=toupper(substr($i,1,1)) tolower(substr($i,2))}1')
-                echo "No heading found, using filename as title: $title"
-              else
-                echo "Found title: $title"
-              fi
-              
-              # Sanitize the title for the wiki filename
-              echo "Sanitizing title for filename"
-              local wiki_filename=$(echo "$title" | tr '[:upper:]' '[:lower:]' | sed 's/[^a-z0-9]/-/g' | sed 's/--*/-/g' | sed 's/^-//' | sed 's/-$//')
-              if [ -z "$wiki_filename" ]; then
-                wiki_filename=$(basename "$file" .md | tr '[:upper:]' '[:lower:]' | sed 's/[^a-z0-9]/-/g')
-                echo "Empty wiki filename, using sanitized basename: $wiki_filename"
-              else
-                echo "Wiki filename: $wiki_filename"
-              fi
-              
-              # Process the content - replace internal links
-              echo "Processing content and links"
-              local content=$(cat "$file")
-              echo "File content length: ${#content} characters"
-              
-              # Write to the wiki file
-              echo "Writing to wiki/${wiki_filename}.md"
-              echo "$content" > "wiki/${wiki_filename}.md"
-              
-              # Add to index
-              local indent_str=$(printf '%*s' "$indent" '')
-              index_content+="${indent_str}- [${title:-$filename}](${wiki_filename})\\n"
-              
-              ((total_files++))
-              echo "Total files processed: $total_files"
-            done
-            
-            echo "Looking for subdirectories in $dir"
-            # Process subdirectories
-            for subdir in "$dir"/*/; do
-              if [ ! -d "$subdir" ]; then
-                echo "No subdirectories found in $dir"
-                break
               fi
               
               # Skip hidden directories
-              local subdir_name=$(basename "${subdir%/}")
-              echo "Found subdirectory: $subdir_name"
-              if [[ "$subdir_name" == .* ]]; then
-                echo "Skipping hidden directory: $subdir_name"
+              if [[ $(basename "$DIR") == .* ]]; then
                 continue
               fi
               
-              # Add directory to index
-              local indent_str=$(printf '%*s' "$indent" '')
-              index_content+="${indent_str}- **${subdir_name^}**\\n"
+              # Calculate the relative path for indentation
+              REL_PATH=${DIR#"$SOURCE_DIR/"}
+              DEPTH=$(echo "$REL_PATH" | tr -cd '/' | wc -c)
+              INDENT=$((DEPTH * 2 + 2))
               
-              # Process subdirectory recursively
-              echo "Recursively processing $subdir"
-              process_directory "${subdir%/}" "${rel_path}/${subdir_name}" $((indent + 2))
-            done
+              # Add directory to index
+              printf "%*s- **%s**\n" $INDENT "" "$(basename "$DIR")" >> wiki/Home.md
+            done < temp_dir_list.txt
             
-            echo "Finished processing directory: $dir"
-          }
-          
-          # Process each source directory
-          echo "Starting to process source directories"
-          for src_dir in "${source_dirs[@]}"; do
-            dir_name=$(basename "$src_dir")
-            echo "Processing main directory: $dir_name"
+            # Find all markdown files
+            find "$SOURCE_DIR" -name "*.md" | sort > temp_file_list.txt
             
-            index_content+="## ${dir_name^}\\n\\n"
+            # Process each file
+            while read -r FILE; do
+              # Skip files starting with underscore or dot
+              FILENAME=$(basename "$FILE")
+              if [[ "$FILENAME" == _* || "$FILENAME" == .* ]]; then
+                continue
+              fi
+              
+              echo "Processing file: $FILE"
+              
+              # Calculate the directory depth for indentation
+              REL_DIR=$(dirname "${FILE#"$SOURCE_DIR/"}")
+              if [ "$REL_DIR" = "." ]; then
+                # File is in the root of the source directory
+                INDENT=2
+              else
+                DEPTH=$(echo "$REL_DIR" | tr -cd '/' | wc -c)
+                INDENT=$((DEPTH * 2 + 2))
+              fi
+              
+              # Extract title from file content or use filename
+              TITLE=$(grep -m 1 "^# " "$FILE" | sed 's/^# //')
+              if [ -z "$TITLE" ]; then
+                TITLE=$(basename "$FILE" .md | sed 's/-/ /g' | sed 's/_/ /g' | awk '{for(i=1;i<=NF;i++) $i=toupper(substr($i,1,1)) tolower(substr($i,2))}1')
+              fi
+              
+              # Create wiki filename
+              WIKI_FILENAME=$(echo "$TITLE" | tr '[:upper:]' '[:lower:]' | sed 's/[^a-z0-9]/-/g' | sed 's/--*/-/g' | sed 's/^-//' | sed 's/-$//')
+              if [ -z "$WIKI_FILENAME" ]; then
+                WIKI_FILENAME=$(basename "$FILE" .md | tr '[:upper:]' '[:lower:]' | sed 's/[^a-z0-9]/-/g')
+              fi
+              
+              # Copy file to wiki
+              cp "$FILE" "wiki/${WIKI_FILENAME}.md"
+              
+              # Add to index
+              printf "%*s- [%s](%s)\n" $INDENT "" "$TITLE" "$WIKI_FILENAME" >> wiki/Home.md
+              
+              ((TOTAL_FILES++))
+            done < temp_file_list.txt
             
-            # Start processing the directory
-            process_directory "$src_dir" "" 2
-            
-            index_content+="\\n"
+            # Add spacing after section
+            echo "" >> wiki/Home.md
           done
           
-          # Add stats to index
-          echo "Finalizing index content"
-          final_index="# Wiki Index\\n\\n*Generated from ${total_files} markdown files across ${#source_dirs[@]} directories.*\\n\\n${index_content#*# Wiki Index\\n\\n}"
+          # Add stats to the top of the index
+          sed -i "1a\\
+          *Generated from ${TOTAL_FILES} markdown files across ${#DIRS[@]} directories.*\\
+          " wiki/Home.md
           
-          # Write the Home.md file
-          echo "Writing Home.md"
-          echo -e "$final_index" > "wiki/Home.md"
+          # Copy Home.md to _Sidebar.md
+          cp wiki/Home.md wiki/_Sidebar.md
           
-          # Also create a _Sidebar.md file with the same content
-          echo "Writing _Sidebar.md"
-          echo -e "$final_index" > "wiki/_Sidebar.md"
+          # Clean up temp files
+          rm -f temp_dir_list.txt temp_file_list.txt
           
-          echo "Wiki generation complete. Processed $total_files markdown files."
+          echo "Wiki generation complete. Processed $TOTAL_FILES markdown files."
+          EOF
           
-          # Reset shell options
-          shopt -u nullglob
-          
-          # Disable error tracing
-          set +x
+          # Make the script executable and run it
+          chmod +x generate-wiki.sh
+          ./generate-wiki.sh
 
       - name: Push to Wiki
         working-directory: wiki
