@@ -18,9 +18,7 @@ jobs:
       - name: Checkout Repository
         uses: actions/checkout@v3
         with:
-          fetch-depth: 0  # We need the full history for accurate timestamps
-      
-      # No Python dependencies needed for shell script
+          fetch-depth: 0
 
       - name: Clone Wiki Repository
         run: |
@@ -28,135 +26,139 @@ jobs:
           git config --global user.email "action@github.com"
           git clone "https://${{ github.actor }}:${{ secrets.WIKI_TOKEN }}@github.com/${{ github.repository }}.wiki.git" wiki
 
-      - name: Generate Wiki Content
+      - name: Generate Wiki Index
         run: |
-          # Create simple script file
-          cat > generate-wiki.sh << 'EOF'
-          #!/bin/bash
-          
-          # Stop on errors
-          set -e
-          
-          echo "Starting Wiki Generator..."
-          
-          # Find source directories (case insensitive)
-          DIRS=()
-          for DIR in docs notes Docs Notes; do
-            if [ -d "$DIR" ]; then
-              DIRS+=("$DIR")
-              echo "Found directory: $DIR"
-            fi
-          done
-          
-          if [ ${#DIRS[@]} -eq 0 ]; then
-            echo "No docs or notes directories found. Exiting."
-            exit 0
-          fi
-          
-          TOTAL_FILES=0
-          
-          # Create Home.md with header
+          # Create the Home.md file
           echo "# Wiki Index" > wiki/Home.md
           echo "" >> wiki/Home.md
+          echo "*This wiki is auto-generated from repository markdown files*" >> wiki/Home.md
+          echo "" >> wiki/Home.md
           
-          # Process each directory
-          for SOURCE_DIR in "${DIRS[@]}"; do
-            DIR_NAME=$(basename "$SOURCE_DIR")
-            echo "Processing directory: $DIR_NAME"
+          # Count directories and files
+          dir_count=0
+          file_count=0
+          
+          # Process each potential directory
+          for source_dir in docs notes Docs Notes; do
+            if [ ! -d "$source_dir" ]; then
+              continue
+            fi
+            
+            echo "Processing directory: $source_dir"
+            ((dir_count++))
             
             # Add section header to Home.md
-            echo "## ${DIR_NAME^}" >> wiki/Home.md
+            echo "## ${source_dir^}" >> wiki/Home.md
             echo "" >> wiki/Home.md
             
-            # Create a temporary directory list file
-            find "$SOURCE_DIR" -type d | sort > temp_dir_list.txt
+            # Process markdown files directly in this directory
+            for md_file in "$source_dir"/*.md; do
+              # Check if the glob expanded to an actual file
+              if [ ! -f "$md_file" ]; then
+                continue
+              fi
+              
+              filename=$(basename "$md_file")
+              # Skip files starting with underscore or dot
+              if [[ "$filename" == _* || "$filename" == .* ]]; then
+                continue
+              fi
+              
+              echo "Processing root file: $md_file"
+              
+              # Try to extract title from first heading
+              title=$(grep -m 1 "^# " "$md_file" | sed 's/^# //')
+              # If no title found, use filename
+              if [ -z "$title" ]; then
+                title=$(basename "$md_file" .md | tr '-_' ' ' | awk '{for(i=1;i<=NF;i++) $i=toupper(substr($i,1,1)) tolower(substr($i,2))}1')
+              fi
+              
+              # Create simple wiki filename
+              wiki_filename=$(echo "$title" | tr '[:upper:]' '[:lower:]' | tr -c 'a-z0-9' '-' | sed 's/-\+/-/g' | sed 's/^-\|-$//g')
+              if [ -z "$wiki_filename" ]; then
+                wiki_filename=$(basename "$md_file" .md | tr '[:upper:]' '[:lower:]' | tr -c 'a-z0-9' '-')
+              fi
+              
+              # Copy the file to wiki
+              cp "$md_file" "wiki/${wiki_filename}.md"
+              
+              # Add to index
+              echo "  - [$title]($wiki_filename)" >> wiki/Home.md
+              ((file_count++))
+            done
             
-            # Process each directory
-            while read -r DIR; do
-              # Skip the root source directory itself (already processed)
-              if [ "$DIR" = "$SOURCE_DIR" ]; then
+            # Find and process all subdirectories
+            for subdir in $(find "$source_dir" -type d | sort); do
+              # Skip the source directory itself
+              if [ "$subdir" = "$source_dir" ]; then
                 continue
               fi
               
               # Skip hidden directories
-              if [[ $(basename "$DIR") == .* ]]; then
+              if [[ $(basename "$subdir") == .* ]]; then
                 continue
               fi
               
-              # Calculate the relative path for indentation
-              REL_PATH=${DIR#"$SOURCE_DIR/"}
-              DEPTH=$(echo "$REL_PATH" | tr -cd '/' | wc -c)
-              INDENT=$((DEPTH * 2 + 2))
+              # Calculate relative path and depth for indentation
+              rel_path=${subdir#"$source_dir/"}
+              # Count slashes to determine depth
+              depth=$(echo "$rel_path" | tr -cd '/' | wc -c)
+              indent=$((depth + 1))
+              indent_spaces=$((indent * 2))
               
-              # Add directory to index
-              printf "%*s- **%s**\n" $INDENT "" "$(basename "$DIR")" >> wiki/Home.md
-            done < temp_dir_list.txt
+              # Add directory name to index
+              spaces=$(printf '%*s' $indent_spaces '')
+              dir_name=$(basename "$subdir")
+              echo "${spaces}- **${dir_name}**" >> wiki/Home.md
+              
+              # Process markdown files in this subdirectory
+              for md_file in "$subdir"/*.md 2>/dev/null || true; do
+                # Check if the glob expanded to an actual file
+                if [ ! -f "$md_file" ]; then
+                  continue
+                fi
+                
+                filename=$(basename "$md_file")
+                # Skip files starting with underscore or dot
+                if [[ "$filename" == _* || "$filename" == .* ]]; then
+                  continue
+                fi
+                
+                echo "Processing file: $md_file"
+                
+                # Try to extract title from first heading
+                title=$(grep -m 1 "^# " "$md_file" | sed 's/^# //')
+                # If no title found, use filename
+                if [ -z "$title" ]; then
+                  title=$(basename "$md_file" .md | tr '-_' ' ' | awk '{for(i=1;i<=NF;i++) $i=toupper(substr($i,1,1)) tolower(substr($i,2))}1')
+                fi
+                
+                # Create simple wiki filename
+                wiki_filename=$(echo "$title" | tr '[:upper:]' '[:lower:]' | tr -c 'a-z0-9' '-' | sed 's/-\+/-/g' | sed 's/^-\|-$//g')
+                if [ -z "$wiki_filename" ]; then
+                  wiki_filename=$(basename "$md_file" .md | tr '[:upper:]' '[:lower:]' | tr -c 'a-z0-9' '-')
+                fi
+                
+                # Copy the file to wiki
+                cp "$md_file" "wiki/${wiki_filename}.md"
+                
+                # Add to index with proper indentation
+                child_spaces=$(printf '%*s' $((indent_spaces + 2)) '')
+                echo "${child_spaces}- [$title]($wiki_filename)" >> wiki/Home.md
+                ((file_count++))
+              done
+            done
             
-            # Find all markdown files
-            find "$SOURCE_DIR" -name "*.md" | sort > temp_file_list.txt
-            
-            # Process each file
-            while read -r FILE; do
-              # Skip files starting with underscore or dot
-              FILENAME=$(basename "$FILE")
-              if [[ "$FILENAME" == _* || "$FILENAME" == .* ]]; then
-                continue
-              fi
-              
-              echo "Processing file: $FILE"
-              
-              # Calculate the directory depth for indentation
-              REL_DIR=$(dirname "${FILE#"$SOURCE_DIR/"}")
-              if [ "$REL_DIR" = "." ]; then
-                # File is in the root of the source directory
-                INDENT=2
-              else
-                DEPTH=$(echo "$REL_DIR" | tr -cd '/' | wc -c)
-                INDENT=$((DEPTH * 2 + 2))
-              fi
-              
-              # Extract title from file content or use filename
-              TITLE=$(grep -m 1 "^# " "$FILE" | sed 's/^# //')
-              if [ -z "$TITLE" ]; then
-                TITLE=$(basename "$FILE" .md | sed 's/-/ /g' | sed 's/_/ /g' | awk '{for(i=1;i<=NF;i++) $i=toupper(substr($i,1,1)) tolower(substr($i,2))}1')
-              fi
-              
-              # Create wiki filename
-              WIKI_FILENAME=$(echo "$TITLE" | tr '[:upper:]' '[:lower:]' | sed 's/[^a-z0-9]/-/g' | sed 's/--*/-/g' | sed 's/^-//' | sed 's/-$//')
-              if [ -z "$WIKI_FILENAME" ]; then
-                WIKI_FILENAME=$(basename "$FILE" .md | tr '[:upper:]' '[:lower:]' | sed 's/[^a-z0-9]/-/g')
-              fi
-              
-              # Copy file to wiki
-              cp "$FILE" "wiki/${WIKI_FILENAME}.md"
-              
-              # Add to index
-              printf "%*s- [%s](%s)\n" $INDENT "" "$TITLE" "$WIKI_FILENAME" >> wiki/Home.md
-              
-              ((TOTAL_FILES++))
-            done < temp_file_list.txt
-            
-            # Add spacing after section
             echo "" >> wiki/Home.md
           done
           
-          # Add stats to the top of the index
-          sed -i "1a\\
-          *Generated from ${TOTAL_FILES} markdown files across ${#DIRS[@]} directories.*\\
-          " wiki/Home.md
+          # Update stats in the file
+          sed -i "3s/.*/*Generated from ${file_count} markdown files across ${dir_count} directories.*/" wiki/Home.md
           
-          # Copy Home.md to _Sidebar.md
+          # Create sidebar
           cp wiki/Home.md wiki/_Sidebar.md
           
-          # Clean up temp files
-          rm -f temp_dir_list.txt temp_file_list.txt
-          
-          echo "Wiki generation complete. Processed $TOTAL_FILES markdown files."
-          EOF
-          
-          # Make the script executable and run it
-          chmod +x generate-wiki.sh
-          ./generate-wiki.sh
+          echo "Wiki generation complete. Processed $file_count files from $dir_count directories."
 
       - name: Push to Wiki
         working-directory: wiki
