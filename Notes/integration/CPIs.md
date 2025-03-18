@@ -416,35 +416,7 @@ For object storage services:
 | `content_encoding` | Content-Encoding header | `gzip` |
 | `metadata` | User-defined metadata | `{"project":"website"}` |
 
-#### 4.4.11 CDN and Content Delivery Parameters
-
-For content delivery networks:
-
-| Parameter | Description | Example Value |
-|-----------|-------------|---------------|
-| `distribution_id` | Identifier for a CDN distribution | `dist-12345` |
-| `origin_domain` | Origin domain name | `origin.example.com` |
-| `origin_path` | Origin path | `/content` |
-| `cache_behavior` | Cache behavior settings | JSON cache configuration |
-| `cdn_ttl` | Time to live for cache (seconds) | `86400` |
-| `ssl_certificate` | SSL certificate for HTTPS | `arn:aws:acm:...` |
-| `custom_domain` | Custom domain name | `cdn.example.com` |
-| `price_class` | Price class/coverage area | `PriceClass_100` |
-| `http_version` | HTTP version | `http2` |
-| `geo_restrictions` | Geographic restrictions | `{"type":"whitelist","locations":["US","CA"]}` |
-| `distribution_enabled` | Enable CDN distribution | `true`, `false` |
-| `default_root_object` | Default root object | `index.html` |
-| `logging_enabled` | Enable access logs | `true`, `false` |
-| `log_bucket` | Bucket for access logs | `logs-bucket` |
-| `log_prefix` | Prefix for log files | `cdn-logs/` |
-| `origin_protocol` | Protocol for origin | `http-only`, `match-viewer` |
-| `origin_keepalive_timeout` | Origin keepalive timeout | `5` |
-| `origin_read_timeout` | Origin read timeout | `30` |
-| `viewer_protocol_policy` | Viewer protocol policy | `redirect-to-https` |
-| `allowed_methods` | HTTP methods allowed | `["GET", "HEAD"]` |
-| `cached_methods` | HTTP methods to cache | `["GET", "HEAD"]` |
-
-#### 4.4.12 Auto-Scaling Parameters
+#### 4.4.11 Auto-Scaling Parameters
 
 For auto-scaling configurations:
 
@@ -478,36 +450,7 @@ For auto-scaling configurations:
 | `service_linked_role_arn` | Service linked role ARN | `arn:aws:iam::...` |
 | `new_instances_protected` | Protect new instances | `true`, `false` |
 
-#### 4.4.13 Cost Management Parameters
-
-For cost and usage management:
-
-| Parameter | Description | Example Value |
-|-----------|-------------|---------------|
-| `billing_period` | Billing period | `2025-03` |
-| `cost_filter` | Filter for cost data | `{"Service":["AmazonEC2"]}` |
-| `granularity` | Data granularity | `DAILY`, `MONTHLY` |
-| `group_by` | Grouping for cost data | `["SERVICE", "REGION"]` |
-| `budget_id` | Identifier for a budget | `budget-12345` |
-| `budget_amount` | Budget amount | `1000` |
-| `time_period` | Budget time period | `MONTHLY` |
-| `budget_type` | Budget type | `COST`, `USAGE` |
-| `notification_threshold` | Budget notification threshold | `80` |
-| `notification_type` | Notification type | `ACTUAL`, `FORECASTED` |
-| `currency` | Currency code | `USD`, `EUR` |
-| `time_unit` | Time unit for cost data | `MONTHLY` |
-| `cost_allocation_tag` | Cost allocation tag | `project` |
-| `linked_account` | Linked account ID | `123456789012` |
-| `forecast_type` | Type of forecast | `HISTORICAL` |
-| `include_credit` | Include credits in cost | `true`, `false` |
-| `include_discount` | Include discounts in cost | `true`, `false` |
-| `include_other_subscription` | Include other subscriptions | `true`, `false` |
-| `include_recurring` | Include recurring costs | `true`, `false` |
-| `include_refund` | Include refunds in cost | `true`, `false` |
-| `include_tax` | Include tax in cost | `true`, `false` |
-| `include_upfront` | Include upfront costs | `true`, `false` |
-
-#### 4.4.14 Identity and Access Management Parameters
+#### 4.4.12 Identity and Access Management Parameters
 
 For IAM operations:
 
