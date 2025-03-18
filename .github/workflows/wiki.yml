@@ -112,7 +112,9 @@ jobs:
               echo "${spaces}- **${dir_name}**" >> wiki/Home.md
               
               # Process markdown files in this subdirectory
-              for md_file in "$subdir"/*.md 2>/dev/null || true; do
+              shopt -s nullglob
+              for md_file in "$subdir"/*.md; do
+                shopt -u nullglob
                 # Check if the glob expanded to an actual file
                 if [ ! -f "$md_file" ]; then
                   continue
