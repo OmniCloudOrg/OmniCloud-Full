@@ -81,6 +81,46 @@ Each action defines a command to execute and how to parse its output:
 > Below are parameters that OmniCloud natively supports and will request from administrators during setup or when commands are executed, depending on parameter type. These parameters will always be available to you.
 > While Omni services allow you to add custom parameters and will prompt users for additional information as needed, it's recommended to use these predefined parameters when possible for consistency.
 
+### What are Parameters?
+Parameters are OmniCloud's system that allows CPI developers to provide user parameters to CPI-defined commands. You use them when you want to prompt the user for a piece of informationn related to a backend operation you need to perform
+
+#### For Example
+
+In the ecample below we use the AWS EC2 CLI to list out running instances in our AWS account. This command usage requires a region to be specified (which ideally is provided by the user)
+
+In order to tell OmniCloud we would like the user to provide the `region` parameter for the `list_instances` method we simply place a set of curly braces where we would have placed the parameter and place the parameter name inside.
+
+```json
+{
+  "name": "provider_name",
+  "type": "command",
+  "default_settings": {
+    "setting1": "default_value1",
+    "setting2": "default_value2"
+  },
+  "actions": {
+    "list_instances": {
+      "command": "aws ec2 describe-instances --region {region} --output json",
+      "params": ["region"],
+      "parse_rules": {
+        "type": "object",
+        "patterns": {
+          "output": {
+            "regex": "(.*)",
+            "group": 1
+          }
+        }
+      }
+    }
+  }
+}
+```
+
+Whenever an administrator wants to, for example, create an instance from the OmniCloud Dashboard the dashboard can query our api to see what parameters the method required for a given CPI. The request we make is shown below:
+
+
+
+
 ### 4.1 Parameter Substitution
 
 Parameters are referenced in command templates using curly braces:
