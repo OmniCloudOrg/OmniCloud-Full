@@ -1,4 +1,4 @@
-# Omni Platform - Development Notes
+# OmniCloud Platform - Development Notes
 
 ## Important Notice
 

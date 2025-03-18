@@ -1,0 +1,48 @@
+name: Generate GitHub Wiki
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - 'docs/**'
+      - 'notes/**'
+      - 'Docs/**'
+      - 'Notes/**'
+  workflow_dispatch:  # Allows manual triggering
+
+jobs:
+  generate-wiki:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v3
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.10'
+
+      - name: Clone Wiki Repository
+        run: |
+          git config --global user.name "GitHub Action"
+          git config --global user.email "action@github.com"
+          git clone "https://${{ github.actor }}:${{ secrets.WIKI_TOKEN }}@github.com/${{ github.repository }}.wiki.git" wiki
+
+      - name: Run Wiki Generator
+        run: |
+          # Ensure the script has execution permissions
+          chmod +x .github/workflows/scripts/gen-docs.py
+          python .github/workflows/scripts/gen-docs.py
+
+      - name: Push to Wiki
+        working-directory: wiki
+        run: |
+          git add .
+          # Only commit and push if there are changes
+          if git diff --staged --quiet; then
+            echo "No changes to commit"
+          else
+            git commit -m "Update wiki from docs and notes directories"
+            git push "https://${{ github.actor }}:${{ secrets.WIKI_TOKEN }}@github.com/${{ github.repository }}.wiki.git"
+          fi
