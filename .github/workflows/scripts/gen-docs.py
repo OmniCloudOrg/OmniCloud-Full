@@ -58,13 +58,20 @@ def process_internal_links(content, path_to_wiki):
     pattern = r'\[([^\]]+)\]\(([^)]+)\)'
     return re.sub(pattern, replace_link, content)
 
-def get_file_last_modified(file_path):
-    """Get the last modified date of a file."""
+def get_git_last_modified(file_path):
+    """Get the last modified date of a file from git history."""
     try:
-        mtime = os.path.getmtime(file_path)
-        return datetime.datetime.fromtimestamp(mtime)
-    except:
-        return datetime.datetime.now()
+        import subprocess
+        result = subprocess.run(
+            ["git", "log", "-1", "--format=%at", file_path],
+            capture_output=True, text=True, check=True
+        )
+        timestamp = int(result.stdout.strip())
+        return datetime.datetime.fromtimestamp(timestamp)
+    except Exception as e:
+        print(f"Error getting git history for {file_path}: {str(e)}")
+        # Fallback to file system timestamp
+        return datetime.datetime.fromtimestamp(os.path.getmtime(file_path))
 
 def main():
     """Main function to generate wiki content."""
@@ -75,6 +82,10 @@ def main():
     recently_updated = []  # Track recently updated files
 
     print("Starting Wiki Generator")
+    
+    # Set up correct git environment for the CI/CD pipeline
+    import subprocess
+    subprocess.run(["git", "config", "--global", "safe.directory", "*"], check=False)
 
     # Find source directories
     for dir_name in ["docs", "notes", "Docs", "Notes"]:
@@ -123,8 +134,8 @@ def main():
                         full_path = os.path.join(root, file)
                         md_files.append((full_path, rel_path))
                         
-                        # Track file modification time for recently updated
-                        last_modified = get_file_last_modified(full_path)
+                        # Track file modification time from git history
+                        last_modified = get_git_last_modified(full_path)
                         recently_updated.append((full_path, rel_path, last_modified))
             
             # Process directory structure - build hierarchy
@@ -343,92 +354,16 @@ def main():
             
             home_file.write("\n<hr>\n\n")  # Add separator between sections
     
-    # Add custom styling for better appearance
-    with open(wiki_dir / "custom-styling.md", "w") as style_file:
-        style_file.write("""# Custom Styling
-
-<!-- This file adds some custom styling to make the wiki more pleasant to read -->
-
-<style>
-.content-section {
-  margin-bottom: 30px;
-  padding: 15px;
-  border-radius: 5px;
-  background-color: #f8f9fa;
-  border: 1px solid #eaecef;
-}
-
-.markdown-body table {
-  width: 100%;
-  border-collapse: collapse;
-}
-
-.markdown-body table th {
-  background-color: #eaecef;
-  text-align: left;
-  padding: 8px;
-}
-
-.markdown-body table td {
-  padding: 8px;
-  border-top: 1px solid #eaecef;
-}
-
-.markdown-body table tr:nth-child(2n) {
-  background-color: #f6f8fa;
-}
-
-.markdown-body hr {
-  height: 2px;
-  background-color: #dfe2e5;
-  margin: 30px 0;
-}
-
-h2 {
-  padding-bottom: 8px;
-  border-bottom: 1px solid #eaecef;
-  margin-top: 24px;
-}
-
-h3 {
-  color: #24292e;
-}
-
-h4 {
-  color: #24292e;
-  font-size: 16px;
-  margin-top: 24px;
-  margin-bottom: 16px;
-  border-left: 3px solid #0366d6;
-  padding-left: 8px;
-}
-
-.recently-updated {
-  background-color: #f1f8ff;
-  padding: 10px;
-  border-radius: 5px;
-  margin-top: 10px;
-  border-left: 3px solid #0366d6;
-}
-
-.recently-updated h4 {
-  margin-top: 0;
-  border-left: none;
-  padding-left: 0;
-}
-</style>
-
-[Return to Home](Home)
-""")
-    
-    # Create sidebar with proper directory hierarchy
+    # Add recently updated section to sidebar
     with open(wiki_dir / "_Sidebar.md", "w") as sidebar_file:
         sidebar_file.write("# Wiki\n\n")
         
         # Add recently updated section to sidebar
         sidebar_file.write("## 🕒 Recently Updated\n\n")
+        
         # Sort by most recent first
         recently_updated.sort(key=lambda x: x[2], reverse=True)
+        
         # Show the 5 most recent files
         for i, (file_path, rel_path, timestamp) in enumerate(recently_updated[:5]):
             try:
@@ -617,9 +552,6 @@ h4 {
         f"*Generated from {total_files} markdown files across {processed_dirs} directories*",
         content
     )
-    
-    # Add link to custom styling at the top
-    content = content.replace("# Wiki Index\n\n", "# Wiki Index\n\n[Custom Styling](custom-styling)\n\n")
     
     with open(wiki_dir / "Home.md", "w") as f:
         f.write(content)
