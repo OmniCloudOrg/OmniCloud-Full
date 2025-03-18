@@ -76,15 +76,41 @@ def main():
         print("No docs or notes directories found. Exiting.")
         return
 
-    # Start creating Home.md
+    # Start creating Home.md with a prettier format
     with open(wiki_dir / "Home.md", "w") as home_file:
         home_file.write("# Wiki Index\n\n")
         home_file.write("*This wiki is auto-generated from repository markdown files*\n\n")
         
-        # Process each source directory
+        # Add a table of contents
+        home_file.write("## Table of Contents\n\n")
+        
+        # Create a table for top-level directories
+        home_file.write("| Category | Description |\n")
+        home_file.write("|:---------|:------------|\n")
+        
+        for source_dir in source_dirs:
+            dir_name = source_dir.capitalize()
+            home_file.write(f"| **[{dir_name}](#{dir_name.lower()})** | Documentation from the `{source_dir}` directory |\n")
+        
+        home_file.write("\n---\n\n")
+        
+        # Process each source directory with enhanced formatting
         for source_dir in source_dirs:
             print(f"Processing directory: {source_dir}")
             home_file.write(f"## {source_dir.capitalize()}\n\n")
+            
+            # Add a brief description based on README if available
+            readme_path = os.path.join(source_dir, "README.md")
+            if os.path.exists(readme_path):
+                try:
+                    with open(readme_path, "r", encoding="utf-8") as readme_file:
+                        content = readme_file.read()
+                        # Try to extract a brief description from the beginning
+                        desc_match = re.search(r'^# .+?\n\n(.+?)(?=\n\n|\Z)', content, re.DOTALL)
+                        if desc_match:
+                            home_file.write(f"{desc_match.group(1).strip()}\n\n")
+                except Exception:
+                    pass  # Continue if readme can't be read
             
             # Get all markdown files with their paths relative to the source dir
             md_files = []
@@ -94,10 +120,67 @@ def main():
                         rel_path = os.path.relpath(root, source_dir)
                         md_files.append((os.path.join(root, file), rel_path if rel_path != "." else ""))
             
+            # Create a dictionary to store all files by their paths
+            path_to_wiki = {}
+            
+            # First pass - collect file information and create mappings
+            for file_path, rel_path in sorted(md_files):
+                try:
+                    # Read the file content
+                    with open(file_path, "r", encoding="utf-8") as md_file:
+                        content = md_file.read()
+                    
+                    # Extract title
+                    title = extract_title(content, os.path.basename(file_path)[:-3])
+                    
+                    # Create wiki filename
+                    wiki_filename = sanitize_filename(title)
+                    if not wiki_filename:
+                        wiki_filename = sanitize_filename(os.path.basename(file_path)[:-3])
+                    
+                    # Store mapping for link processing
+                    original_path = os.path.relpath(file_path)
+                    path_to_wiki[original_path] = wiki_filename
+                    path_to_wiki[os.path.basename(file_path)] = wiki_filename
+                    
+                    total_files += 1
+                    print(f"Indexed: {file_path}")
+                    
+                except Exception as e:
+                    print(f"Error indexing {file_path}: {str(e)}")
+            
+            # Second pass - process content and fix links
+            for file_path, rel_path in sorted(md_files):
+                try:
+                    # Read the file content
+                    with open(file_path, "r", encoding="utf-8") as md_file:
+                        content = md_file.read()
+                    
+                    # Process internal links using our file mapping
+                    content = process_internal_links(content, path_to_wiki)
+                    
+                    # Extract title
+                    title = extract_title(content, os.path.basename(file_path)[:-3])
+                    
+                    # Get wiki filename
+                    wiki_filename = sanitize_filename(title)
+                    if not wiki_filename:
+                        wiki_filename = sanitize_filename(os.path.basename(file_path)[:-3])
+                    
+                    # Copy content to wiki
+                    with open(wiki_dir / f"{wiki_filename}.md", "w", encoding="utf-8") as wiki_file:
+                        wiki_file.write(content)
+                    
+                    print(f"Processed: {file_path} → {wiki_filename}.md")
+                    
+                except Exception as e:
+                    print(f"Error updating content for {file_path}: {str(e)}")
+            
             # Get all directories for structure
             directories = set()
             for _, rel_path in md_files:
                 if rel_path:  # Skip root level
+                    # Add all intermediate directories
                     parts = rel_path.split(os.sep)
                     for i in range(len(parts)):
                         directories.add(os.sep.join(parts[:i+1]))
@@ -189,23 +272,43 @@ def main():
     with open(wiki_dir / "Home.md", "w") as f:
         f.write(content)
 
-    # Create sidebar with only top-level items
+    # Add custom styling to improve appearance
     with open(wiki_dir / "_Sidebar.md", "w") as sidebar_file:
-        sidebar_file.write("# Wiki Index\n\n")
+        sidebar_file.write("# Wiki\n\n")
         
-        # Add only top-level section headers and links
+        # Add a cleaner sidebar with emoji icons
         for source_dir in source_dirs:
-            sidebar_file.write(f"## {source_dir.capitalize()}\n\n")
+            # Choose an appropriate icon based on directory name
+            icon = "📄"
+            if source_dir.lower() == "docs":
+                icon = "📚"
+            elif source_dir.lower() == "notes":
+                icon = "📝"
+            
+            sidebar_file.write(f"## {icon} {source_dir.capitalize()}\n\n")
             
             # Add top-level directories first (sorted)
             top_dirs = []
             for dir_path in sorted(directories):
-                if dir_path.count(os.sep) == 0:  # Only top-level dirs
+                if os.path.dirname(dir_path) == '':  # Only top-level dirs
                     dir_name = os.path.basename(dir_path)
                     top_dirs.append(dir_name)
             
             for dir_name in sorted(top_dirs):
-                sidebar_file.write(f"  - **{dir_name}**\n")
+                # Choose an appropriate icon based on directory name
+                dir_icon = "📁"
+                if dir_name.lower() in ["cli", "command", "commands"]:
+                    dir_icon = "⌨️"
+                elif dir_name.lower() in ["admin", "administration"]:
+                    dir_icon = "🔧"
+                elif dir_name.lower() in ["network", "networking"]:
+                    dir_icon = "🌐"
+                elif dir_name.lower() in ["storage", "data"]:
+                    dir_icon = "💾"
+                elif dir_name.lower() in ["integration", "api"]:
+                    dir_icon = "🔌"
+                
+                sidebar_file.write(f"- {dir_icon} **{dir_name}**\n")
             
             # Find top-level files
             top_level_files = []
@@ -224,7 +327,10 @@ def main():
             
             # Add top-level files (sorted by title)
             for title, wiki_filename in sorted(top_level_files):
-                sidebar_file.write(f"  - [{title}]({wiki_filename})\n")
+                doc_icon = "📄"
+                if "readme" in title.lower():
+                    doc_icon = "ℹ️"
+                sidebar_file.write(f"- {doc_icon} [{title}]({wiki_filename})\n")
             
             sidebar_file.write("\n")
 
