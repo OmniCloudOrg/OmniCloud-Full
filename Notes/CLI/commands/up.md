@@ -107,15 +107,6 @@ The command includes safety checks for large projects:
 1. For projects with more than 5,000 files, the command will ask for confirmation before proceeding
 2. There is a server-enforced maximum file count that may vary depending on your OmniOrchestrator configuration
 
-## Component Auto-Detection
-
-OmniOrchestrator analyzes your project structure to automatically detect common components:
-
-- **Frontend**: Detected by the presence of frontend frameworks (React, Vue, Angular, etc.)
-- **API/Backend**: Detected by server frameworks (Express, Django, Flask, etc.)
-- **Database**: Detected by database configuration files
-- **Additional Services**: Message queues, caching layers, etc.
-
 ## Error Handling
 
 The command handles several common error scenarios:
