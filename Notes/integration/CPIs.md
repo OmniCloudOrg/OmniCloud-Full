@@ -134,7 +134,7 @@ These parameters are commonly used across multiple commands and providers:
 
 #### 4.4.2 Worker Management Parameters
 
-These parameters are used for creating and managing workers (virtual machines):
+These parameters are used for creating and managing workers (usually virtual machines):
 
 | Parameter | Description | Example Value |
 |-----------|-------------|---------------|
