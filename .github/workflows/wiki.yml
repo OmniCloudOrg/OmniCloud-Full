@@ -26,7 +26,7 @@ jobs:
         run: |
           git config --global user.name "GitHub Action"
           git config --global user.email "action@github.com"
-          git clone "https://${{ github.actor }}:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.wiki.git" wiki
+          git clone "https://${{ github.actor }}:${{ secrets.WIKI_TOKEN }}@github.com/${{ github.repository }}.wiki.git" wiki
 
       - name: Generate Wiki Content
         run: |
@@ -159,5 +159,5 @@ jobs:
             echo "No changes to commit"
           else
             git commit -m "Update wiki from docs and notes directories"
-            git push
+            git push "https://${{ github.actor }}:${{ secrets.WIKI_TOKEN }}@github.com/${{ github.repository }}.wiki.git"
           fi
