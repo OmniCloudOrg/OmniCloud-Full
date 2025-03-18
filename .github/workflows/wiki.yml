@@ -30,127 +30,125 @@ jobs:
 
       - name: Generate Wiki Content
         run: |
-          cat > wiki-generator.sh << 'EOL'
-          #!/bin/bash
-          set -e
-
-          echo "Starting Wiki Generator..."
-
-          # Create temp directory for processing
-          mkdir -p temp_wiki
-          
-          # Find source directories (case insensitive)
-          source_dirs=()
-          for dir in docs notes Docs Notes; do
-            if [ -d "$dir" ]; then
-              source_dirs+=("$dir")
-              echo "Found source directory: $dir"
+          # Define the generate_wiki function directly
+          function generate_wiki() {
+            echo "Starting Wiki Generator..."
+            
+            # Find source directories (case insensitive)
+            declare -a source_dirs
+            for dir in docs notes Docs Notes; do
+              if [ -d "$dir" ]; then
+                source_dirs+=("$dir")
+                echo "Found source directory: $dir"
+              fi
+            done
+            
+            if [ ${#source_dirs[@]} -eq 0 ]; then
+              echo "No docs or notes directories found. Exiting."
+              return 0
             fi
-          done
-
-          if [ ${#source_dirs[@]} -eq 0 ]; then
-            echo "No docs or notes directories found. Exiting."
-            exit 0
-          fi
-
-          # Initialize index content
-          index_content="# Wiki Index\n\n"
-          total_files=0
-
-          # Process each source directory
-          for src_dir in "${source_dirs[@]}"; do
-            dir_name=$(basename "$src_dir")
-            echo "Processing directory: $dir_name"
             
-            index_content+="## ${dir_name^}\n\n"
+            # Initialize index content
+            local index_content="# Wiki Index\n\n"
+            local total_files=0
             
-            # Process the directory recursively
-            process_directory() {
-              local dir=$1
-              local rel_path=$2
-              local indent=$3
+            # Process each source directory
+            for src_dir in "${source_dirs[@]}"; do
+              local dir_name=$(basename "$src_dir")
+              echo "Processing directory: $dir_name"
               
-              # Get all subdirectories
-              subdirs=($(find "$dir" -maxdepth 1 -mindepth 1 -type d | sort))
+              index_content+="## ${dir_name^}\n\n"
               
-              # Get all markdown files in the current directory
-              files=($(find "$dir" -maxdepth 1 -mindepth 1 -name "*.md" | sort))
+              # Define the process_directory function
+              function process_directory() {
+                local dir="$1"
+                local rel_path="$2"
+                local indent="$3"
+                
+                # Process files in the current directory
+                for file in "$dir"/*.md; do
+                  # Check if the glob matched any files
+                  if [ ! -f "$file" ]; then
+                    continue
+                  fi
+                  
+                  local filename=$(basename "$file")
+                  # Skip files starting with underscore or dot
+                  if [[ "$filename" == _* || "$filename" == .* ]]; then
+                    continue
+                  fi
+                  
+                  # Extract the title
+                  local title=$(grep -m 1 "^# " "$file" | sed 's/^# //')
+                  if [ -z "$title" ]; then
+                    title=$(basename "$file" .md | sed 's/-/ /g' | sed 's/_/ /g' | awk '{for(i=1;i<=NF;i++) $i=toupper(substr($i,1,1)) tolower(substr($i,2))}1')
+                  fi
+                  
+                  # Sanitize the title for the wiki filename
+                  local wiki_filename=$(echo "$title" | tr '[:upper:]' '[:lower:]' | sed 's/[^a-z0-9]/-/g' | sed 's/--*/-/g' | sed 's/^-//' | sed 's/-$//')
+                  if [ -z "$wiki_filename" ]; then
+                    wiki_filename=$(basename "$file" .md | tr '[:upper:]' '[:lower:]' | sed 's/[^a-z0-9]/-/g')
+                  fi
+                  
+                  # Process the content - replace internal links
+                  local content=$(cat "$file")
+                  # Replace markdown links to other .md files
+                  content=$(echo "$content" | sed -E 's/\[([^]]+)\]\(([^)]+\.md)([^)]*)\)/[\1](\2)/')
+                  # Remove the .md extension from links
+                  content=$(echo "$content" | sed -E 's/\[([^]]+)\]\(([^)]+)\.md([^)]*)\)/[\1](\2\3)/')
+                  
+                  # Write to the wiki file
+                  echo "$content" > "wiki/${wiki_filename}.md"
+                  
+                  # Add to index
+                  local indent_str=$(printf '%*s' "$indent" '')
+                  index_content+="${indent_str}- [${title:-$filename}](${wiki_filename})\n"
+                  
+                  ((total_files++))
+                done
+                
+                # Process subdirectories
+                for subdir in "$dir"/*/; do
+                  # Check if the glob matched any directories
+                  if [ ! -d "$subdir" ]; then
+                    continue
+                  fi
+                  
+                  local subdir_name=$(basename "$subdir")
+                  # Skip hidden directories
+                  if [[ "$subdir_name" == .* ]]; then
+                    continue
+                  fi
+                  
+                  # Add directory to index
+                  local indent_str=$(printf '%*s' "$indent" '')
+                  index_content+="${indent_str}- **${subdir_name^}**\n"
+                  
+                  # Process subdirectory recursively
+                  process_directory "$subdir" "${rel_path}/${subdir_name}" $((indent + 2))
+                done
+              }
               
-              # Process files first
-              for file in "${files[@]}"; do
-                filename=$(basename "$file")
-                # Skip files starting with underscore or dot
-                if [[ "$filename" == _* || "$filename" == .* ]]; then
-                  continue
-                fi
-                
-                # Extract the title
-                title=$(grep -m 1 "^# " "$file" | sed 's/^# //')
-                if [ -z "$title" ]; then
-                  title=$(basename "$file" .md | sed 's/-/ /g' | sed 's/_/ /g' | awk '{for(i=1;i<=NF;i++) $i=toupper(substr($i,1,1)) tolower(substr($i,2))}1')
-                fi
-                
-                # Sanitize the title for the wiki filename
-                wiki_filename=$(echo "$title" | tr '[:upper:]' '[:lower:]' | sed 's/[^a-z0-9]/-/g' | sed 's/--*/-/g' | sed 's/^-//' | sed 's/-$//')
-                if [ -z "$wiki_filename" ]; then
-                  wiki_filename=$(basename "$file" .md | tr '[:upper:]' '[:lower:]' | sed 's/[^a-z0-9]/-/g')
-                fi
-                
-                # Process the content - replace internal links
-                content=$(cat "$file")
-                # Replace markdown links to other .md files
-                content=$(echo "$content" | sed -E 's/\[([^]]+)\]\(([^)]+\.md)([^)]*)\)/[\1](\2)/')
-                # Remove the .md extension from links
-                content=$(echo "$content" | sed -E 's/\[([^]]+)\]\(([^)]+)\.md([^)]*)\)/[\1](\2\3)/')
-                
-                # Write to the wiki file
-                echo "$content" > "wiki/${wiki_filename}.md"
-                
-                # Add to index
-                indent_str=$(printf '%*s' "$indent" '')
-                index_content+="${indent_str}- [${title:-$filename}](${wiki_filename})\n"
-                
-                ((total_files++))
-              done
+              # Start processing the directory
+              process_directory "$src_dir" "" 2
               
-              # Process subdirectories
-              for subdir in "${subdirs[@]}"; do
-                subdir_name=$(basename "$subdir")
-                # Skip hidden directories
-                if [[ "$subdir_name" == .* ]]; then
-                  continue
-                fi
-                
-                # Add directory to index
-                indent_str=$(printf '%*s' "$indent" '')
-                index_content+="${indent_str}- **${subdir_name^}**\n"
-                
-                # Process subdirectory recursively
-                process_directory "$subdir" "${rel_path}/${subdir_name}" $((indent + 2))
-              done
-            }
+              index_content+="\n"
+            done
             
-            # Start processing the directory
-            process_directory "$src_dir" "" 2
+            # Add stats to index
+            index_content=$(echo -e "# Wiki Index\n\n*Generated from ${total_files} markdown files across ${#source_dirs[@]} directories.*\n\n${index_content#*# Wiki Index\n\n}")
             
-            index_content+="\n"
-          done
-
-          # Add stats to index
-          index_content=$(echo -e "# Wiki Index\n\n*Generated from ${total_files} markdown files across ${#source_dirs[@]} directories.*\n\n${index_content#*# Wiki Index\n\n}")
-
-          # Write the Home.md file
-          echo -e "$index_content" > "wiki/Home.md"
+            # Write the Home.md file
+            echo -e "$index_content" > "wiki/Home.md"
+            
+            # Also create a _Sidebar.md file with the same content
+            echo -e "$index_content" > "wiki/_Sidebar.md"
+            
+            echo "Wiki generation complete. Processed $total_files markdown files."
+          }
           
-          # Also create a _Sidebar.md file with the same content
-          echo -e "$index_content" > "wiki/_Sidebar.md"
-          
-          echo "Wiki generation complete. Processed $total_files markdown files."
-          EOL
-
-          # Make the script executable and run it
-          chmod +x wiki-generator.sh
-          ./wiki-generator.sh
+          # Call the function
+          generate_wiki
 
       - name: Push to Wiki
         working-directory: wiki
