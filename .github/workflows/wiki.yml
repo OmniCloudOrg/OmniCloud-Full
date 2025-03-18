@@ -1,0 +1,165 @@
+name: Generate GitHub Wiki
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - 'docs/**'
+      - 'notes/**'
+      - 'Docs/**'
+      - 'Notes/**'
+  workflow_dispatch:  # Allows manual triggering
+
+jobs:
+  generate-wiki:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0  # We need the full history for accurate timestamps
+
+      # No Python dependencies needed for shell script
+
+      - name: Clone Wiki Repository
+        run: |
+          git config --global user.name "GitHub Action"
+          git config --global user.email "action@github.com"
+          git clone "https://${{ github.actor }}:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.wiki.git" wiki
+
+      - name: Generate Wiki Content
+        run: |
+          cat > wiki-generator.sh << 'EOL'
+          #!/bin/bash
+          set -e
+
+          echo "Starting Wiki Generator..."
+
+          # Create temp directory for processing
+          mkdir -p temp_wiki
+          
+          # Find source directories (case insensitive)
+          source_dirs=()
+          for dir in docs notes Docs Notes; do
+            if [ -d "$dir" ]; then
+              source_dirs+=("$dir")
+              echo "Found source directory: $dir"
+            fi
+          done
+
+          if [ ${#source_dirs[@]} -eq 0 ]; then
+            echo "No docs or notes directories found. Exiting."
+            exit 0
+          fi
+
+          # Initialize index content
+          index_content="# Wiki Index\n\n"
+          total_files=0
+
+          # Process each source directory
+          for src_dir in "${source_dirs[@]}"; do
+            dir_name=$(basename "$src_dir")
+            echo "Processing directory: $dir_name"
+            
+            index_content+="## ${dir_name^}\n\n"
+            
+            # Process the directory recursively
+            process_directory() {
+              local dir=$1
+              local rel_path=$2
+              local indent=$3
+              
+              # Get all subdirectories
+              subdirs=($(find "$dir" -maxdepth 1 -mindepth 1 -type d | sort))
+              
+              # Get all markdown files in the current directory
+              files=($(find "$dir" -maxdepth 1 -mindepth 1 -name "*.md" | sort))
+              
+              # Process files first
+              for file in "${files[@]}"; do
+                filename=$(basename "$file")
+                # Skip files starting with underscore or dot
+                if [[ "$filename" == _* || "$filename" == .* ]]; then
+                  continue
+                fi
+                
+                # Extract the title
+                title=$(grep -m 1 "^# " "$file" | sed 's/^# //')
+                if [ -z "$title" ]; then
+                  title=$(basename "$file" .md | sed 's/-/ /g' | sed 's/_/ /g' | awk '{for(i=1;i<=NF;i++) $i=toupper(substr($i,1,1)) tolower(substr($i,2))}1')
+                fi
+                
+                # Sanitize the title for the wiki filename
+                wiki_filename=$(echo "$title" | tr '[:upper:]' '[:lower:]' | sed 's/[^a-z0-9]/-/g' | sed 's/--*/-/g' | sed 's/^-//' | sed 's/-$//')
+                if [ -z "$wiki_filename" ]; then
+                  wiki_filename=$(basename "$file" .md | tr '[:upper:]' '[:lower:]' | sed 's/[^a-z0-9]/-/g')
+                fi
+                
+                # Process the content - replace internal links
+                content=$(cat "$file")
+                # Replace markdown links to other .md files
+                content=$(echo "$content" | sed -E 's/\[([^]]+)\]\(([^)]+\.md)([^)]*)\)/[\1](\2)/')
+                # Remove the .md extension from links
+                content=$(echo "$content" | sed -E 's/\[([^]]+)\]\(([^)]+)\.md([^)]*)\)/[\1](\2\3)/')
+                
+                # Write to the wiki file
+                echo "$content" > "wiki/${wiki_filename}.md"
+                
+                # Add to index
+                indent_str=$(printf '%*s' "$indent" '')
+                index_content+="${indent_str}- [${title:-$filename}](${wiki_filename})\n"
+                
+                ((total_files++))
+              done
+              
+              # Process subdirectories
+              for subdir in "${subdirs[@]}"; do
+                subdir_name=$(basename "$subdir")
+                # Skip hidden directories
+                if [[ "$subdir_name" == .* ]]; then
+                  continue
+                fi
+                
+                # Add directory to index
+                indent_str=$(printf '%*s' "$indent" '')
+                index_content+="${indent_str}- **${subdir_name^}**\n"
+                
+                # Process subdirectory recursively
+                process_directory "$subdir" "${rel_path}/${subdir_name}" $((indent + 2))
+              done
+            }
+            
+            # Start processing the directory
+            process_directory "$src_dir" "" 2
+            
+            index_content+="\n"
+          done
+
+          # Add stats to index
+          index_content=$(echo -e "# Wiki Index\n\n*Generated from ${total_files} markdown files across ${#source_dirs[@]} directories.*\n\n${index_content#*# Wiki Index\n\n}")
+
+          # Write the Home.md file
+          echo -e "$index_content" > "wiki/Home.md"
+          
+          # Also create a _Sidebar.md file with the same content
+          echo -e "$index_content" > "wiki/_Sidebar.md"
+          
+          echo "Wiki generation complete. Processed $total_files markdown files."
+          EOL
+
+          # Make the script executable and run it
+          chmod +x wiki-generator.sh
+          ./wiki-generator.sh
+
+      - name: Push to Wiki
+        working-directory: wiki
+        run: |
+          git add .
+          # Only commit and push if there are changes
+          if git diff --staged --quiet; then
+            echo "No changes to commit"
+          else
+            git commit -m "Update wiki from docs and notes directories"
+            git push
+          fi
