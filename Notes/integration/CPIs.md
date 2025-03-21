@@ -10,7 +10,14 @@ The CPI framework uses a modular design to separate concerns and maintain flexib
 
 ### 2.1 System Components
 
-The CPI system relies on several interconnected components to function. The Provider Registry serves as the central hub for managing available provider implementations, while the Executor handles command execution with proper parameter substitution. Command outputs flow through the Parser, which extracts structured data according to defined rules. A Validator ensures all provider definitions adhere to the required schema. The Error Handler creates uniform error representations across different providers, and the Logger captures detailed information for troubleshooting and auditing.
+The CPI system relies on several interconnected components to function:
+
+- **Provider Registry**: The central hub for managing available provider implementations
+- **Executor**: Handles command execution with proper parameter substitution
+- **Parser**: Extracts structured data from command outputs according to defined rules
+- **Validator**: Ensures all provider definitions adhere to the required schema
+- **Error Handler**: Creates uniform error representations across different providers
+- **Logger**: Captures detailed information for troubleshooting and auditing
 
 ### 2.2 Initialization Flow
 
@@ -55,12 +62,42 @@ Each provider is defined in a JSON file with the following top-level structure:
 
 ### 3.2 Action Definition
 
-Each action defines a command to execute and how to parse its output:
+Each action defines what to execute and how to parse its output. The CPI supports two target types:
+
+#### Command-based Actions
+
+For providers that interact through command-line interfaces:
 
 ```json
 "action_name": {
-  "command": "executable {param1} --option {param2}",
+  "target": {
+    "Command": "executable {param1} --option {param2}"
+  },
   "params": ["param1", "param2"],
+  "pre_exec": [ ... ],
+  "post_exec": [ ... ],
+  "parse_rules": { ... }
+}
+```
+
+#### Endpoint-based Actions
+
+For providers that interact through REST APIs:
+
+```json
+"action_name": {
+  "target": {
+    "Endpoint": {
+      "url": "https://api.example.com/v1/{resource_id}",
+      "method": "Get",
+      "headers": {
+        "Authorization": "Bearer {api_key}",
+        "Content-Type": "application/json"
+      },
+      "body": "{\"parameter\":\"{param_value}\"}"
+    }
+  },
+  "params": ["resource_id", "api_key", "param_value"],
   "pre_exec": [ ... ],
   "post_exec": [ ... ],
   "parse_rules": { ... }
@@ -69,7 +106,7 @@ Each action defines a command to execute and how to parse its output:
 
 | Field | Description | Required |
 |-------|-------------|----------|
-| `command` | Command template with parameter placeholders | Yes |
+| `target` | Command or Endpoint target with parameter placeholders | Yes |
 | `params` | List of required parameters | No |
 | `pre_exec` | Actions to execute before the main command | No |
 | `post_exec` | Actions to execute after the main command | No |
@@ -82,25 +119,24 @@ Each action defines a command to execute and how to parse its output:
 > While Omni services allow you to add custom parameters and will prompt users for additional information as needed, it's recommended to use these predefined parameters when possible for consistency.
 
 ### What are Parameters?
-Parameters are OmniCloud's system that allows CPI developers to provide user parameters to CPI-defined commands. You use them when you want to prompt the user for a piece of informationn related to a backend operation you need to perform
+Parameters are OmniCloud's system that allows CPI developers to provide user parameters to CPI-defined commands. You use them when you want to prompt the user for a piece of information related to a backend operation you need to perform.
 
-#### For Example
+#### Example: Command-based parameter usage
 
-In the ecample below we use the AWS EC2 CLI to list out running instances in our AWS account. This command usage requires a region to be specified (which ideally is provided by the user)
-
-In order to tell OmniCloud we would like the user to provide the `region` parameter for the `list_instances` method we simply place a set of curly braces where we would have placed the parameter and place the parameter name inside.
+In the example below we use the AWS EC2 CLI to list out running instances in our AWS account. This command usage requires a region to be specified (which ideally is provided by the user).
 
 ```json
 {
-  "name": "provider_name",
+  "name": "aws",
   "type": "command",
   "default_settings": {
-    "setting1": "default_value1",
-    "setting2": "default_value2"
+    "region": "us-east-1"
   },
   "actions": {
     "list_instances": {
-      "command": "aws ec2 describe-instances --region {region} --output json",
+      "target": {
+        "Command": "aws ec2 describe-instances --region {region} --output json"
+      },
       "params": ["region"],
       "parse_rules": {
         "type": "object",
@@ -116,46 +152,50 @@ In order to tell OmniCloud we would like the user to provide the `region` parame
 }
 ```
 
-Whenever an administrator wants to, for example, create an instance from the OmniCloud Dashboard the dashboard can query the Omni api to see what parameters the method required for a given CPI. The request we make is shown below:
+#### Example: Endpoint-based parameter usage
 
-![API Request Screenshot](https://github.com/user-attachments/assets/ec752af5-ef04-45d7-8947-b336d137cf9b)
-
-In this case we are asking the api to tell us what parameters the `aws` CPI requires for the create_instance method. We can back this response up by looking at the implementation of the method show below. Close examination of the `create_instance` action block in the JSON shows us that the AWS CPI does indeed require `region`, `image_id`, `instance_type`, `security_group`, and `ssh_key_name`.
+For REST API-based providers, parameters are used similarly but in endpoint URLs, headers, and request bodies:
 
 ```json
 {
-    "name": "aws",
-    "type": "command",
-    "default_settings": {
-      "region": "us-east-1",
-      "instance_type": "t2.micro",
-      "image_id": "ami-0c55b159cbfafe1f0",
-      "ssh_key_name": "default-key",
-      "security_group": "default",
-      "volume_type": "gp2"
-    },
-    "actions": {
-      "create_instance": {
-        "command": "aws ec2 run-instances --region {region} --image-id {image_id} --instance-type {instance_type} --key-name {ssh_key_name} --security-group-ids {security_group} --output json",
-        "params": [
-          "region",
-          "image_id",
-          "instance_type",
-          "ssh_key_name",
-          "security_group"
-        ],
-        "parse_rules": {
-          "type": "object",
-          "patterns": {
-            "instance_id": {
-              "regex": "\"InstanceId\":\\s*\"([^\"]+)\"",
-              "group": 1
-            }
+  "name": "digital_ocean",
+  "type": "endpoint",
+  "default_settings": {
+    "api_url": "https://api.digitalocean.com/v2",
+    "api_key": ""
+  },
+  "actions": {
+    "list_droplets": {
+      "target": {
+        "Endpoint": {
+          "url": "{api_url}/droplets?page={page}&per_page={per_page}",
+          "method": "Get",
+          "headers": {
+            "Authorization": "Bearer {api_key}",
+            "Content-Type": "application/json"
+          }
+        }
+      },
+      "params": [
+        "api_url", 
+        "api_key"
+      ],
+      "default_settings": {
+        "page": "1",
+        "per_page": "100"
+      },
+      "parse_rules": {
+        "type": "object",
+        "patterns": {
+          "droplets": {
+            "regex": "(.*)",
+            "group": 1
           }
         }
       }
     }
   }
+}
 ```
 
 ### 4.1 Parameter Substitution
@@ -163,7 +203,13 @@ In this case we are asking the api to tell us what parameters the `aws` CPI requ
 Parameters are referenced in command templates using curly braces:
 
 ```
-"command": "aws ec2 describe-instances --region {region} --output json"
+"url": "{api_url}/instances/{instance_id}"
+```
+
+Or in command-based providers:
+
+```
+"Command": "aws ec2 describe-instances --region {region} --output json"
 ```
 
 ### 4.2 Parameter Resolution
@@ -183,7 +229,6 @@ Parameters can be constructed conditionally by using separate parameters:
 ```
 
 This allows parameters to be included only when needed.
-
 
 ### 4.4 Global Parameters
 
@@ -885,7 +930,7 @@ For CLI and environment configuration:
 
 ## 5. Parse Rules
 
-Converting command-line output into structured data is one of the CPI's most powerful features. Parse rules define how to extract meaningful information from raw command outputs, whether they're formatted as JSON, tabular data, or unstructured text.
+Converting outputs into structured data is one of the CPI's most powerful features. Parse rules define how to extract meaningful information from raw command or API outputs, whether they're formatted as JSON, tabular data, or unstructured text.
 
 ### 5.1 Parse Rule Types
 
@@ -958,8 +1003,7 @@ For more complex outputs with nested structures, the properties parser provides 
         }
       }
     }
-  },
-  "related_patterns": { ... }
+  }
 }
 ```
 
@@ -982,80 +1026,238 @@ Values can be transformed using:
 - `boolean`: Converts extracted value to boolean
 - `number`: Converts extracted value to number
 
-## 6. Execution Workflow
+## 6. Target Types
 
-### 6.1 Command Execution Process
+CPI providers can use two types of targets for their actions: Command or Endpoint.
 
-The command execution flow represents how CPI processes a request from preparation to completion. Each request goes through a well-defined lifecycle that includes parameter preparation, command execution, output parsing, and result delivery.
+### 6.1 Command Target
+
+Command targets invoke the provider's CLI tools directly. This is useful for providers that primarily interact through command-line interfaces.
+
+#### Example: Command target for AWS provider
+
+```json
+"list_instances": {
+  "target": {
+    "Command": "aws ec2 describe-instances --region {region} --output json"
+  },
+  "params": ["region"],
+  "parse_rules": {
+    "type": "object",
+    "patterns": {
+      "output": {
+        "regex": "(.*)",
+        "group": 1
+      }
+    }
+  }
+}
+```
+
+### 6.2 Endpoint Target
+
+Endpoint targets make HTTP requests directly to the provider's API. This is preferred for providers with robust REST APIs or when direct API access is more efficient than using CLI tools.
+
+#### Example: Endpoint target for TrueNAS provider
+
+```json
+"list_workers": {
+  "target": {
+    "Endpoint": {
+      "url": "{api_url}/pool/dataset",
+      "method": "Get",
+      "headers": {
+        "Authorization": "Bearer {api_key}",
+        "Content-Type": "application/json"
+      }
+    }
+  },
+  "params": [
+    "api_url",
+    "api_key"
+  ],
+  "parse_rules": {
+    "type": "object",
+    "patterns": {
+      "datasets": {
+        "regex": "(.*)",
+        "group": 1
+      }
+    }
+  }
+}
+```
+
+### 6.3 Mixed Target Approach
+
+Some providers might benefit from a mixed approach, using Command targets for some actions and Endpoint targets for others. This is acceptable as long as the interface remains consistent from the user's perspective.
+
+## 7. Execution Workflow
+
+### 7.1 Command Execution Process
+
+The command execution flow represents how CPI processes a request from preparation to completion. Each request goes through a well-defined lifecycle that includes parameter preparation, target execution, output parsing, and result delivery.
 
 ```mermaid
 flowchart LR
     A[Prepare Parameters] --> B[Execute Pre-Exec Actions]
-    B --> C[Execute Main Command]
+    B --> C[Execute Target]
     C --> D[Parse Output]
     D --> E[Execute Post-Exec Actions]
     E --> F[Return Result to Caller]
 ```
 
-### 6.2 Error Handling
+### 7.2 Error Handling
 
 Robust error handling makes the CPI system reliable and debuggable. All errors are captured in a standardized `CpiError` type, which provides consistent error reporting across different providers and operations.
 
 When things go wrong during provider initialization or command execution, the CPI system returns meaningful errors that help diagnose and fix issues. Provider errors might indicate that a necessary cloud CLI tool isn't installed. Action errors often point to missing parameters or permissions problems. Parsing errors typically suggest that command output doesn't match the expected format, which might happen after a provider API change.
 
-The system defines several error categories including `ProviderNotFound` when a requested provider isn't available, `ActionNotFound` when trying to use an undefined action, `MissingParameter` when required inputs are missing, and `ExecutionFailed` when a command doesn't complete successfully. Other error types handle parsing issues (`ParseError`), path problems (`InvalidPath`), specification errors (`InvalidCpiFormat`), provider loading failures (`NoProvidersLoaded`), I/O problems (`IoError`), JSON handling errors (`SerdeError`), regular expression issues (`RegexError`), and command timeouts (`Timeout`).
+The system defines several error categories including:
 
-## 7. Provider Ecosystem
+- `ProviderNotFound`: Requested provider isn't available
+- `ActionNotFound`: Trying to use an undefined action
+- `MissingParameter`: Required inputs are missing
+- `ExecutionFailed`: Command doesn't complete successfully
+- `ParseError`: Output parsing fails
+- `InvalidPath`: Path problems
+- `InvalidCpiFormat`: Specification errors
+- `NoProvidersLoaded`: Provider loading failures
+- `IoError`: I/O problems
+- `SerdeError`: JSON handling errors
+- `RegexError`: Regular expression issues
+- `Timeout`: Command timeouts
 
-The CPI system boasts a rich ecosystem of providers covering major cloud platforms and virtualization technologies. This diversity allows applications to work with multiple infrastructure providers without code changes.
+## 8. Provider Ecosystem
 
-For public cloud environments, the CPI includes providers for AWS, Azure, and Google Cloud Platform, covering the biggest players in the market. It also supports popular alternative cloud providers like DigitalOcean, Linode, Vultr, OVH Cloud, Hetzner Cloud, Oracle Cloud, Scaleway, UpCloud, and DeTee. Each provider implements the common interface while respecting the unique characteristics of its underlying platform.
+The CPI system supports a rich ecosystem of providers covering major cloud platforms and virtualization technologies. This diversity allows applications to work with multiple infrastructure providers without code changes.
 
-The system extends beyond public clouds to virtualization technologies. Users can manage KVM and QEMU virtual machines with the same API they use for cloud resources. Similarly, providers for Proxmox, VMware ESXi, and VirtualBox (with specific implementations for both Windows and Linux) bring enterprise and desktop virtualization platforms into the fold.
+### 8.1 Command-based Provider Examples
 
-## 8. Working with the CPI System
+For public cloud environments, the CPI includes providers that use CLI tools:
 
-### 8.1 Integration Examples
-
-Working with the CPI system is straightforward once you understand the basic patterns. After initialization, your application can discover available providers, examine their capabilities, and execute actions with appropriate parameters. The following Rust example demonstrates a typical usage flow:
-
-```rust
-// Initialize the CPI system
-let cpi = cpi::initialize()?;
-
-// List available providers
-let providers = cpi.get_providers();
-println!("Available providers: {:?}", providers);
-
-// Execute an action
-let params = HashMap::new();
-params.insert("region".to_string(), "us-east-1".into());
-
-let result = cpi.execute("aws", "list_instances", params)?;
-println!("Result: {:?}", result);
-```
-
-This pattern works identically across providers, allowing your code to remain consistent regardless of which cloud platform you're targeting. The CPI system handles the translation between your standardized requests and provider-specific commands.
-
-### 8.2 Provider Definition Example
-
-The AWS provider illustrates how provider definitions map cloud-specific commands to the CPI framework. Even this simple example shows the power of parameter substitution and output parsing:
+#### AWS Provider Example
 
 ```json
 {
   "name": "aws",
   "type": "command",
   "default_settings": {
-    "region": "us-east-1"
+    "region": "us-east-1",
+    "output": "json"
   },
   "actions": {
-    "list_instances": {
-      "command": "aws ec2 describe-instances --region {region} --output json",
+    "test_install": {
+      "target": {
+        "Command": "aws --version"
+      },
+      "parse_rules": {
+        "type": "object",
+        "patterns": {
+          "version": {
+            "regex": "aws-cli/([\\d\\.]+)",
+            "group": 1
+          }
+        }
+      }
+    },
+    "list_workers": {
+      "target": {
+        "Command": "aws ec2 describe-instances --region {region} --output {output}"
+      },
       "params": ["region"],
       "parse_rules": {
         "type": "object",
         "patterns": {
-          "output": {
+          "instances": {
+            "regex": "(.*)",
+            "group": 1
+          }
+        }
+      }
+    },
+    "create_worker": {
+      "target": {
+        "Command": "aws ec2 run-instances --region {region} --image-id {image} --instance-type {worker_type} --key-name {ssh_key_name} --security-group-ids {security_group} --output {output}"
+      },
+      "params": [
+        "region",
+        "image",
+        "worker_type",
+        "ssh_key_name",
+        "security_group"
+      ],
+      "parse_rules": {
+        "type": "object",
+        "patterns": {
+          "instance_id": {
+            "regex": "\"InstanceId\":\\s*\"([^\"]+)\"",
+            "group": 1
+          }
+        }
+      }
+    }
+  }
+}
+```
+
+#### Google Cloud Provider Example
+
+```json
+{
+  "name": "gcp",
+  "type": "command",
+  "default_settings": {
+    "region": "us-central1",
+    "zone": "us-central1-a",
+    "project": "",
+    "machine_type": "e2-medium",
+    "image_project": "debian-cloud",
+    "image_family": "debian-11"
+  },
+  "actions": {
+    "test_install": {
+      "target": {
+        "Command": "gcloud --version"
+      },
+      "parse_rules": {
+        "type": "object",
+        "patterns": {
+          "version": {
+            "regex": "Google Cloud SDK ([\\d\\.]+)",
+            "group": 1
+          }
+        }
+      }
+    },
+    "list_workers": {
+      "target": {
+        "Command": "gcloud compute instances list --project {project} --format json"
+      },
+      "params": ["project"],
+      "parse_rules": {
+        "type": "object",
+        "patterns": {
+          "instances": {
+            "regex": "(.*)",
+            "group": 1
+          }
+        }
+      }
+    },
+    "create_worker": {
+      "target": {
+        "Command": "gcloud compute instances create {name} --project {project} --zone {zone} --machine-type {worker_type} --image-family {image_family} --image-project {image_project} --format json"
+      },
+      "params": [
+        "name",
+        "project",
+        "zone"
+      ],
+      "parse_rules": {
+        "type": "object",
+        "patterns": {
+          "instance": {
             "regex": "(.*)",
             "group": 1
           }
@@ -1066,15 +1268,251 @@ The AWS provider illustrates how provider definitions map cloud-specific command
 }
 ```
 
-The provider defines a default region while allowing users to override it. The `list_instances` action translates to the appropriate AWS CLI command with parameter substitution for the region. A simple parsing rule captures the entire output, which is already in JSON format from the AWS CLI.
+### 8.2 Endpoint-based Provider Examples
 
+For services with robust APIs, the CPI includes providers that use direct API calls:
+
+#### TrueNAS Provider Example
+
+```json
+{
+  "name": "truenas",
+  "type": "endpoint",
+  "default_settings": {
+    "api_url": "http://localhost/api/v2.0",
+    "api_key": "",
+    "verify_ssl": "true",
+    "region": ""
+  },
+  "actions": {
+    "test_install": {
+      "target": {
+        "Endpoint": {
+          "url": "{api_url}/system/info",
+          "method": "Get",
+          "headers": {
+            "Authorization": "Bearer {api_key}",
+            "Content-Type": "application/json"
+          }
+        }
+      },
+      "params": [
+        "api_url",
+        "api_key"
+      ],
+      "parse_rules": {
+        "type": "object",
+        "patterns": {
+          "hostname": {
+            "regex": "\"hostname\":\\s*\"([^\"]+)\"",
+            "group": 1
+          },
+          "version": {
+            "regex": "\"version\":\\s*\"([^\"]+)\"",
+            "group": 1
+          }
+        }
+      }
+    },
+    "list_workers": {
+      "target": {
+        "Endpoint": {
+          "url": "{api_url}/pool/dataset",
+          "method": "Get",
+          "headers": {
+            "Authorization": "Bearer {api_key}",
+            "Content-Type": "application/json"
+          }
+        }
+      },
+      "params": [
+        "api_url",
+        "api_key"
+      ],
+      "parse_rules": {
+        "type": "object",
+        "patterns": {
+          "datasets": {
+            "regex": "(.*)",
+            "group": 1
+          }
+        }
+      }
+    },
+    "create_worker": {
+      "target": {
+        "Endpoint": {
+          "url": "{api_url}/pool",
+          "method": "Post",
+          "headers": {
+            "Authorization": "Bearer {api_key}",
+            "Content-Type": "application/json"
+          },
+          "body": "{\"name\":\"{name}\",\"topology\":{\"data\":[{\"type\":\"STRIPE\",\"disks\":{disk_names}}]}}"
+        }
+      },
+      "params": [
+        "api_url",
+        "api_key",
+        "name",
+        "disk_names"
+      ],
+      "parse_rules": {
+        "type": "object",
+        "patterns": {
+          "id": {
+            "regex": "\"id\":\\s*(\\d+)",
+            "group": 1
+          }
+        }
+      }
+    }
+  }
+}
+```
+
+#### DigitalOcean Provider Example
+
+```json
+{
+  "name": "digitalocean",
+  "type": "endpoint",
+  "default_settings": {
+    "api_url": "https://api.digitalocean.com/v2",
+    "region": "nyc1",
+    "size": "s-1vcpu-1gb",
+    "image": "ubuntu-22-04-x64"
+  },
+  "actions": {
+    "test_install": {
+      "target": {
+        "Endpoint": {
+          "url": "{api_url}/account",
+          "method": "Get",
+          "headers": {
+            "Authorization": "Bearer {api_key}",
+            "Content-Type": "application/json"
+          }
+        }
+      },
+      "params": [
+        "api_url",
+        "api_key"
+      ],
+      "parse_rules": {
+        "type": "object",
+        "patterns": {
+          "account": {
+            "regex": "(.*)",
+            "group": 1
+          }
+        }
+      }
+    },
+    "list_workers": {
+      "target": {
+        "Endpoint": {
+          "url": "{api_url}/droplets",
+          "method": "Get",
+          "headers": {
+            "Authorization": "Bearer {api_key}",
+            "Content-Type": "application/json"
+          }
+        }
+      },
+      "params": [
+        "api_url",
+        "api_key"
+      ],
+      "parse_rules": {
+        "type": "object",
+        "patterns": {
+          "droplets": {
+            "regex": "(.*)",
+            "group": 1
+          }
+        }
+      }
+    },
+    "create_worker": {
+      "target": {
+        "Endpoint": {
+          "url": "{api_url}/droplets",
+          "method": "Post",
+          "headers": {
+            "Authorization": "Bearer {api_key}",
+            "Content-Type": "application/json"
+          },
+          "body": "{\"name\":\"{name}\",\"region\":\"{region}\",\"size\":\"{worker_type}\",\"image\":\"{image}\",\"ssh_keys\":[{ssh_key_ids}]}"
+        }
+      },
+      "params": [
+        "api_url",
+        "api_key",
+        "name"
+      ],
+      "parse_rules": {
+        "type": "object",
+        "patterns": {
+          "droplet": {
+            "regex": "(.*)",
+            "group": 1
+          }
+        }
+      }
+    }
+  }
+}
+```
 
 ## 9. Provider Implementation Guidelines
 
-Creating a new CPI provider requires careful planning and attention to detail. Start by choosing descriptive, consistent names for your provider and its actions. Names should reflect the services they represent and follow established patterns from existing providers. Document all parameters thoroughly, explaining their purpose, format, and any default values or constraints.
+Creating a new CPI provider requires careful planning and attention to detail:
 
-Error handling deserves special attention in provider implementations. Validate inputs before executing commands to catch issues early, and handle execution errors with clear, actionable messages. When crafting parse rules, anticipate variations in command output formats to make your provider robust against minor changes in the underlying tools.
+### 9.1 Naming and Structure
 
-Default settings improve usability by reducing the number of parameters users must specify. Include sensible defaults for common parameters while allowing overrides for special cases. Every provider should include a `test_install` action to verify that the necessary tools are available and correctly configured. This simple diagnostic helps users troubleshoot setup issues.
+- Choose descriptive, consistent names for your provider and its actions
+- Names should reflect the services they represent and follow established patterns
+- Document all parameters thoroughly, explaining their purpose, format, and any constraints
 
-Authentication mechanisms should align with the underlying service's standards. For cloud providers, this typically involves environment variables or configuration files in standard locations. Document the minimum required versions of any underlying tools to help users avoid compatibility problems.
+### 9.2 Target Selection
+
+- For providers with robust REST APIs, prefer **Endpoint** targets:
+  ```json
+  "target": {
+    "Endpoint": {
+      "url": "{api_url}/resources/{resource_id}",
+      "method": "Get",
+      "headers": {
+        "Authorization": "Bearer {api_key}"
+      }
+    }
+  }
+  ```
+
+- For providers with mature CLI tools, use **Command** targets:
+  ```json
+  "target": {
+    "Command": "provider-cli resource get {resource_id} --format json"
+  }
+  ```
+
+- Consider a mixed approach if different actions benefit from different target types
+
+### 9.3 Error Handling
+
+- Validate inputs before executing commands to catch issues early
+- Handle execution errors with clear, actionable messages
+- When crafting parse rules, anticipate variations in command output formats
+
+### 9.4 Authentication and Settings
+
+- Include sensible defaults for common parameters
+- Document the minimum required versions of any underlying tools
+- Align authentication mechanisms with the underlying service's standards
+
+### 9.5 Testing and Verification
+
+- Every provider should include a `test_install` action
+- Test all actions with various parameter combinations
+- Validate parse rules against different output formats and variations
