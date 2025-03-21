@@ -28,6 +28,9 @@ The `test_install` method should verify that the necessary tools for the provide
 
 For command-based CPIs, this typically involves checking CLI tool availability:
 
+<details>
+<summary>Command Example</summary>
+
 ```json
 "test_install": {
   "target": {
@@ -45,8 +48,12 @@ For command-based CPIs, this typically involves checking CLI tool availability:
   }
 }
 ```
+</details>
 
 For endpoint-based CPIs, this involves testing API connectivity:
+
+<details>
+<summary>Endpoint Example</summary>
 
 ```json
 "test_install": {
@@ -75,10 +82,12 @@ For endpoint-based CPIs, this involves testing API connectivity:
   }
 }
 ```
+</details>
 
 The `list_workers` method should return all workers accessible to the authenticated user, with basic information about each worker. The output should include, at minimum, worker IDs, names, statuses, and types.
 
-Command-based example:
+<details>
+<summary>Command Example</summary>
 
 ```json
 "list_workers": {
@@ -110,8 +119,10 @@ Command-based example:
   }
 }
 ```
+</details>
 
-Endpoint-based example:
+<details>
+<summary>Endpoint Example</summary>
 
 ```json
 "list_workers": {
@@ -141,10 +152,12 @@ Endpoint-based example:
   }
 }
 ```
+</details>
 
 The `create_worker` method provisions a new worker with the specified parameters. At minimum, it should support specifying the worker name, size/type, and image/OS. The method should return the worker ID and initial status.
 
-Command-based example:
+<details>
+<summary>Command Example</summary>
 
 ```json
 "create_worker": {
@@ -182,8 +195,10 @@ Command-based example:
   }
 }
 ```
+</details>
 
-Endpoint-based example:
+<details>
+<summary>Endpoint Example</summary>
 
 ```json
 "create_worker": {
@@ -222,10 +237,12 @@ Endpoint-based example:
   }
 }
 ```
+</details>
 
 The `delete_worker` method permanently removes a specified worker. This operation is typically irreversible, so implementations should include appropriate warnings in their documentation.
 
-Command-based example:
+<details>
+<summary>Command Example</summary>
 
 ```json
 "delete_worker": {
@@ -244,8 +261,10 @@ Command-based example:
   }
 }
 ```
+</details>
 
-Endpoint-based example:
+<details>
+<summary>Endpoint Example</summary>
 
 ```json
 "delete_worker": {
@@ -275,10 +294,12 @@ Endpoint-based example:
   }
 }
 ```
+</details>
 
 The `get_worker` method retrieves detailed information about a specific worker, including its current status, specifications, and network configuration.
 
-Command-based example:
+<details>
+<summary>Command Example</summary>
 
 ```json
 "get_worker": {
@@ -314,8 +335,10 @@ Command-based example:
   }
 }
 ```
+</details>
 
-Endpoint-based example:
+<details>
+<summary>Endpoint Example</summary>
 
 ```json
 "get_worker": {
@@ -345,10 +368,12 @@ Endpoint-based example:
   }
 }
 ```
+</details>
 
 The `start_worker` and `stop_worker` methods control the power state of a worker. These operations should be idempotent—calling start on an already running worker should not cause an error.
 
-Command-based example:
+<details>
+<summary>Command Example</summary>
 
 ```json
 "start_worker": {
@@ -367,8 +392,10 @@ Command-based example:
   }
 }
 ```
+</details>
 
-Endpoint-based example:
+<details>
+<summary>Endpoint Example</summary>
 
 ```json
 "start_worker": {
@@ -398,6 +425,7 @@ Endpoint-based example:
   }
 }
 ```
+</details>
 
 ## 3. Optional Methods
 
@@ -488,6 +516,9 @@ While the required methods provide basic functionality, optional methods enhance
 Below are example implementations for both command-based and endpoint-based CPI providers that meet the minimum CPI requirements while also implementing some optional methods.
 
 ### 4.1 Command-Based CPI: "CloudCo"
+
+<details>
+<summary>Command Example</summary>
 
 ```json
 {
@@ -690,8 +721,12 @@ Below are example implementations for both command-based and endpoint-based CPI 
   }
 }
 ```
+</details>
 
 ### 4.2 Endpoint-Based CPI: "TrueNAS"
+
+<details>
+<summary>Endpoint Example</summary>
 
 ```json
 {
@@ -893,6 +928,7 @@ Below are example implementations for both command-based and endpoint-based CPI 
   }
 }
 ```
+</details>
 
 ## 5. Method Naming Conventions
 
@@ -999,211 +1035,251 @@ When implementing a new CPI provider, follow this sequence for initialization:
 
 1. **CLI Setup**: Ensure the CLI tools are installed and properly configured
    - For command-based CPIs:
-   ```json
-   "initialize_cli": {
-     "target": {
-       "Command": "bash -c 'if ! command -v {cli_path} &> /dev/null; then curl -sSL https://downloads.cloudco.io/cli/install.sh | bash -s -- --version {cli_version} --install-dir $(dirname {cli_path}); fi'"
-     },
-     "params": ["cli_path", "cli_version"],
-     "parse_rules": { 
-       "type": "object",
-       "patterns": {
-         "success": {
-           "regex": "Installation complete|already installed",
-           "transform": "boolean"
-         },
-         "version": {
-           "regex": "Installed version:\\s+([\\d\\.]+)",
-           "group": 1,
-           "optional": true
-         }
-       }
-     }
-   }
-   ```
+   
+<details>
+<summary>Command Example</summary>
+
+```json
+"initialize_cli": {
+  "target": {
+    "Command": "bash -c 'if ! command -v {cli_path} &> /dev/null; then curl -sSL https://downloads.cloudco.io/cli/install.sh | bash -s -- --version {cli_version} --install-dir $(dirname {cli_path}); fi'"
+  },
+  "params": ["cli_path", "cli_version"],
+  "parse_rules": { 
+    "type": "object",
+    "patterns": {
+      "success": {
+        "regex": "Installation complete|already installed",
+        "transform": "boolean"
+      },
+      "version": {
+        "regex": "Installed version:\\s+([\\d\\.]+)",
+        "group": 1,
+        "optional": true
+      }
+    }
+  }
+}
+```
+</details>
    
    - For endpoint-based CPIs:
-   ```json
-   "initialize_cli": {
-     "target": {
-       "Command": "pip install truenas-api-client"
-     },
-     "params": [],
-     "parse_rules": {
-       "type": "object",
-       "patterns": {
-         "success": {
-           "regex": "Successfully installed",
-           "transform": "boolean"
-         }
-       }
-     }
-   }
-   ```
+
+<details>
+<summary>Endpoint Example</summary>
+
+```json
+"initialize_cli": {
+  "target": {
+    "Command": "pip install truenas-api-client"
+  },
+  "params": [],
+  "parse_rules": {
+    "type": "object",
+    "patterns": {
+      "success": {
+        "regex": "Successfully installed",
+        "transform": "boolean"
+      }
+    }
+  }
+}
+```
+</details>
 
 2. **Authentication Configuration**: Set up credentials for accessing the cloud provider
    
    - For command-based CPIs:
-   ```json
-   "configure_auth": {
-     "target": {
-       "Command": "cloudco-cli auth configure --api-key {api_key} --project {project_id}"
-     },
-     "params": [
-       "api_key",
-       "project_id"
-     ],
-     "parse_rules": {
-       "type": "object",
-       "patterns": {
-         "success": {
-           "regex": "Authentication configured successfully",
-           "transform": "boolean"
-         },
-         "account_id": {
-           "regex": "Account ID:\\s+([a-z0-9-]+)",
-           "group": 1,
-           "optional": true
-         }
-       }
-     }
-   }
-   ```
+
+<details>
+<summary>Command Example</summary>
+
+```json
+"configure_auth": {
+  "target": {
+    "Command": "cloudco-cli auth configure --api-key {api_key} --project {project_id}"
+  },
+  "params": [
+    "api_key",
+    "project_id"
+  ],
+  "parse_rules": {
+    "type": "object",
+    "patterns": {
+      "success": {
+        "regex": "Authentication configured successfully",
+        "transform": "boolean"
+      },
+      "account_id": {
+        "regex": "Account ID:\\s+([a-z0-9-]+)",
+        "group": 1,
+        "optional": true
+      }
+    }
+  }
+}
+```
+</details>
    
    - For endpoint-based CPIs:
-   ```json
-   "configure_auth": {
-     "target": {
-       "Endpoint": {
-         "url": "{api_url}/auth/token",
-         "method": "Post",
-         "headers": {
-           "Content-Type": "application/json"
-         },
-         "body": "{\"username\":\"{username}\",\"password\":\"{password}\"}"
-       }
-     },
-     "params": [
-       "api_url",
-       "username",
-       "password"
-     ],
-     "parse_rules": {
-       "type": "object",
-       "patterns": {
-         "api_key": {
-           "regex": "\"token\":\\s*\"([^\"]+)\"",
-           "group": 1
-         }
-       }
-     }
-   }
-   ```
+
+<details>
+<summary>Endpoint Example</summary>
+
+```json
+"configure_auth": {
+  "target": {
+    "Endpoint": {
+      "url": "{api_url}/auth/token",
+      "method": "Post",
+      "headers": {
+        "Content-Type": "application/json"
+      },
+      "body": "{\"username\":\"{username}\",\"password\":\"{password}\"}"
+    }
+  },
+  "params": [
+    "api_url",
+    "username",
+    "password"
+  ],
+  "parse_rules": {
+    "type": "object",
+    "patterns": {
+      "api_key": {
+        "regex": "\"token\":\\s*\"([^\"]+)\"",
+        "group": 1
+      }
+    }
+  }
+}
+```
+</details>
 
 3. **Authentication Validation**: Verify that authentication is working properly
    
    - For command-based CPIs:
-   ```json
-   "test_auth": {
-     "target": {
-       "Command": "cloudco-cli auth validate"
-     },
-     "params": [],
-     "parse_rules": {
-       "type": "object",
-       "patterns": {
-         "status": {
-           "regex": "Authentication Status:\\s+(\\w+)",
-           "group": 1
-         },
-         "username": {
-           "regex": "Username:\\s+([^\\n]+)",
-           "group": 1,
-           "optional": true
-         }
-       }
-     }
-   }
-   ```
+
+<details>
+<summary>Command Example</summary>
+
+```json
+"test_auth": {
+  "target": {
+    "Command": "cloudco-cli auth validate"
+  },
+  "params": [],
+  "parse_rules": {
+    "type": "object",
+    "patterns": {
+      "status": {
+        "regex": "Authentication Status:\\s+(\\w+)",
+        "group": 1
+      },
+      "username": {
+        "regex": "Username:\\s+([^\\n]+)",
+        "group": 1,
+        "optional": true
+      }
+    }
+  }
+}
+```
+</details>
    
    - For endpoint-based CPIs:
-   ```json
-   "test_auth": {
-     "target": {
-       "Endpoint": {
-         "url": "{api_url}/auth/check",
-         "method": "Get",
-         "headers": {
-           "Authorization": "Bearer {api_key}",
-           "Content-Type": "application/json"
-         }
-       }
-     },
-     "params": [
-       "api_url",
-       "api_key"
-     ],
-     "parse_rules": {
-       "type": "object",
-       "patterns": {
-         "status": {
-           "regex": "\"authenticated\":\\s*(true|false)",
-           "group": 1
-         }
-       }
-     }
-   }
-   ```
+
+<details>
+<summary>Endpoint Example</summary>
+
+```json
+"test_auth": {
+  "target": {
+    "Endpoint": {
+      "url": "{api_url}/auth/check",
+      "method": "Get",
+      "headers": {
+        "Authorization": "Bearer {api_key}",
+        "Content-Type": "application/json"
+      }
+    }
+  },
+  "params": [
+    "api_url",
+    "api_key"
+  ],
+  "parse_rules": {
+    "type": "object",
+    "patterns": {
+      "status": {
+        "regex": "\"authenticated\":\\s*(true|false)",
+        "group": 1
+      }
+    }
+  }
+}
+```
+</details>
 
 4. **Installation Testing**: Verify that the CLI or API is installed and accessible
    
    - For command-based CPIs:
-   ```json
-   "test_install": {
-     "target": {
-       "Command": "cloudco-cli --version"
-     },
-     "params": [],
-     "parse_rules": {
-       "type": "object",
-       "patterns": {
-         "version": {
-           "regex": "cloudco-cli version ([\\d\\.]+)",
-           "group": 1
-         }
-       }
-     }
-   }
-   ```
+
+<details>
+<summary>Command Example</summary>
+
+```json
+"test_install": {
+  "target": {
+    "Command": "cloudco-cli --version"
+  },
+  "params": [],
+  "parse_rules": {
+    "type": "object",
+    "patterns": {
+      "version": {
+        "regex": "cloudco-cli version ([\\d\\.]+)",
+        "group": 1
+      }
+    }
+  }
+}
+```
+</details>
    
    - For endpoint-based CPIs:
-   ```json
-   "test_install": {
-     "target": {
-       "Endpoint": {
-         "url": "{api_url}/system/version",
-         "method": "Get",
-         "headers": {
-           "Authorization": "Bearer {api_key}",
-           "Content-Type": "application/json"
-         }
-       }
-     },
-     "params": [
-       "api_url",
-       "api_key"
-     ],
-     "parse_rules": {
-       "type": "object",
-       "patterns": {
-         "version": {
-           "regex": "\"version\":\\s*\"([^\"]+)\"",
-           "group": 1
-         }
-       }
-     }
-   }
-   ```
+
+<details>
+<summary>Endpoint Example</summary>
+
+```json
+"test_install": {
+  "target": {
+    "Endpoint": {
+      "url": "{api_url}/system/version",
+      "method": "Get",
+      "headers": {
+        "Authorization": "Bearer {api_key}",
+        "Content-Type": "application/json"
+      }
+    }
+  },
+  "params": [
+    "api_url",
+    "api_key"
+  ],
+  "parse_rules": {
+    "type": "object",
+    "patterns": {
+      "version": {
+        "regex": "\"version\":\\s*\"([^\"]+)\"",
+        "group": 1
+      }
+    }
+  }
+}
+```
+</details>
 
 This sequence ensures that the CPI provider is properly set up before any resource management commands are executed.
 
@@ -1215,15 +1291,22 @@ The CPI system supports two primary target types for action execution: Command a
 
 The Command target type executes shell commands on the host system. This is typically used for cloud providers that offer a command-line interface (CLI) tool.
 
+<details>
+<summary>Command Example</summary>
+
 ```json
 "target": {
   "Command": "cloudco-cli worker create --name {name} --type {worker_type}"
 }
 ```
+</details>
 
 ### 9.2 Endpoint Target Type
 
 The Endpoint target type makes HTTP requests to REST APIs. This is used for cloud providers that offer a REST API interface or when direct API access is preferred over a CLI tool.
+
+<details>
+<summary>Endpoint Example</summary>
 
 ```json
 "target": {
@@ -1238,6 +1321,7 @@ The Endpoint target type makes HTTP requests to REST APIs. This is used for clou
   }
 }
 ```
+</details>
 
 ### 9.3 Supported HTTP Methods
 
@@ -1255,6 +1339,9 @@ For Endpoint targets, the following HTTP methods are supported:
 
 Both Command and Endpoint targets support parameter substitution using curly braces `{}`. Any parameter referenced in the command string or endpoint details must be listed in the `params` array.
 
+<details>
+<summary>Command Example</summary>
+
 ```json
 "create_worker": {
   "target": {
@@ -1266,6 +1353,7 @@ Both Command and Endpoint targets support parameter substitution using curly bra
   ]
 }
 ```
+</details>
 
 ## 10. Parser Rules and Output Processing
 
@@ -1278,6 +1366,9 @@ Three primary parser types are supported:
 #### 10.1.1 Object Parser
 
 Used for extracting key-value pairs from outputs with a single instance of each field.
+
+<details>
+<summary>Command Example</summary>
 
 ```json
 "parse_rules": {
@@ -1294,10 +1385,14 @@ Used for extracting key-value pairs from outputs with a single instance of each 
   }
 }
 ```
+</details>
 
 #### 10.1.2 Array Parser
 
 Used for extracting repeated patterns from outputs, such as lists of items.
+
+<details>
+<summary>Command Example</summary>
 
 ```json
 "parse_rules": {
@@ -1315,10 +1410,14 @@ Used for extracting repeated patterns from outputs, such as lists of items.
   }
 }
 ```
+</details>
 
 #### 10.1.3 Properties Parser
 
 Used for extracting complex nested structures with multiple instances of related fields.
+
+<details>
+<summary>Command Example</summary>
 
 ```json
 "parse_rules": {
@@ -1346,10 +1445,14 @@ Used for extracting complex nested structures with multiple instances of related
   }
 }
 ```
+</details>
 
 ### 10.2 Error Response Format
 
 Error responses should follow a consistent format with meaningful information:
+
+<details>
+<summary>Error Response Example</summary>
 
 ```json
 {
@@ -1364,6 +1467,7 @@ Error responses should follow a consistent format with meaningful information:
   }
 }
 ```
+</details>
 
 ## 11. CPI Provider Documentation Requirements
 
