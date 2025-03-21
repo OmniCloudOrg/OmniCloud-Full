@@ -1727,7 +1727,6 @@ Creates a new worker instance in the specified region.
   "ip_address": ""
 }
 ```
-```
 
 ## 12. CPI Implementation Best Practices
 
