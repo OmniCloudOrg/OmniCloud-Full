@@ -1,13 +1,81 @@
+<!-- TOC --><a name="cloud-provider-interface-cpi-specification"></a>
 # Cloud Provider Interface (CPI) Specification
 
+- [Cloud Provider Interface (CPI) Specification](#cloud-provider-interface-cpi-specification)
+   * [1. Introduction](#1-introduction)
+   * [2. Core Architecture](#2-core-architecture)
+      + [2.1 System Components](#21-system-components)
+      + [2.2 Initialization Flow](#22-initialization-flow)
+   * [3. Provider Definition Schema](#3-provider-definition-schema)
+      + [3.1 Provider File Structure](#31-provider-file-structure)
+      + [3.2 Action Definition](#32-action-definition)
+         - [Command-based Actions](#command-based-actions)
+         - [Endpoint-based Actions](#endpoint-based-actions)
+   * [4. Parameter Handling](#4-parameter-handling)
+      + [What are Parameters?](#what-are-parameters)
+         - [Example: Command-based parameter usage](#example-command-based-parameter-usage)
+         - [Example: Endpoint-based parameter usage](#example-endpoint-based-parameter-usage)
+      + [4.1 Parameter Substitution](#41-parameter-substitution)
+      + [4.2 Parameter Resolution](#42-parameter-resolution)
+      + [4.3 Optional Parameters](#43-optional-parameters)
+      + [4.4 Global Parameters](#44-global-parameters)
+         - [4.4.1 General Parameters](#441-general-parameters)
+         - [4.4.2 Worker Management Parameters](#442-worker-management-parameters)
+         - [4.4.3 Storage Management Parameters](#443-storage-management-parameters)
+         - [4.4.4 Network Management Parameters](#444-network-management-parameters)
+         - [4.4.5 Authentication and Credentials Parameters](#445-authentication-and-credentials-parameters)
+         - [4.4.6 Container and Orchestration Parameters](#446-container-and-orchestration-parameters)
+         - [4.4.7 Database Service Parameters](#447-database-service-parameters)
+         - [4.4.8 Serverless and Functions Parameters](#448-serverless-and-functions-parameters)
+         - [4.4.9 Monitoring and Logging Parameters](#449-monitoring-and-logging-parameters)
+         - [4.4.10 Object Storage Parameters](#4410-object-storage-parameters)
+         - [4.4.11 Auto-Scaling Parameters](#4411-auto-scaling-parameters)
+         - [4.4.12 Identity and Access Management Parameters](#4412-identity-and-access-management-parameters)
+      + [4.5 Command-Specific Parameters](#45-command-specific-parameters)
+         - [4.5.1 Worker Commands](#451-worker-commands)
+   * [5. Parse Rules](#5-parse-rules)
+      + [5.1 Parse Rule Types](#51-parse-rule-types)
+         - [5.1.1 Object Parse Rules](#511-object-parse-rules)
+         - [5.1.2 Array Parse Rules](#512-array-parse-rules)
+         - [5.1.3 Properties Parse Rules](#513-properties-parse-rules)
+      + [5.2 Pattern Specification](#52-pattern-specification)
+      + [5.3 Value Transformation](#53-value-transformation)
+   * [6. Target Types](#6-target-types)
+      + [6.1 Command Target](#61-command-target)
+         - [Example: Command target for AWS provider](#example-command-target-for-aws-provider)
+      + [6.2 Endpoint Target](#62-endpoint-target)
+         - [Example: Endpoint target for TrueNAS provider](#example-endpoint-target-for-truenas-provider)
+      + [6.3 Mixed Target Approach](#63-mixed-target-approach)
+   * [7. Execution Workflow](#7-execution-workflow)
+      + [7.1 Command Execution Process](#71-command-execution-process)
+      + [7.2 Error Handling](#72-error-handling)
+   * [8. Provider Ecosystem](#8-provider-ecosystem)
+      + [8.1 Command-based Provider Examples](#81-command-based-provider-examples)
+         - [AWS Provider Example](#aws-provider-example)
+         - [Google Cloud Provider Example](#google-cloud-provider-example)
+      + [8.2 Endpoint-based Provider Examples](#82-endpoint-based-provider-examples)
+         - [TrueNAS Provider Example](#truenas-provider-example)
+         - [DigitalOcean Provider Example](#digitalocean-provider-example)
+   * [9. Provider Implementation Guidelines](#9-provider-implementation-guidelines)
+      + [9.1 Naming and Structure](#91-naming-and-structure)
+      + [9.2 Target Selection](#92-target-selection)
+      + [9.3 Error Handling](#93-error-handling)
+      + [9.4 Authentication and Settings](#94-authentication-and-settings)
+      + [9.5 Testing and Verification](#95-testing-and-verification)
+
+<!-- TOC end -->
+
+<!-- TOC --><a name="1-introduction"></a>
 ## 1. Introduction
 
 The Cloud Provider Interface (CPI) system provides a unified way to interact with different cloud and virtualization platforms through a consistent API. Rather than writing custom code for each provider, developers can leverage the CPI's abstraction layer, which translates standardized commands into provider-specific actions. This specification outlines how the system works, the structure of provider definitions, and patterns for effective implementation and usage.
 
+<!-- TOC --><a name="2-core-architecture"></a>
 ## 2. Core Architecture
 
 The CPI framework uses a modular design to separate concerns and maintain flexibility. At its heart, the system translates high-level requests into provider-specific commands, executes those commands, and transforms their outputs into structured data.
 
+<!-- TOC --><a name="21-system-components"></a>
 ### 2.1 System Components
 
 The CPI system relies on several interconnected components to function:
@@ -19,6 +87,7 @@ The CPI system relies on several interconnected components to function:
 - **Error Handler**: Creates uniform error representations across different providers
 - **Logger**: Captures detailed information for troubleshooting and auditing
 
+<!-- TOC --><a name="22-initialization-flow"></a>
 ### 2.2 Initialization Flow
 
 When a CPI system initializes, it goes through several important stages to discover, validate, and register providers. This process ensures that only valid providers are available for use.
@@ -32,8 +101,10 @@ flowchart LR
     E --> F[Providers Ready for Use]
 ```
 
+<!-- TOC --><a name="3-provider-definition-schema"></a>
 ## 3. Provider Definition Schema
 
+<!-- TOC --><a name="31-provider-file-structure"></a>
 ### 3.1 Provider File Structure
 
 Each provider is defined in a JSON file with the following top-level structure:
@@ -60,10 +131,12 @@ Each provider is defined in a JSON file with the following top-level structure:
 | `default_settings` | Default parameters for actions | No |
 | `actions` | Collection of available actions | Yes |
 
+<!-- TOC --><a name="32-action-definition"></a>
 ### 3.2 Action Definition
 
 Each action defines what to execute and how to parse its output. The CPI supports two target types:
 
+<!-- TOC --><a name="command-based-actions"></a>
 #### Command-based Actions
 
 For providers that interact through command-line interfaces:
@@ -80,6 +153,7 @@ For providers that interact through command-line interfaces:
 }
 ```
 
+<!-- TOC --><a name="endpoint-based-actions"></a>
 #### Endpoint-based Actions
 
 For providers that interact through REST APIs:
@@ -112,15 +186,18 @@ For providers that interact through REST APIs:
 | `post_exec` | Actions to execute after the main command | No |
 | `parse_rules` | Rules for parsing the command output | Yes |
 
+<!-- TOC --><a name="4-parameter-handling"></a>
 ## 4. Parameter Handling
 
 > [!WARNING]
 > Below are parameters that OmniCloud natively supports and will request from administrators during setup or when commands are executed, depending on parameter type. These parameters will always be available to you.
 > While Omni services allow you to add custom parameters and will prompt users for additional information as needed, it's recommended to use these predefined parameters when possible for consistency.
 
+<!-- TOC --><a name="what-are-parameters"></a>
 ### What are Parameters?
 Parameters are OmniCloud's system that allows CPI developers to provide user parameters to CPI-defined commands. You use them when you want to prompt the user for a piece of information related to a backend operation you need to perform.
 
+<!-- TOC --><a name="example-command-based-parameter-usage"></a>
 #### Example: Command-based parameter usage
 
 In the example below we use the AWS EC2 CLI to list out running instances in our AWS account. This command usage requires a region to be specified (which ideally is provided by the user).
@@ -152,6 +229,7 @@ In the example below we use the AWS EC2 CLI to list out running instances in our
 }
 ```
 
+<!-- TOC --><a name="example-endpoint-based-parameter-usage"></a>
 #### Example: Endpoint-based parameter usage
 
 For REST API-based providers, parameters are used similarly but in endpoint URLs, headers, and request bodies:
@@ -198,6 +276,7 @@ For REST API-based providers, parameters are used similarly but in endpoint URLs
 }
 ```
 
+<!-- TOC --><a name="41-parameter-substitution"></a>
 ### 4.1 Parameter Substitution
 
 Parameters are referenced in command templates using curly braces:
@@ -212,6 +291,7 @@ Or in command-based providers:
 "Command": "aws ec2 describe-instances --region {region} --output json"
 ```
 
+<!-- TOC --><a name="42-parameter-resolution"></a>
 ### 4.2 Parameter Resolution
 
 Parameters are resolved in the following order:
@@ -220,6 +300,7 @@ Parameters are resolved in the following order:
 2. Provider's default settings
 3. If parameter is not found, an error is raised (for required parameters)
 
+<!-- TOC --><a name="43-optional-parameters"></a>
 ### 4.3 Optional Parameters
 
 Parameters can be constructed conditionally by using separate parameters:
@@ -230,8 +311,10 @@ Parameters can be constructed conditionally by using separate parameters:
 
 This allows parameters to be included only when needed.
 
+<!-- TOC --><a name="44-global-parameters"></a>
 ### 4.4 Global Parameters
 
+<!-- TOC --><a name="441-general-parameters"></a>
 #### 4.4.1 General Parameters
 
 <details>
@@ -258,6 +341,7 @@ These parameters are commonly used across multiple commands and providers:
 | `debug` | Enable debug level logging | `true`, `false` |
 </details>
 
+<!-- TOC --><a name="442-worker-management-parameters"></a>
 #### 4.4.2 Worker Management Parameters
 
 <details>
@@ -292,6 +376,7 @@ These parameters are used for creating and managing workers (usually virtual mac
 | `hostname` | Hostname for the worker | `srv01.example.com` |
 </details>
 
+<!-- TOC --><a name="443-storage-management-parameters"></a>
 #### 4.4.3 Storage Management Parameters
 
 <details>
@@ -323,6 +408,7 @@ For managing storage volumes and disks:
 | `shared` | Whether the disk is shared | `true`, `false` |
 </details>
 
+<!-- TOC --><a name="444-network-management-parameters"></a>
 #### 4.4.4 Network Management Parameters
 
 <details>
@@ -365,6 +451,7 @@ For network configuration and management:
 | `source` | Source CIDR for firewall rules | `192.168.1.0/24` |
 </details>
 
+<!-- TOC --><a name="445-authentication-and-credentials-parameters"></a>
 #### 4.4.5 Authentication and Credentials Parameters
 
 <details>
@@ -398,6 +485,7 @@ For authentication and credential management:
 | `ssh_public_key_file` | Path to SSH public key file | `~/.ssh/id_rsa.pub` |
 </details>
 
+<!-- TOC --><a name="446-container-and-orchestration-parameters"></a>
 #### 4.4.6 Container and Orchestration Parameters
 
 <details>
@@ -434,6 +522,7 @@ For container orchestration services:
 | `kubeconfig` | Path to kubeconfig file | `~/.kube/config` |
 </details>
 
+<!-- TOC --><a name="447-database-service-parameters"></a>
 #### 4.4.7 Database Service Parameters
 
 <details>
@@ -472,6 +561,7 @@ For database services:
 | `storage_type` | Type of database storage | `gp2`, `io1` |
 </details>
 
+<!-- TOC --><a name="448-serverless-and-functions-parameters"></a>
 #### 4.4.8 Serverless and Functions Parameters
 
 <details>
@@ -506,6 +596,7 @@ For serverless functions and applications:
 | `deployment_package` | Deployment package URI | `s3://bucket/function.zip` |
 </details>
 
+<!-- TOC --><a name="449-monitoring-and-logging-parameters"></a>
 #### 4.4.9 Monitoring and Logging Parameters
 
 <details>
@@ -544,6 +635,7 @@ For monitoring and logging services:
 | `query` | Query string | `rate(http_requests_total[5m])` |
 </details>
 
+<!-- TOC --><a name="4410-object-storage-parameters"></a>
 #### 4.4.10 Object Storage Parameters
 
 <details>
@@ -578,6 +670,7 @@ For object storage services:
 | `metadata` | User-defined metadata | `{"project":"website"}` |
 </details>
 
+<!-- TOC --><a name="4411-auto-scaling-parameters"></a>
 #### 4.4.11 Auto-Scaling Parameters
 
 <details>
@@ -616,6 +709,7 @@ For auto-scaling configurations:
 | `new_instances_protected` | Protect new instances | `true`, `false` |
 </details>
 
+<!-- TOC --><a name="4412-identity-and-access-management-parameters"></a>
 #### 4.4.12 Identity and Access Management Parameters
 
 <details>
@@ -649,10 +743,12 @@ For IAM operations:
 | `access_key_status` | Access key status | `Active`, `Inactive` |
 </details>
 
+<!-- TOC --><a name="45-command-specific-parameters"></a>
 ### 4.5 Command-Specific Parameters
 
 These parameters are specific to certain command types. Providers can choose which parameters to implement based on their specific needs.
 
+<!-- TOC --><a name="451-worker-commands"></a>
 #### 4.5.1 Worker Commands
 
 <details>
@@ -724,14 +820,17 @@ These parameters are specific to certain command types. Providers can choose whi
 | `has_worker` | `worker_id` | Identifier for a worker | `i-0abc123def456789` |
 </details>
 
+<!-- TOC --><a name="5-parse-rules"></a>
 ## 5. Parse Rules
 
 Converting outputs into structured data is one of the CPI's most powerful features. Parse rules define how to extract meaningful information from raw command or API outputs, whether they're formatted as JSON, tabular data, or unstructured text.
 
+<!-- TOC --><a name="51-parse-rule-types"></a>
 ### 5.1 Parse Rule Types
 
 The CPI supports three parsing strategies to handle different output formats:
 
+<!-- TOC --><a name="511-object-parse-rules"></a>
 #### 5.1.1 Object Parse Rules
 
 The object parser extracts a single cohesive entity with multiple attributes. This works well for commands that return information about a specific resource, like a VM instance or storage volume. Each field is extracted using its own regex pattern:
@@ -752,6 +851,7 @@ The object parser extracts a single cohesive entity with multiple attributes. Th
 }
 ```
 
+<!-- TOC --><a name="512-array-parse-rules"></a>
 #### 5.1.2 Array Parse Rules
 
 When dealing with lists of items, the array parser shines. It splits output by a defined separator (often newlines) and applies extraction patterns to each segment. This works perfectly for commands that list resources like VMs, storage volumes, or network interfaces:
@@ -774,6 +874,7 @@ When dealing with lists of items, the array parser shines. It splits output by a
 }
 ```
 
+<!-- TOC --><a name="513-properties-parse-rules"></a>
 #### 5.1.3 Properties Parse Rules
 
 For more complex outputs with nested structures, the properties parser provides additional capabilities. Beyond basic property extraction, it can handle arrays of sub-objects and related patterns. This parser type excels at extracting detailed configuration information:
@@ -803,6 +904,7 @@ For more complex outputs with nested structures, the properties parser provides 
 }
 ```
 
+<!-- TOC --><a name="52-pattern-specification"></a>
 ### 5.2 Pattern Specification
 
 Each pattern consists of:
@@ -815,6 +917,7 @@ Each pattern consists of:
 | `optional` | Whether the pattern is optional (default: false) | No |
 | `match_value` | Reference to another value for comparison | No |
 
+<!-- TOC --><a name="53-value-transformation"></a>
 ### 5.3 Value Transformation
 
 Values can be transformed using:
@@ -822,14 +925,17 @@ Values can be transformed using:
 - `boolean`: Converts extracted value to boolean
 - `number`: Converts extracted value to number
 
+<!-- TOC --><a name="6-target-types"></a>
 ## 6. Target Types
 
 CPI providers can use two types of targets for their actions: Command or Endpoint.
 
+<!-- TOC --><a name="61-command-target"></a>
 ### 6.1 Command Target
 
 Command targets invoke the provider's CLI tools directly. This is useful for providers that primarily interact through command-line interfaces.
 
+<!-- TOC --><a name="example-command-target-for-aws-provider"></a>
 #### Example: Command target for AWS provider
 
 ```json
@@ -850,10 +956,12 @@ Command targets invoke the provider's CLI tools directly. This is useful for pro
 }
 ```
 
+<!-- TOC --><a name="62-endpoint-target"></a>
 ### 6.2 Endpoint Target
 
 Endpoint targets make HTTP requests directly to the provider's API. This is preferred for providers with robust REST APIs or when direct API access is more efficient than using CLI tools.
 
+<!-- TOC --><a name="example-endpoint-target-for-truenas-provider"></a>
 #### Example: Endpoint target for TrueNAS provider
 
 ```json
@@ -884,12 +992,15 @@ Endpoint targets make HTTP requests directly to the provider's API. This is pref
 }
 ```
 
+<!-- TOC --><a name="63-mixed-target-approach"></a>
 ### 6.3 Mixed Target Approach
 
 Some providers might benefit from a mixed approach, using Command targets for some actions and Endpoint targets for others. This is acceptable as long as the interface remains consistent from the user's perspective.
 
+<!-- TOC --><a name="7-execution-workflow"></a>
 ## 7. Execution Workflow
 
+<!-- TOC --><a name="71-command-execution-process"></a>
 ### 7.1 Command Execution Process
 
 The command execution flow represents how CPI processes a request from preparation to completion. Each request goes through a well-defined lifecycle that includes parameter preparation, target execution, output parsing, and result delivery.
@@ -903,6 +1014,7 @@ flowchart LR
     E --> F[Return Result to Caller]
 ```
 
+<!-- TOC --><a name="72-error-handling"></a>
 ### 7.2 Error Handling
 
 Robust error handling makes the CPI system reliable and debuggable. All errors are captured in a standardized `CpiError` type, which provides consistent error reporting across different providers and operations.
@@ -924,14 +1036,17 @@ The system defines several error categories including:
 - `RegexError`: Regular expression issues
 - `Timeout`: Command timeouts
 
+<!-- TOC --><a name="8-provider-ecosystem"></a>
 ## 8. Provider Ecosystem
 
 The CPI system supports a rich ecosystem of providers covering major cloud platforms and virtualization technologies. This diversity allows applications to work with multiple infrastructure providers without code changes.
 
+<!-- TOC --><a name="81-command-based-provider-examples"></a>
 ### 8.1 Command-based Provider Examples
 
 For public cloud environments, the CPI includes providers that use CLI tools:
 
+<!-- TOC --><a name="aws-provider-example"></a>
 #### AWS Provider Example
 
 <details>
@@ -1000,6 +1115,7 @@ For public cloud environments, the CPI includes providers that use CLI tools:
 ```
 </details>
 
+<!-- TOC --><a name="google-cloud-provider-example"></a>
 #### Google Cloud Provider Example
 
 <details>
@@ -1070,10 +1186,12 @@ For public cloud environments, the CPI includes providers that use CLI tools:
 ```
 </details>
 
+<!-- TOC --><a name="82-endpoint-based-provider-examples"></a>
 ### 8.2 Endpoint-based Provider Examples
 
 For services with robust APIs, the CPI includes providers that use direct API calls:
 
+<!-- TOC --><a name="truenas-provider-example"></a>
 #### TrueNAS Provider Example
 <details>
 <summary>Click to expand/collapse TrueNAS Provider Example</summary>
@@ -1176,6 +1294,7 @@ For services with robust APIs, the CPI includes providers that use direct API ca
 </details>
 
 
+<!-- TOC --><a name="digitalocean-provider-example"></a>
 #### DigitalOcean Provider Example
 
 
@@ -1274,16 +1393,19 @@ For services with robust APIs, the CPI includes providers that use direct API ca
 ```
 </details>
 
+<!-- TOC --><a name="9-provider-implementation-guidelines"></a>
 ## 9. Provider Implementation Guidelines
 
 Creating a new CPI provider requires careful planning and attention to detail:
 
+<!-- TOC --><a name="91-naming-and-structure"></a>
 ### 9.1 Naming and Structure
 
 - Choose descriptive, consistent names for your provider and its actions
 - Names should reflect the services they represent and follow established patterns
 - Document all parameters thoroughly, explaining their purpose, format, and any constraints
 
+<!-- TOC --><a name="92-target-selection"></a>
 ### 9.2 Target Selection
 
 - For providers with robust REST APIs, prefer **Endpoint** targets:
@@ -1308,18 +1430,21 @@ Creating a new CPI provider requires careful planning and attention to detail:
 
 - Consider a mixed approach if different actions benefit from different target types
 
+<!-- TOC --><a name="93-error-handling"></a>
 ### 9.3 Error Handling
 
 - Validate inputs before executing commands to catch issues early
 - Handle execution errors with clear, actionable messages
 - When crafting parse rules, anticipate variations in command output formats
 
+<!-- TOC --><a name="94-authentication-and-settings"></a>
 ### 9.4 Authentication and Settings
 
 - Include sensible defaults for common parameters
 - Document the minimum required versions of any underlying tools
 - Align authentication mechanisms with the underlying service's standards
 
+<!-- TOC --><a name="95-testing-and-verification"></a>
 ### 9.5 Testing and Verification
 
 - Every provider should include a `test_install` action
