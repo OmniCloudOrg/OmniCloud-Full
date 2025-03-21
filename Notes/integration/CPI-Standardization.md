@@ -360,7 +360,9 @@ Used for extracting complex nested structures with multiple instances of related
           "group": 2
         },
         "size": {
-          "regex": "Disk-(\\d+)-Size:\\s+(\\d+)GB# Cloud Provider Interface (CPI) Standardization
+          "regex": "Disk-(\\d+)-Size:\\s+(\\d+)GB
+```
+# Cloud Provider Interface (CPI) Standardization
 
 ## 1. Introduction
 
