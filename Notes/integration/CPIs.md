@@ -234,6 +234,9 @@ This allows parameters to be included only when needed.
 
 #### 4.4.1 General Parameters
 
+<details>
+<summary>Click to expand/collapse General Parameters</summary>
+
 These parameters are commonly used across multiple commands and providers:
 
 | Parameter | Description | Example Value |
@@ -253,8 +256,12 @@ These parameters are commonly used across multiple commands and providers:
 | `cli_version` | Version of CLI to use | `2.11.3` |
 | `verbose` | Enable verbose output | `true`, `false` |
 | `debug` | Enable debug level logging | `true`, `false` |
+</details>
 
 #### 4.4.2 Worker Management Parameters
+
+<details>
+<summary>Click to expand/collapse Worker Management Parameters</summary>
 
 These parameters are used for creating and managing workers (usually virtual machines):
 
@@ -283,8 +290,12 @@ These parameters are used for creating and managing workers (usually virtual mac
 | `boot_type` | Boot type for workers | `local`, `network` |
 | `timezone` | Timezone for the worker | `UTC`, `America/New_York` |
 | `hostname` | Hostname for the worker | `srv01.example.com` |
+</details>
 
 #### 4.4.3 Storage Management Parameters
+
+<details>
+<summary>Click to expand/collapse Storage Management Parameters</summary>
 
 For managing storage volumes and disks:
 
@@ -310,8 +321,12 @@ For managing storage volumes and disks:
 | `mount_point` | Mount point for the volume | `/data`, `/mnt/volume1` |
 | `target_dev` | Target device for attachment | `vdb`, `sdc` |
 | `shared` | Whether the disk is shared | `true`, `false` |
+</details>
 
 #### 4.4.4 Network Management Parameters
+
+<details>
+<summary>Click to expand/collapse Network Management Parameters</summary>
 
 For network configuration and management:
 
@@ -348,8 +363,12 @@ For network configuration and management:
 | `network_index` | Index of network interface | `1`, `2` |
 | `destination` | Destination CIDR for routing | `0.0.0.0/0` |
 | `source` | Source CIDR for firewall rules | `192.168.1.0/24` |
+</details>
 
 #### 4.4.5 Authentication and Credentials Parameters
+
+<details>
+<summary>Click to expand/collapse Authentication and Credentials Parameters</summary>
 
 For authentication and credential management:
 
@@ -377,8 +396,12 @@ For authentication and credential management:
 | `ssh_key_ids` | IDs of SSH keys to use | `["key-12345", "key-67890"]` |
 | `ssh_key_file` | Path to SSH key file | `~/.ssh/id_rsa.pub` |
 | `ssh_public_key_file` | Path to SSH public key file | `~/.ssh/id_rsa.pub` |
+</details>
 
 #### 4.4.6 Container and Orchestration Parameters
+
+<details>
+<summary>Click to expand/collapse Container and Orchestration Parameters</summary>
 
 For container orchestration services:
 
@@ -409,8 +432,12 @@ For container orchestration services:
 | `addons` | Cluster addons to enable | `["monitoring", "http_load_balancing"]` |
 | `endpoint` | Cluster API endpoint | `https://10.10.10.10` |
 | `kubeconfig` | Path to kubeconfig file | `~/.kube/config` |
+</details>
 
 #### 4.4.7 Database Service Parameters
+
+<details>
+<summary>Click to expand/collapse Database Service Parameters</summary>
 
 For database services:
 
@@ -443,8 +470,12 @@ For database services:
 | `db_name` | Logical database name | `products` |
 | `engine` | Database engine | `mysql`, `postgres` |
 | `storage_type` | Type of database storage | `gp2`, `io1` |
+</details>
 
 #### 4.4.8 Serverless and Functions Parameters
+
+<details>
+<summary>Click to expand/collapse Serverless and Functions Parameters</summary>
 
 For serverless functions and applications:
 
@@ -473,8 +504,12 @@ For serverless functions and applications:
 | `reserved_concurrency` | Reserved concurrency | `10` |
 | `tracing_config` | Function tracing configuration | `Active`, `PassThrough` |
 | `deployment_package` | Deployment package URI | `s3://bucket/function.zip` |
+</details>
 
 #### 4.4.9 Monitoring and Logging Parameters
+
+<details>
+<summary>Click to expand/collapse Monitoring and Logging Parameters</summary>
 
 For monitoring and logging services:
 
@@ -507,8 +542,12 @@ For monitoring and logging services:
 | `severity` | Alert severity | `critical`, `warning`, `info` |
 | `time_range` | Time range for queries | `1h`, `24h`, `7d` |
 | `query` | Query string | `rate(http_requests_total[5m])` |
+</details>
 
 #### 4.4.10 Object Storage Parameters
+
+<details>
+<summary>Click to expand/collapse Object Storage Parameters</summary>
 
 For object storage services:
 
@@ -537,8 +576,12 @@ For object storage services:
 | `content_disposition` | Content-Disposition header | `attachment; filename="file.txt"` |
 | `content_encoding` | Content-Encoding header | `gzip` |
 | `metadata` | User-defined metadata | `{"project":"website"}` |
+</details>
 
 #### 4.4.11 Auto-Scaling Parameters
+
+<details>
+<summary>Click to expand/collapse Auto-Scaling Parameters</summary>
 
 For auto-scaling configurations:
 
@@ -571,8 +614,12 @@ For auto-scaling configurations:
 | `placement_group` | Placement group | `cluster-1` |
 | `service_linked_role_arn` | Service linked role ARN | `arn:aws:iam::...` |
 | `new_instances_protected` | Protect new instances | `true`, `false` |
+</details>
 
 #### 4.4.12 Identity and Access Management Parameters
+
+<details>
+<summary>Click to expand/collapse Identity and Access Management Parameters</summary>
 
 For IAM operations:
 
@@ -600,12 +647,16 @@ For IAM operations:
 | `iam_path` | Path for IAM entity | `/` |
 | `account_id` | AWS account ID | `123456789012` |
 | `access_key_status` | Access key status | `Active`, `Inactive` |
+</details>
 
 ### 4.5 Command-Specific Parameters
 
 These parameters are specific to certain command types. Providers can choose which parameters to implement based on their specific needs.
 
 #### 4.5.1 Worker Commands
+
+<details>
+<summary>Click to expand/collapse Worker Commands Parameters</summary>
 
 | Command | Parameter | Description | Example Value |
 |---------|-----------|-------------|---------------|
@@ -671,262 +722,7 @@ These parameters are specific to certain command types. Providers can choose whi
 | `update_worker` | `termination_protection` | Enable termination protection | `true`, `false` |
 | `update_worker` | `monitoring` | Update monitoring settings | `true`, `false` |
 | `has_worker` | `worker_id` | Identifier for a worker | `i-0abc123def456789` |
-
-#### 4.5.2 Storage Management
-
-| Command | Parameter | Description | Example Value |
-|---------|-----------|-------------|---------------|
-| `list_disks` | `region` | Geographic region | `us-east-1` |
-| `list_disks` | `zone` | Availability zone within a region | `us-east-1a` |
-| `list_disks` | `filter_tag` | Filter disks by tag | `environment=production` |
-| `list_disks` | `filter_status` | Filter disks by status | `available` |
-| `list_disks` | `filter_type` | Filter disks by type | `ssd` |
-| `list_disks` | `limit` | Maximum number of results | `50` |
-| `list_disks` | `worker_id` | List disks attached to worker | `i-0abc123def456789` |
-| `create_disk` | `disk_name` | Name of the disk/volume | `data-volume-1` |
-| `create_disk` | `disk_type` | Type of storage | `ssd`, `hdd`, `premium-ssd` |
-| `create_disk` | `size_gb` | Size in gigabytes | `100` |
-| `create_disk` | `region` | Geographic region for the disk | `us-east-1` |
-| `create_disk` | `zone` | Availability zone for the disk | `us-east-1a` |
-| `create_disk` | `iops` | IOPS for disk (if supported) | `3000` |
-| `create_disk` | `throughput` | Throughput in MB/s | `125` |
-| `create_disk` | `snapshot_id` | Create from snapshot | `snap-0abc123def456789` |
-| `create_disk` | `encrypted` | Enable encryption | `true`, `false` |
-| `create_disk` | `kms_key_id` | KMS key for encryption | `key-0abc123def456789` |
-| `create_disk` | `tags` | Resource tags | `environment=prod,service=database` |
-| `create_disk` | `multi_attach` | Enable multi-attach capability | `true`, `false` |
-| `create_disk` | `disk_size_param` | Disk size parameter | `--size 100GB` |
-| `delete_disk` | `disk_id` | Identifier for a disk/volume | `vol-0abc123def456789` |
-| `delete_disk` | `force` | Force deletion without confirmation | `true`, `false` |
-| `delete_disk` | `force_param` | Force parameter | `--force` |
-| `attach_disk` | `worker_id` | Worker to attach disk to | `i-0abc123def456789` |
-| `attach_disk` | `disk_id` | Disk to attach | `vol-0abc123def456789` |
-| `attach_disk` | `device` | Device path for attachment | `/dev/sdf`, `xvdh` |
-| `attach_disk` | `device_param` | Device parameter | `--device /dev/sdf` |
-| `attach_disk` | `read_only` | Attach as read-only | `true`, `false` |
-| `attach_disk` | `auto_delete` | Delete disk when worker is deleted | `true`, `false` |
-| `detach_disk` | `worker_id` | Worker to detach disk from | `i-0abc123def456789` |
-| `detach_disk` | `disk_id` | Disk to detach | `vol-0abc123def456789` |
-| `detach_disk` | `force` | Force detachment | `true`, `false` |
-| `resize_disk` | `disk_id` | Disk to resize | `vol-0abc123def456789` |
-| `resize_disk` | `size_gb` | New size in gigabytes | `200` |
-| `resize_disk` | `resize_fs` | Resize filesystem | `true`, `false` |
-| `resize_disk` | `iops` | New IOPS value | `6000` |
-| `resize_disk` | `throughput` | New throughput in MB/s | `250` |
-| `has_disk` | `disk_id` | Identifier for a disk/volume | `vol-0abc123def456789` |
-
-#### 4.5.3 Image Management
-
-| Command | Parameter | Description | Example Value |
-|---------|-----------|-------------|---------------|
-| `list_images` | `region` | Geographic region | `us-east-1` |
-| `list_images` | `zone` | Availability zone within a region | `us-east-1a` |
-| `list_images` | `owner` | Filter by image owner | `self`, `amazon`, `marketplace` |
-| `list_images` | `architecture` | Filter by architecture | `x86_64`, `arm64` |
-| `list_images` | `platform` | Filter by platform | `linux`, `windows` |
-| `list_images` | `name_prefix` | Filter by name prefix | `ubuntu-` |
-| `list_images` | `state` | Filter by image state | `available` |
-| `list_images` | `limit` | Maximum number of results | `50` |
-| `list_images` | `filter_tag` | Filter images by tag | `type=release` |
-| `create_snapshot` | `worker_id` | Worker to snapshot | `i-0abc123def456789` |
-| `create_snapshot` | `disk_id` | Disk to snapshot | `vol-0abc123def456789` |
-| `create_snapshot` | `snapshot_name` | Name for the snapshot | `web-server-backup` |
-| `create_snapshot` | `description` | Description of snapshot | `Daily backup of web server` |
-| `create_snapshot` | `description_param` | Description parameter | `--description "Daily backup"` |
-| `create_snapshot` | `tags` | Resource tags | `schedule=daily,retention=7days` |
-| `create_snapshot` | `no_reboot` | Skip reboot during snapshot | `true`, `false` |
-| `create_snapshot` | `encrypted` | Enable encryption | `true`, `false` |
-| `create_snapshot` | `kms_key_id` | KMS key for encryption | `key-0abc123def456789` |
-| `list_snapshots` | `worker_id` | Optional worker to filter snapshots | `i-0abc123def456789` |
-| `list_snapshots` | `disk_id` | Optional disk to filter snapshots | `vol-0abc123def456789` |
-| `list_snapshots` | `region` | Geographic region | `us-east-1` |
-| `list_snapshots` | `owner` | Filter by snapshot owner | `self` |
-| `list_snapshots` | `filter_tag` | Filter snapshots by tag | `type=automatic` |
-| `list_snapshots` | `state` | Filter by snapshot state | `completed` |
-| `list_snapshots` | `limit` | Maximum number of results | `50` |
-| `delete_snapshot` | `snapshot_id` | Identifier for a snapshot | `snap-0abc123def456789` |
-| `delete_snapshot` | `force` | Force deletion without confirmation | `true`, `false` |
-| `has_snapshot` | `snapshot_id` | Identifier for a snapshot | `snap-0abc123def456789` |
-
-#### 4.5.4 Network Management
-
-| Command | Parameter | Description | Example Value |
-|---------|-----------|-------------|---------------|
-| `list_networks` | `region` | Geographic region | `us-east-1` |
-| `list_networks` | `zone` | Availability zone within a region | `us-east-1a` |
-| `list_networks` | `filter_tag` | Filter networks by tag | `environment=production` |
-| `list_networks` | `limit` | Maximum number of results | `50` |
-| `create_network` | `network_name` | Name of the network | `prod-network` |
-| `create_network` | `cidr_range` | CIDR notation for IP range | `10.0.0.0/16` |
-| `create_network` | `region` | Geographic region for the network | `us-east-1` |
-| `create_network` | `auto_subnets` | Create default subnets | `true`, `false` |
-| `create_network` | `dns_resolution` | Enable DNS resolution | `true`, `false` |
-| `create_network` | `dns_hostnames` | Enable DNS hostnames | `true`, `false` |
-| `create_network` | `tags` | Resource tags | `environment=prod,service=core` |
-| `create_network` | `tenancy` | Default tenancy | `default`, `dedicated` |
-| `create_network` | `enable_ipv6` | Enable IPv6 networking | `true`, `false` |
-| `delete_network` | `network_id` | Identifier for a network | `vpc-0abc123def456789` |
-| `delete_network` | `force` | Force deletion of all resources | `true`, `false` |
-| `list_subnets` | `network_id` | Network to list subnets for | `vpc-0abc123def456789` |
-| `list_subnets` | `filter_tag` | Filter subnets by tag | `tier=public` |
-| `list_subnets` | `filter_zone` | Filter subnets by zone | `us-east-1a` |
-| `list_subnets` | `limit` | Maximum number of results | `50` |
-| `create_subnet` | `network_id` | Network for the subnet | `vpc-0abc123def456789` |
-| `create_subnet` | `subnet_name` | Name of the subnet | `public-subnet-1` |
-| `create_subnet` | `cidr_range` | CIDR notation for IP range | `10.0.1.0/24` |
-| `create_subnet` | `zone` | Availability zone | `us-east-1a` |
-| `create_subnet` | `public` | Make subnet public | `true`, `false` |
-| `create_subnet` | `auto_assign_ip` | Auto-assign public IPs | `true`, `false` |
-| `create_subnet` | `route_table_id` | Route table for subnet | `rtb-0abc123def456789` |
-| `create_subnet` | `tags` | Resource tags | `tier=public,environment=prod` |
-| `create_subnet` | `ipv6_cidr` | IPv6 CIDR block | `2001:db8::/64` |
-| `delete_subnet` | `subnet_id` | Identifier for a subnet | `subnet-0abc123def456789` |
-| `delete_subnet` | `force` | Force deletion of resources | `true`, `false` |
-| `list_firewall_rules` | `network_id` | Optional network to filter rules | `vpc-0abc123def456789` |
-| `list_firewall_rules` | `security_group_id` | Security group to list rules | `sg-0abc123def456789` |
-| `list_firewall_rules` | `direction` | Filter by direction | `ingress`, `egress` |
-| `list_firewall_rules` | `protocol` | Filter by protocol | `tcp`, `udp`, `icmp` |
-| `list_firewall_rules` | `port` | Filter by port | `80`, `443` |
-| `create_firewall_rule` | `security_group_id` | Security group for the rule | `sg-0abc123def456789` |
-| `create_firewall_rule` | `direction` | Direction for the rule | `ingress`, `egress` |
-| `create_firewall_rule` | `direction_param` | Direction parameter | `--direction ingress` |
-| `create_firewall_rule` | `protocol` | Network protocol | `tcp`, `udp`, `icmp`, `all` |
-| `create_firewall_rule` | `port` | Port for the rule | `80`, `443`, `22` |
-| `create_firewall_rule` | `port_range` | Port range | `8000-9000` |
-| `create_firewall_rule` | `port_param` | Port parameter | `--port 80` |
-| `create_firewall_rule` | `source` | Source CIDR or security group | `0.0.0.0/0`, `sg-0abc123def456789` |
-| `create_firewall_rule` | `source_param` | Source parameter | `--source 0.0.0.0/0` |
-| `create_firewall_rule` | `destination` | Destination CIDR or security group | `10.0.0.0/8` |
-| `create_firewall_rule` | `destination_param` | Destination parameter | `--destination 10.0.0.0/8` |
-| `create_firewall_rule` | `description` | Description for the rule | `Allow HTTP traffic` |
-| `create_firewall_rule` | `comment_param` | Comment parameter | `--comment "Allow HTTP"` |
-| `create_firewall_rule` | `priority` | Rule priority | `100` |
-| `create_firewall_rule` | `ipv6` | Apply to IPv6 | `true`, `false` |
-| `delete_firewall_rule` | `rule_id` | Identifier for a firewall rule | `sgr-0abc123def456789` |
-| `delete_firewall_rule` | `security_group_id` | Security group containing the rule | `sg-0abc123def456789` |
-| `delete_firewall_rule` | `force` | Force deletion without confirmation | `true`, `false` |
-
-#### 4.5.5 Authentication and Account Management
-
-| Command | Parameter | Description | Example Value |
-|---------|-----------|-------------|---------------|
-| `configure_auth` | `api_key` | API key for authentication | `abcdef123456` |
-| `configure_auth` | `api_secret` | API secret key | `abcdef123456abcdef123456` |
-| `configure_auth` | `token` | Authentication token | `eyJhbGciOiJIUzI1NiIsInR5...` |
-| `configure_auth` | `credentials_file` | Path to credentials file | `~/.aws/credentials` |
-| `configure_auth` | `config_file` | Path to config file | `~/.aws/config` |
-| `configure_auth` | `profile` | Named profile to use | `development` |
-| `configure_auth` | `username` | Username for authentication | `admin` |
-| `configure_auth` | `password` | Password for authentication | `P@ssw0rd123!` |
-| `configure_auth` | `project_id` | Project ID for scope | `project-0abc123def456789` |
-| `configure_auth` | `tenant_id` | Tenant/organization ID | `tenant-0abc123def456789` |
-| `configure_auth` | `region` | Default region to use | `us-east-1` |
-| `configure_auth` | `endpoint` | API endpoint URL | `https://api.example.com/v1` |
-| `configure_auth` | `mfa_token` | MFA code for authentication | `123456` |
-| `test_auth` | `verbose` | Show detailed test results | `true`, `false` |
-| `get_account_info` | `include_usage` | Include usage information | `true`, `false` |
-| `get_account_info` | `include_billing` | Include billing information | `true`, `false` |
-| `get_account_info` | `include_limits` | Include account limits | `true`, `false` |
-| `list_credentials` | `credential_type` | Optional credential type filter | `api-key`, `ssh-key` |
-| `list_credentials` | `limit` | Maximum number of results | `50` |
-| `list_credentials` | `filter_status` | Filter by status | `active`, `inactive` |
-| `create_credential` | `credential_name` | Name for the credential | `prod-api-key` |
-| `create_credential` | `credential_type` | Type of credential | `api-key`, `ssh-key` |
-| `create_credential` | `permissions` | Permissions for the credential | `["read", "write"]` |
-| `create_credential` | `description` | Description of credential | `Production deployment key` |
-| `create_credential` | `expiration` | Expiration time | `2026-03-17T00:00:00Z` |
-| `create_credential` | `ssh_public_key` | SSH public key content | `ssh-rsa AAAAB3NzaC1...` |
-| `create_credential` | `tags` | Resource tags | `environment=prod,service=deploy` |
-| `delete_credential` | `credential_id` | Identifier for a credential | `key-0abc123def456789` |
-| `delete_credential` | `force` | Force deletion without confirmation | `true`, `false` |
-| `rotate_credential` | `credential_id` | Identifier for a credential | `key-0abc123def456789` |
-| `rotate_credential` | `deactivate_previous` | Deactivate previous credential | `true`, `false` |
-| `rotate_credential` | `expiration` | New expiration time | `2026-03-17T00:00:00Z` |
-| `set_default_project` | `project_id` | Identifier for a project | `project-0abc123def456789` |
-| `list_projects` | `filter_status` | Filter by project status | `active`, `suspended` |
-| `list_projects` | `limit` | Maximum number of results | `50` |
-
-#### 4.5.6 CLI Setup and Initialization
-
-| Command | Parameter | Description | Example Value |
-|---------|-----------|-------------|---------------|
-| `initialize_cli` | `cli_path` | Path to CLI executable | `/usr/local/bin/aws` |
-| `initialize_cli` | `cli_version` | Version of CLI to install | `2.11.3` |
-| `initialize_cli` | `install_dir` | Installation directory | `/usr/local/bin` |
-| `initialize_cli` | `os_type` | Operating system type | `linux`, `darwin`, `windows` |
-| `initialize_cli` | `arch` | System architecture | `x86_64`, `arm64` |
-| `initialize_cli` | `skip_verify` | Skip signature verification | `true`, `false` |
-| `initialize_cli` | `auto_completion` | Install shell completion | `true`, `false` |
-| `setup_environment` | `env_vars` | Environment variables to set | `{"AWS_REGION":"us-east-1"}` |
-| `setup_environment` | `shell_type` | Shell type for environment | `bash`, `zsh`, `fish` |
-| `setup_environment` | `rc_file` | RC file to modify | `~/.bashrc`, `~/.zshrc` |
-| `setup_environment` | `persist` | Persist changes to shell config | `true`, `false` |
-| `update_cli` | `cli_version` | Version to update to (optional) | `2.12.0`, `latest` |
-| `update_cli` | `force` | Force update | `true`, `false` |
-| `update_cli` | `check_only` | Only check for updates | `true`, `false` |
-| `validate_prerequisites` | `check_commands` | Commands to check | `curl,unzip,jq` |
-| `install_plugin` | `plugin_name` | Name of CLI plugin | `eks`, `session-manager` |
-| `install_plugin` | `plugin_version` | Version of plugin | `1.2.0`, `latest` |
-| `install_plugin` | `plugins_dir` | Plugin installation directory | `~/.aws/cli/plugins` |
-| `install_plugin` | `force` | Force installation | `true`, `false` |
-| `install_plugin` | `skip_verify` | Skip signature verification | `true`, `false` |
-
-#### 4.5.7 Metadata and Infrastructure
-
-| Command | Parameter | Description | Example Value |
-|---------|-----------|-------------|---------------|
-| `list_regions` | `filter_status` | Filter regions by status | `available`, `opted-in` |
-| `list_regions` | `filter_name` | Filter regions by name pattern | `us-*`, `eu-*` |
-| `list_regions` | `include_opt_status` | Include opt-in status | `true`, `false` |
-| `list_zones` | `region` | Region to list zones for | `us-east-1` |
-| `list_zones` | `filter_status` | Filter zones by status | `available` |
-| `list_zones` | `filter_name` | Filter zones by name pattern | `us-east-1*` |
-| `list_worker_types` | `region` | Geographic region | `us-east-1` |
-| `list_worker_types` | `zone` | Availability zone within a region | `us-east-1a` |
-| `list_worker_types` | `filter_category` | Filter by instance category | `general`, `compute`, `memory` |
-| `list_worker_types` | `filter_architecture` | Filter by CPU architecture | `x86_64`, `arm64` |
-| `list_worker_types` | `filter_vcpus_min` | Minimum vCPUs | `2` |
-| `list_worker_types` | `filter_vcpus_max` | Maximum vCPUs | `16` |
-| `list_worker_types` | `filter_memory_min` | Minimum memory in GB | `4` |
-| `list_worker_types` | `filter_memory_max` | Maximum memory in GB | `64` |
-| `list_worker_types` | `include_costs` | Include cost information | `true`, `false` |
-| `get_pricing` | `resource_type` | Type of resource | `worker`, `disk`, `snapshot` |
-| `get_pricing` | `worker_type` | Type of worker for pricing | `t2.micro`, `standard-2` |
-| `get_pricing` | `disk_type` | Type of disk for pricing | `ssd`, `standard` |
-| `get_pricing` | `region` | Geographic region | `us-east-1` |
-| `get_pricing` | `currency` | Currency for pricing | `USD`, `EUR` |
-| `get_pricing` | `term` | Term for pricing | `ondemand`, `reserved` |
-| `get_pricing` | `reserved_term` | Reserved instance term | `1year`, `3year` |
-| `get_pricing` | `os` | Operating system | `linux`, `windows` |
-| `get_quota` | `resource_type` | Type of resource | `workers`, `cpus`, `memory` |
-| `get_quota` | `region` | Geographic region | `us-east-1` |
-| `get_quota` | `include_usage` | Include current usage | `true`, `false` |
-
-#### 4.5.8 CLI Setup and Environment Parameters
-
-For CLI and environment configuration:
-
-| Parameter | Description | Example Value |
-|-----------|-------------|---------------|
-| `cli_path` | Path to CLI executable | `/usr/local/bin/aws` |
-| `cli_version` | Version of CLI to install | `2.11.3` |
-| `install_dir` | Directory for installation | `/usr/local/bin` |
-| `config_file` | Path to configuration file | `~/.aws/config` |
-| `credentials_file` | Path to credentials file | `~/.aws/credentials` |
-| `profile` | Named profile to use | `development` |
-| `cache_dir` | Directory for CLI cache | `~/.aws/cli/cache` |
-| `plugin_dir` | Directory for CLI plugins | `~/.aws/cli/plugins` |
-| `env_vars` | Environment variables to set | `{"AWS_REGION":"us-east-1"}` |
-| `proxy` | Proxy server to use | `http://proxy.example.com:8080` |
-| `no_verify_ssl` | Disable SSL verification | `true`, `false` |
-| `debug` | Enable debug output | `true`, `false` |
-| `output` | Output format | `json`, `text`, `table` |
-| `color` | Enable color output | `true`, `false` |
-| `query` | JMESPath query | `Reservations[*].Instances[*].[InstanceId]` |
-| `no_paginate` | Disable pagination | `true`, `false` |
-| `ignore_user_config` | Ignore user configuration | `true`, `false` |
-| `api_version` | API version to use | `2016-04-01` |
-| `endpoint_url` | Custom endpoint URL | `https://ec2.us-east-1.amazonaws.com` |
+</details>
 
 ## 5. Parse Rules
 
