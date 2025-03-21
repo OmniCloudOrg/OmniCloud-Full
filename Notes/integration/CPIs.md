@@ -934,6 +934,8 @@ For public cloud environments, the CPI includes providers that use CLI tools:
 
 #### AWS Provider Example
 
+<details>
+<summary>Click to expand/collapse AWS Provider Example</summary>
 ```json
 {
   "name": "aws",
@@ -996,9 +998,12 @@ For public cloud environments, the CPI includes providers that use CLI tools:
   }
 }
 ```
+</details>
 
 #### Google Cloud Provider Example
 
+<details>
+<summary>Click to expand/collapse Google Cloud Provider Example</summary>
 ```json
 {
   "name": "gcp",
@@ -1063,13 +1068,15 @@ For public cloud environments, the CPI includes providers that use CLI tools:
   }
 }
 ```
+</details>
 
 ### 8.2 Endpoint-based Provider Examples
 
 For services with robust APIs, the CPI includes providers that use direct API calls:
 
 #### TrueNAS Provider Example
-
+<details>
+<summary>Click to expand/collapse TrueNAS Provider Example</summary>
 ```json
 {
   "name": "truenas",
@@ -1166,9 +1173,14 @@ For services with robust APIs, the CPI includes providers that use direct API ca
   }
 }
 ```
+</details>
+
 
 #### DigitalOcean Provider Example
 
+
+<details>
+<summary>Click to expand/collapse DigitalOcean Provider Example</summary>
 ```json
 {
   "name": "digitalocean",
@@ -1260,6 +1272,7 @@ For services with robust APIs, the CPI includes providers that use direct API ca
   }
 }
 ```
+</details>
 
 ## 9. Provider Implementation Guidelines
 
