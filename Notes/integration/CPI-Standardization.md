@@ -1,372 +1,3 @@
-## 8. CPI Lifecycle and Initialization Process
-
-The CPI system follows a defined lifecycle that starts with CLI initialization and ends with resource management. Understanding this flow helps implementers build robust providers.
-
-### 8.1 Standard Initialization Sequence
-
-```mermaid
-flowchart TD
-    A[Initialize CPI System] --> B[Discover Provider Files]
-    B --> C[Load Provider Definitions]
-    C --> D[Initialize CLI Environment]
-    D --> E[Configure Authentication]
-    E --> F[Test Authentication]
-    F --> G[Provider Ready for Use]
-```
-
-### 8.2 Recommended Initialization Implementation
-
-When implementing a new CPI provider, follow this sequence for initialization:
-
-1. **CLI Setup**: Ensure the CLI tools are installed and properly configured
-   - For command-based CPIs:
-   ```json
-   "initialize_cli": {
-     "target": {
-       "Command": "bash -c 'if ! command -v {cli_path} &> /dev/null; then curl -sSL https://downloads.cloudco.io/cli/install.sh | bash -s -- --version {cli_version} --install-dir $(dirname {cli_path}); fi'"
-     },
-     "params": ["cli_path", "cli_version"],
-     "parse_rules": { 
-       "type": "object",
-       "patterns": {
-         "success": {
-           "regex": "Installation complete|already installed",
-           "transform": "boolean"
-         },
-         "version": {
-           "regex": "Installed version:\\s+([\\d\\.]+)",
-           "group": 1,
-           "optional": true
-         }
-       }
-     }
-   }
-   ```
-   
-   - For endpoint-based CPIs:
-   ```json
-   "initialize_cli": {
-     "target": {
-       "Command": "pip install truenas-api-client"
-     },
-     "params": [],
-     "parse_rules": {
-       "type": "object",
-       "patterns": {
-         "success": {
-           "regex": "Successfully installed",
-           "transform": "boolean"
-         }
-       }
-     }
-   }
-   ```
-
-2. **Authentication Configuration**: Set up credentials for accessing the cloud provider
-   
-   - For command-based CPIs:
-   ```json
-   "configure_auth": {
-     "target": {
-       "Command": "cloudco-cli auth configure --api-key {api_key} --project {project_id}"
-     },
-     "params": [
-       "api_key",
-       "project_id"
-     ],
-     "parse_rules": {
-       "type": "object",
-       "patterns": {
-         "success": {
-           "regex": "Authentication configured successfully",
-           "transform": "boolean"
-         },
-         "account_id": {
-           "regex": "Account ID:\\s+([a-z0-9-]+)",
-           "group": 1,
-           "optional": true
-         }
-       }
-     }
-   }
-   ```
-   
-   - For endpoint-based CPIs:
-   ```json
-   "configure_auth": {
-     "target": {
-       "Endpoint": {
-         "url": "{api_url}/auth/token",
-         "method": "Post",
-         "headers": {
-           "Content-Type": "application/json"
-         },
-         "body": "{\"username\":\"{username}\",\"password\":\"{password}\"}"
-       }
-     },
-     "params": [
-       "api_url",
-       "username",
-       "password"
-     ],
-     "parse_rules": {
-       "type": "object",
-       "patterns": {
-         "api_key": {
-           "regex": "\"token\":\\s*\"([^\"]+)\"",
-           "group": 1
-         }
-       }
-     }
-   }
-   ```
-
-3. **Authentication Validation**: Verify that authentication is working properly
-   
-   - For command-based CPIs:
-   ```json
-   "test_auth": {
-     "target": {
-       "Command": "cloudco-cli auth validate"
-     },
-     "params": [],
-     "parse_rules": {
-       "type": "object",
-       "patterns": {
-         "status": {
-           "regex": "Authentication Status:\\s+(\\w+)",
-           "group": 1
-         },
-         "username": {
-           "regex": "Username:\\s+([^\\n]+)",
-           "group": 1,
-           "optional": true
-         }
-       }
-     }
-   }
-   ```
-   
-   - For endpoint-based CPIs:
-   ```json
-   "test_auth": {
-     "target": {
-       "Endpoint": {
-         "url": "{api_url}/auth/check",
-         "method": "Get",
-         "headers": {
-           "Authorization": "Bearer {api_key}",
-           "Content-Type": "application/json"
-         }
-       }
-     },
-     "params": [
-       "api_url",
-       "api_key"
-     ],
-     "parse_rules": {
-       "type": "object",
-       "patterns": {
-         "status": {
-           "regex": "\"authenticated\":\\s*(true|false)",
-           "group": 1
-         }
-       }
-     }
-   }
-   ```
-
-4. **Installation Testing**: Verify that the CLI or API is installed and accessible
-   
-   - For command-based CPIs:
-   ```json
-   "test_install": {
-     "target": {
-       "Command": "cloudco-cli --version"
-     },
-     "params": [],
-     "parse_rules": {
-       "type": "object",
-       "patterns": {
-         "version": {
-           "regex": "cloudco-cli version ([\\d\\.]+)",
-           "group": 1
-         }
-       }
-     }
-   }
-   ```
-   
-   - For endpoint-based CPIs:
-   ```json
-   "test_install": {
-     "target": {
-       "Endpoint": {
-         "url": "{api_url}/system/version",
-         "method": "Get",
-         "headers": {
-           "Authorization": "Bearer {api_key}",
-           "Content-Type": "application/json"
-         }
-       }
-     },
-     "params": [
-       "api_url",
-       "api_key"
-     ],
-     "parse_rules": {
-       "type": "object",
-       "patterns": {
-         "version": {
-           "regex": "\"version\":\\s*\"([^\"]+)\"",
-           "group": 1
-         }
-       }
-     }
-   }
-   ```
-
-This sequence ensures that the CPI provider is properly set up before any resource management commands are executed.
-
-## 9. Target Types and Specifications
-
-The CPI system supports two primary target types for action execution: Command and Endpoint. Each type has specific requirements and capabilities.
-
-### 9.1 Command Target Type
-
-The Command target type executes shell commands on the host system. This is typically used for cloud providers that offer a command-line interface (CLI) tool.
-
-```json
-"target": {
-  "Command": "cloudco-cli worker create --name {name} --type {worker_type}"
-}
-```
-
-### 9.2 Endpoint Target Type
-
-The Endpoint target type makes HTTP requests to REST APIs. This is used for cloud providers that offer a REST API interface or when direct API access is preferred over a CLI tool.
-
-```json
-"target": {
-  "Endpoint": {
-    "url": "{api_url}/instances",
-    "method": "Post",
-    "headers": {
-      "Authorization": "Bearer {api_key}",
-      "Content-Type": "application/json"
-    },
-    "body": "{\"name\":\"{name}\",\"type\":\"{worker_type}\"}"
-  }
-}
-```
-
-### 9.3 Supported HTTP Methods
-
-For Endpoint targets, the following HTTP methods are supported:
-
-- `Get` - For retrieving resources
-- `Post` - For creating resources
-- `Put` - For replacing resources
-- `Patch` - For updating resources
-- `Delete` - For removing resources
-- `Option` - For checking allowed operations
-- `Custom` - For provider-specific methods
-
-### 9.4 Parameter Substitution
-
-Both Command and Endpoint targets support parameter substitution using curly braces `{}`. Any parameter referenced in the command string or endpoint details must be listed in the `params` array.
-
-```json
-"create_worker": {
-  "target": {
-    "Command": "cloudco-cli worker create --name {name} --type {worker_type}"
-  },
-  "params": [
-    "name",
-    "worker_type"
-  ]
-}
-```
-
-## 10. Parser Rules and Output Processing
-
-The CPI system uses a flexible parsing system to extract structured data from command outputs or API responses. The parser transforms raw text into structured objects that can be used by the caller.
-
-### 10.1 Parser Types
-
-Three primary parser types are supported:
-
-#### 10.1.1 Object Parser
-
-Used for extracting key-value pairs from outputs with a single instance of each field.
-
-```json
-"parse_rules": {
-  "type": "object",
-  "patterns": {
-    "version": {
-      "regex": "Version:\\s+([\\d\\.]+)",
-      "group": 1
-    },
-    "status": {
-      "regex": "Status:\\s+(\\w+)",
-      "group": 1
-    }
-  }
-}
-```
-
-#### 10.1.2 Array Parser
-
-Used for extracting repeated patterns from outputs, such as lists of items.
-
-```json
-"parse_rules": {
-  "type": "array",
-  "separator": "\\n",
-  "patterns": {
-    "id": {
-      "regex": "ID:\\s+([a-z0-9-]+)",
-      "group": 1
-    },
-    "name": {
-      "regex": "Name:\\s+([^\\n]+)",
-      "group": 1
-    }
-  }
-}
-```
-
-#### 10.1.3 Properties Parser
-
-Used for extracting complex nested structures with multiple instances of related fields.
-
-```json
-"parse_rules": {
-  "type": "properties",
-  "patterns": {
-    "id": {
-      "regex": "\"id\":\\s*\"([^\"]+)\"",
-      "group": 1
-    }
-  },
-  "array_patterns": {
-    "disks": {
-      "prefix": "Disk",
-      "index": "(\\d+)",
-      "object": {
-        "id": {
-          "regex": "Disk-(\\d+)-ID:\\s+([a-z0-9-]+)",
-          "group": 2
-        },
-        "size": {
-          "regex": "Disk-(\\d+)-Size:\\s+(\\d+)GB"
-        }
-      }
-    }
-  }
-}
-```
 # Cloud Provider Interface (CPI) Standardization
 
 ## 1. Introduction
@@ -1475,18 +1106,18 @@ When implementing a new CPI provider, follow this sequence for initialization:
    ```json
    "test_auth": {
      "target": {
-       "Command": "cloudco-cli auth status"
+       "Command": "cloudco-cli auth validate"
      },
      "params": [],
      "parse_rules": {
        "type": "object",
        "patterns": {
-         "authenticated": {
+         "status": {
            "regex": "Authentication Status:\\s+(\\w+)",
            "group": 1
          },
-         "account_id": {
-           "regex": "Account ID:\\s+([a-z0-9-]+)",
+         "username": {
+           "regex": "Username:\\s+([^\\n]+)",
            "group": 1,
            "optional": true
          }
@@ -1515,10 +1146,9 @@ When implementing a new CPI provider, follow this sequence for initialization:
      "parse_rules": {
        "type": "object",
        "patterns": {
-         "authenticated": {
+         "status": {
            "regex": "\"authenticated\":\\s*(true|false)",
-           "group": 1,
-           "transform": "boolean"
+           "group": 1
          }
        }
      }
@@ -1577,56 +1207,145 @@ When implementing a new CPI provider, follow this sequence for initialization:
 
 This sequence ensures that the CPI provider is properly set up before any resource management commands are executed.
 
-## 9. Target Format Standardization
+## 9. Target Types and Specifications
 
-CPI providers can use two types of targets for their actions: Command or Endpoint.
+The CPI system supports two primary target types for action execution: Command and Endpoint. Each type has specific requirements and capabilities.
 
-### 9.1 Command Target
+### 9.1 Command Target Type
 
-Command targets invoke the provider's CLI tools. This is useful for providers that primarily interact through command-line interfaces.
+The Command target type executes shell commands on the host system. This is typically used for cloud providers that offer a command-line interface (CLI) tool.
 
 ```json
 "target": {
-  "Command": "aws ec2 describe-instances --region {region} --output json"
+  "Command": "cloudco-cli worker create --name {name} --type {worker_type}"
 }
 ```
 
-### 9.2 Endpoint Target
+### 9.2 Endpoint Target Type
 
-Endpoint targets make HTTP requests directly to the provider's API. This is preferred for providers with robust REST APIs.
+The Endpoint target type makes HTTP requests to REST APIs. This is used for cloud providers that offer a REST API interface or when direct API access is preferred over a CLI tool.
 
 ```json
 "target": {
   "Endpoint": {
     "url": "{api_url}/instances",
-    "method": "Get",
+    "method": "Post",
     "headers": {
       "Authorization": "Bearer {api_key}",
       "Content-Type": "application/json"
     },
-    "body": "{...}" // Optional for POST/PUT/PATCH requests
+    "body": "{\"name\":\"{name}\",\"type\":\"{worker_type}\"}"
   }
 }
 ```
 
-### 9.3 Mixed Target Approach
+### 9.3 Supported HTTP Methods
 
-Some providers might benefit from a mixed approach, using Command targets for some actions and Endpoint targets for others. This is acceptable as long as the interface remains consistent from the user's perspective.
+For Endpoint targets, the following HTTP methods are supported:
 
-## 10. Error Handling and Reporting
+- `Get` - For retrieving resources
+- `Post` - For creating resources
+- `Put` - For replacing resources
+- `Patch` - For updating resources
+- `Delete` - For removing resources
+- `Option` - For checking allowed operations
+- `Custom` - For provider-specific methods
 
-CPI implementations should provide clear error reporting to help users diagnose issues.
+### 9.4 Parameter Substitution
 
-### 10.1 Common Error Categories
+Both Command and Endpoint targets support parameter substitution using curly braces `{}`. Any parameter referenced in the command string or endpoint details must be listed in the `params` array.
 
-| Category | Description | Example Causes |
-|----------|-------------|----------------|
-| `AuthenticationError` | Authentication failed | Invalid API key, expired token |
-| `ResourceNotFoundError` | Requested resource doesn't exist | Invalid worker ID, deleted resource |
-| `QuotaExceededError` | Provider-imposed limits reached | Too many instances, insufficient credits |
-| `ValidationError` | Invalid parameters | Incorrect parameter format, missing required field |
-| `RateLimitError` | API rate limit exceeded | Too many requests in short period |
-| `ProviderError` | Provider-side error | Service unavailable, internal server error |
+```json
+"create_worker": {
+  "target": {
+    "Command": "cloudco-cli worker create --name {name} --type {worker_type}"
+  },
+  "params": [
+    "name",
+    "worker_type"
+  ]
+}
+```
+
+## 10. Parser Rules and Output Processing
+
+The CPI system uses a flexible parsing system to extract structured data from command outputs or API responses. The parser transforms raw text into structured objects that can be used by the caller.
+
+### 10.1 Parser Types
+
+Three primary parser types are supported:
+
+#### 10.1.1 Object Parser
+
+Used for extracting key-value pairs from outputs with a single instance of each field.
+
+```json
+"parse_rules": {
+  "type": "object",
+  "patterns": {
+    "version": {
+      "regex": "Version:\\s+([\\d\\.]+)",
+      "group": 1
+    },
+    "status": {
+      "regex": "Status:\\s+(\\w+)",
+      "group": 1
+    }
+  }
+}
+```
+
+#### 10.1.2 Array Parser
+
+Used for extracting repeated patterns from outputs, such as lists of items.
+
+```json
+"parse_rules": {
+  "type": "array",
+  "separator": "\\n",
+  "patterns": {
+    "id": {
+      "regex": "ID:\\s+([a-z0-9-]+)",
+      "group": 1
+    },
+    "name": {
+      "regex": "Name:\\s+([^\\n]+)",
+      "group": 1
+    }
+  }
+}
+```
+
+#### 10.1.3 Properties Parser
+
+Used for extracting complex nested structures with multiple instances of related fields.
+
+```json
+"parse_rules": {
+  "type": "properties",
+  "patterns": {
+    "id": {
+      "regex": "\"id\":\\s*\"([^\"]+)\"",
+      "group": 1
+    }
+  },
+  "array_patterns": {
+    "disks": {
+      "prefix": "Disk",
+      "index": "(\\d+)",
+      "object": {
+        "id": {
+          "regex": "Disk-(\\d+)-ID:\\s+([a-z0-9-]+)",
+          "group": 2
+        },
+        "size": {
+          "regex": "Disk-(\\d+)-Size:\\s+(\\d+)GB"
+        }
+      }
+    }
+  }
+}
+```
 
 ### 10.2 Error Response Format
 
