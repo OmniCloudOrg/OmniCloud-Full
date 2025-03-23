@@ -3,4 +3,6 @@
 *.exe
 *.zip
 *.glue
+*.drawio.dtmp
+*.drawio.bkp
 */target
