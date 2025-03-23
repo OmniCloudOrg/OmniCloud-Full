@@ -7,3 +7,73 @@
 *.drawio.bkp
 *.vscode
 */target
+
+# OS generated files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# Editor directories and files
+.idea/
+.vscode/
+.vs/
+*.sublime-project
+*.sublime-workspace
+.atom/
+.eclipse/
+nbproject/
+.netbeans/
+.recommenders/
+.settings/
+.project
+.classpath
+.factorypath
+*.swp
+*~
+.*.swp
+.~lock.*
+*.tmp
+*.bak
+
+# Find all editor and IDE directories
+**/.idea/
+**/.vscode/
+**/.vs/
+**/.sublime-project/
+**/.sublime-workspace/
+**/.atom/
+**/.eclipse/
+**/nbproject/
+**/.netbeans/
+**/.recommenders/
+**/.settings/
+
+# Emacs
+*~
+\#*\#
+/.emacs.desktop
+/.emacs.desktop.lock
+*.elc
+auto-save-list
+tramp
+.\#*
+
+# vim
+[._]*.s[a-v][a-z]
+[._]*.sw[a-p]
+[._]s[a-rt-v][a-z]
+[._]ss[a-gi-z]
+[._]sw[a-p]
+Session.vim
+.netrwhist
+
+# JetBrains IDEs
+**/*.iml
+**/*.iws
+**/*.ipr
+**/out/
+**/cmake-build-*/
