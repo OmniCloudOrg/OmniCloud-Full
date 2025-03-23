@@ -1,0 +1,16 @@
+[workspace]
+members = [
+    "crates/*",
+]
+
+[workspace.package]
+version = "0.1.0"
+edition = "2021"
+authors = ["Tristan Poland"]
+license = "MIT OR Apache-2.0"
+repository = "https://github.com/OmniCloudOrg/OmniCloud-Full"
+description = "OmniCloud project workspace"
+
+[workspace.dependencies]
+# WE DO NOT USE WORKSPACE DEPENDENCIES, THIS BREAKS THE INDIVIDUAL REPOS
+# ABILITY TO RUN INDEPENDENTLY OF THE WORKSPACE
