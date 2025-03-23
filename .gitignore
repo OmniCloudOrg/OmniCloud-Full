@@ -1,79 +1,58 @@
-/target
+# Rust
+/target/
+*/target/
+**/target/
+
+# Docker
 /docker/**
+!/docker/compose.yml
+!/docker/README.md
+
+# Executables and Archives
 *.exe
 *.zip
 *.glue
+
+# Diagram Files
 *.drawio.dtmp
 *.drawio.bkp
-*.vscode
-*/target
 
-# OS generated files
-.DS_Store
-.DS_Store?
-._*
-.Spotlight-V100
-.Trashes
-ehthumbs.db
-Thumbs.db
-
-# Editor directories and files
-.idea/
+# Ensure .vscode is correctly ignored (both file and directory)
 .vscode/
-.vs/
-*.sublime-project
-*.sublime-workspace
-.atom/
-.eclipse/
-nbproject/
-.netbeans/
-.recommenders/
-.settings/
-.project
-.classpath
-.factorypath
-*.swp
-*~
-.*.swp
-.~lock.*
-*.tmp
-*.bak
-
-# Find all editor and IDE directories
-**/.idea/
+*.vscode
 **/.vscode/
-**/.vs/
-**/.sublime-project/
-**/.sublime-workspace/
-**/.atom/
-**/.eclipse/
-**/nbproject/
-**/.netbeans/
-**/.recommenders/
-**/.settings/
 
-# Emacs
+# Temporary and backup files
 *~
-\#*\#
-/.emacs.desktop
-/.emacs.desktop.lock
-*.elc
-auto-save-list
-tramp
-.\#*
+*.bak
+*.tmp
+*.temp
+*.swp
+*.swo
 
-# vim
-[._]*.s[a-v][a-z]
-[._]*.sw[a-p]
-[._]s[a-rt-v][a-z]
-[._]ss[a-gi-z]
-[._]sw[a-p]
-Session.vim
-.netrwhist
+# Log files
+*.log
+logs/
+**/logs/
 
-# JetBrains IDEs
-**/*.iml
-**/*.iws
-**/*.ipr
-**/out/
-**/cmake-build-*/
+# Build directories
+build/
+**/build/
+dist/
+**/dist/
+
+# Node.js
+node_modules/
+**/node_modules/
+npm-debug.log
+yarn-error.log
+.npm/
+
+# Mac directory attributes
+.AppleDouble
+.LSOverride
+Icon
+
+# Windows specific
+desktop.ini
+$RECYCLE.BIN/
