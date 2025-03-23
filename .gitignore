@@ -5,4 +5,5 @@
 *.glue
 *.drawio.dtmp
 *.drawio.bkp
+*.vscode
 */target
