@@ -1,2 +1,7 @@
 [alias]
-xtask = "run --bin xtask --"
+orchestrator = "run --bin omni-orchestrator --"
+agent = "run --bin omni-agent --"
+director = "run --bin omni-director --"
+lodestone = "run --bin Lodestone --"
+forge = "run --bin omni-forge --"
+cli = "run --bin omni --"

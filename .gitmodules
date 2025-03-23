@@ -19,7 +19,7 @@
 	url = https://github.com/Omni-Forge/OmniOrchestrator
 
 [submodule "OmniCosmos"]
-	path = crates/OmniCosmos
+	path = services/OmniCosmos
 	url = https://github.com/Omni-Forge/OmniForge-Dashboard
 
 [submodule "Omni-CLI"]
@@ -30,7 +30,7 @@
 	path = OmniOrchestrator
 	url = https://github.com/Omni-Forge/OmniOrchestrator
 [submodule "OmniEditor"]
-	path = crates/OmniEditor
+	path = services/OmniEditor
 	url = https://github.com/Omni-Forge/OmniEditor
 [submodule "Lodestone"]
 	path = crates/Lodestone
