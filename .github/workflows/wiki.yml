@@ -1,49 +1,50 @@
-name: Generate GitHub Wiki
+name: Generate and Publish Rust Documentation
 
 on:
   push:
-    branches:
-      - main
-    paths:
-      - 'docs/**'
-      - 'notes/**'
-      - 'Docs/**'
-      - 'Notes/**'
+    branches: [ main, master ]
   workflow_dispatch:  # Allows manual triggering
 
 jobs:
-  generate-wiki:
+  build-and-deploy:
     runs-on: ubuntu-latest
+    
     steps:
-      - name: Checkout Repository
-        uses: actions/checkout@v3
-
-      - name: Set up Python
-        uses: actions/setup-python@v4
+      - name: Checkout repository
+        uses: actions/checkout@v4
         with:
-          python-version: '3.10'
+          submodules: recursive  # Fetches git submodules
 
-      - name: Clone Wiki Repository
-        run: |
-          git config --global user.name "GitHub Action"
-          git config --global user.email "action@github.com"
-          git clone "https://${{ github.actor }}:${{ secrets.WIKI_TOKEN }}@github.com/${{ github.repository }}.wiki.git" wiki
+      - name: Setup Rust
+        uses: actions-rs/toolchain@v1
+        with:
+          profile: minimal
+          toolchain: stable
+          override: true
+          components: rustfmt, clippy
 
-      - name: Run Wiki Generator
+      - name: Generate Documentation
         run: |
-          # Ensure the script has execution permissions
-          ls -lah
-          chmod +x .github/workflows/scripts/gen-docs.py
-          python .github/workflows/scripts/gen-docs.py
-
-      - name: Push to Wiki
-        working-directory: wiki
-        run: |
-          git add .
-          # Only commit and push if there are changes
-          if git diff --staged --quiet; then
-            echo "No changes to commit"
-          else
-            git commit -m "Update wiki from docs and notes directories"
-            git push "https://${{ github.actor }}:${{ secrets.WIKI_TOKEN }}@github.com/${{ github.repository }}.wiki.git"
+          # Create combined documentation for the main crate and all workspace members
+          cargo doc --no-deps --document-private-items --workspace
+          
+          # Create an index.html that redirects to the main crate documentation
+          # You may need to adjust this if your main crate has a different name
+          MAIN_CRATE=$(grep -m 1 "name" Cargo.toml | head -1 | cut -d '"' -f 2 || echo "")
+          
+          if [ -z "$MAIN_CRATE" ]; then
+            # If we couldn't find the main crate name, use the directory name
+            MAIN_CRATE=$(basename $(pwd) | tr '-' '_')
           fi
+          
+          echo "<meta http-equiv=\"refresh\" content=\"0; url=./$MAIN_CRATE/index.html\">" > target/doc/index.html
+          
+          # Create a .nojekyll file to prevent GitHub Pages from ignoring files that begin with an underscore
+          touch target/doc/.nojekyll
+
+      - name: Deploy to GitHub Pages
+        uses: JamesIves/github-pages-deploy-action@v4
+        with:
+          branch: gh-pages  # The branch the action should deploy to
+          folder: target/doc  # The folder the action should deploy
+          clean: true  # Automatically remove deleted files from the deploy branch
