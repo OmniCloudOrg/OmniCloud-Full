@@ -49,7 +49,8 @@ jobs:
             MAIN_CRATE=$(basename $(pwd) | tr '-' '_')
           fi
           
-          echo "<meta http-equiv=\"refresh\" content=\"0; url=./$MAIN_CRATE/index.html\">" > target/doc/index.html
+          # Create a proper index.html that doesn't cause nested redirects
+          echo "<meta http-equiv=\"refresh\" content=\"0; url=$MAIN_CRATE/index.html\">" > target/doc/index.html
           
           # Create a .nojekyll file to prevent GitHub Pages from ignoring files that begin with an underscore
           touch target/doc/.nojekyll
