@@ -712,7 +712,7 @@ spec:
     - name: "Cross-Layer Latency"
       type: Graph
       metrics:
-        - query: 'container_to_vm_communication_latency{source="api-service",destination="database"}'
+        - query: 'container_to_worker_communication_latency{source="api-service",destination="database"}'
 ```
 
 These dashboards incorporate OmniCloud-specific metrics that show how the bootstrapped architecture affects your applications, providing insights not available on traditional platforms.
@@ -734,7 +734,7 @@ spec:
         target_type: "deployment"
         target_name: "api-service"
   targetMetrics:
-    - name: director_vm_provision_duration_seconds
+    - name: director_worker_provision_duration_seconds
       aggregation: avg
     - name: agent_container_start_duration_seconds
       aggregation: avg

@@ -77,18 +77,18 @@ Example VirtualBox CPI:
     "type": "virt",
     "actions": {
         "create_vm": {
-            "command": "VBoxManage createvm --name {vm_name} --ostype {os_type} --register",
-            "params": ["vm_name", "os_type"],
+            "command": "VBoxManage createvm --name {worker_name} --ostype {os_type} --register",
+            "params": ["worker_name", "os_type"],
             "output_parser": {
                 "type": "regex",
                 "pattern": "UUID:\\s+([a-f0-9-]+)",
                 "capture_groups": {
-                    "vm_uuid": 1
+                    "worker_uuid": 1
                 }
             },
             "post_exec": [
                 {
-                    "command": "VBoxManage modifyvm {vm_name} --memory {memory_mb} --cpus {cpu_count}",
+                    "command": "VBoxManage modifyvm {worker_name} --memory {memory_mb} --cpus {cpu_count}",
                     "output_parser": {
                         "type": "exit_code",
                         "success_value": 0
