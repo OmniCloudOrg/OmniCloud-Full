@@ -1,7 +1,7 @@
 [workspace]
-members = [
-    "crates/*",
-]
+members = ["crates/*"]
+exclude = ["crates/MegaTrix"]
+
 
 [workspace.package]
 version = "0.1.0"
