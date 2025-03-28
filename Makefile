@@ -85,50 +85,52 @@ all: build
 
 # Show help
 # Show help
+# Show help
 .PHONY: help
 help:
-	@echo OmniCloud PaaS Build System
-	@echo ============================
-	@echo
-	@echo Main targets:
-	@echo   all                 - Build all crates (default)
-	@echo   build               - Build all crates in debug mode
-	@echo   release             - Build all crates in release mode
-	@echo   test                - Run tests for all crates
-	@echo   clean               - Remove build artifacts
-	@echo   docs                - Generate documentation
-	@echo   docker-build        - Build all Docker images
-	@echo   docker-up           - Start all services with Docker Compose
-	@echo   docker-down         - Stop all Docker Compose services
-	@echo
-	@echo Individual crate targets:
-	@echo   build-lodestone     - Build the Lodestone crate
-	@echo   build-agent         - Build the OmniAgent crate
-	@echo   build-cli           - Build the OmniCLI crate
-	@echo   build-director      - Build the OmniDirector crate
-	@echo   build-forge         - Build the OmniForge crate
-	@echo   build-orchestrator  - Build the OmniOrchestrator crate
-	@echo
-	@echo Frontend service targets:
-	@echo   build-cosmos        - Build the OmniCosmos frontend
-	@echo   build-editor        - Build the OmniEditor frontend
-	@echo
-	@echo Development targets:
-	@echo   lint                - Run linter on all crates
-	@echo   format              - Format all code with rustfmt
-	@echo   dev-setup           - Set up development environment
-	@echo   update-deps         - Update dependencies for all crates
-	@echo
-	@echo Deployment targets:
-	@echo   deploy-dev          - Deploy to development environment
-	@echo   deploy-staging      - Deploy to staging environment
-	@echo   deploy-prod         - Deploy to production environment
-	@echo
-	@echo Utility targets:
-	@echo   check-env           - Check if development environment is properly set up
-	@echo   db-init             - Initialize database schema
-	@echo   backup              - Backup data and configuration
-	@echo   help                - Show this help information
+	@echo "OmniCloud PaaS Build System"
+	@echo "============================"
+	@echo ""
+	@echo "Main targets:"
+	@echo "  all                 - Build all crates (default)"
+	@echo "  build               - Build all crates in debug mode"
+	@echo "  release             - Build all crates in release mode"
+	@echo "  test                - Run tests for all crates"
+	@echo "  clean               - Remove build artifacts"
+	@echo "  docs                - Generate documentation"
+	@echo "  docker-build        - Build all Docker images"
+	@echo "  docker-up           - Start all services with Docker Compose"
+	@echo "  docker-down         - Stop all Docker Compose services"
+	@echo ""
+	@echo "Individual crate targets:"
+	@echo "  build-lodestone     - Build the Lodestone crate"
+	@echo "  build-agent         - Build the OmniAgent crate"
+	@echo "  build-cli           - Build the OmniCLI crate"
+	@echo "  build-director      - Build the OmniDirector crate"
+	@echo "  build-forge         - Build the OmniForge crate"
+	@echo "  build-orchestrator  - Build the OmniOrchestrator crate"
+	@echo ""
+	@echo "Frontend service targets:"
+	@echo "  build-cosmos        - Build the OmniCosmos frontend"
+	@echo "  build-editor        - Build the OmniEditor frontend"
+	@echo ""
+	@echo "Development targets:"
+	@echo "  lint                - Run linter on all crates"
+	@echo "  format              - Format all code with rustfmt"
+	@echo "  dev-setup           - Set up development environment"
+	@echo "  update-deps         - Update dependencies for all crates"
+	@echo ""
+	@echo "Deployment targets:"
+	@echo "  deploy-dev          - Deploy to development environment"
+	@echo "  deploy-staging      - Deploy to staging environment"
+	@echo "  deploy-prod         - Deploy to production environment"
+	@echo ""
+	@echo "Utility targets:"
+	@echo "  check-env           - Check if development environment is properly set up"
+	@echo "  db-init             - Initialize database schema"
+	@echo "  backup              - Backup data and configuration"
+	@echo "  help                - Show this help information"
+
 # Build targets
 .PHONY: build build-lodestone build-agent build-cli build-director build-forge build-orchestrator build-cosmos build-editor
 
