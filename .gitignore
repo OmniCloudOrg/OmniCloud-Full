@@ -56,3 +56,4 @@ Icon
 # Windows specific
 desktop.ini
 $RECYCLE.BIN/
+/OmniOrchestrator/db_data

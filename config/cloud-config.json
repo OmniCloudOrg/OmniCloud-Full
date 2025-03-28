@@ -1,0 +1,10 @@
+{
+  "company_name": "test",
+  "admin_name": "trident",
+  "cloud_name": "test-cloud",
+  "region": "eu-west",
+  "ssh_hosts": [],
+  "enable_monitoring": true,
+  "enable_backups": true,
+  "backup_retention_days": 30
+}
