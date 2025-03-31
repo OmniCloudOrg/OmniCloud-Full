@@ -22,3 +22,6 @@
 [submodule "Lodestone"]
 	path = crates/Lodestone
 	url = https://github.com/Omni-Forge/Lodestone
+[submodule "MegaTrix"]
+	path = crates/MegaTrix
+	url = https://github.com/Omni-Forge/MegaTrix
