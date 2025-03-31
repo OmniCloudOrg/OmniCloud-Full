@@ -1,27 +1,27 @@
 [submodule "OmniAgent"]
 	path = crates/OmniAgent
-	url = https://github.com/Omni-Forge/OmniAgent
+	url = https://github.com/OmniCloudOrg/OmniAgent
 [submodule "OmniForge"]
 	path = crates/OmniForge
-	url = https://github.com/Omni-Forge/OmniForge
+	url = https://github.com/OmniCloudOrg/OmniForge
 [submodule "OmniDirector"]
 	path = crates/OmniDirector
-	url = https://github.com/Omni-Forge/OmniDirector
+	url = https://github.com/OmniCloudOrg/OmniDirector
 [submodule "OmniCosmos"]
 	path = services/OmniCosmos
-	url = https://github.com/Omni-Forge/OmniForge-Dashboard
+	url = https://github.com/OmniCloudOrg/OmniForge-Dashboard
 [submodule "Omni-CLI"]
 	path = crates/OmniCLI
 	url = https://github.com/OmniCloudOrg/Omni-CLI
 [submodule "OmniOrchestrator"]
 	path = crates/OmniOrchestrator
-	url = https://github.com/Omni-Forge/OmniOrchestrator
+	url = https://github.com/OmniCloudOrg/OmniOrchestrator
 [submodule "OmniEditor"]
 	path = services/OmniEditor
-	url = https://github.com/Omni-Forge/OmniEditor
+	url = https://github.com/OmniCloudOrg/OmniEditor
 [submodule "Lodestone"]
 	path = crates/Lodestone
-	url = https://github.com/Omni-Forge/Lodestone
+	url = https://github.com/OmniCloudOrg/Lodestone
 [submodule "MegaTrix"]
 	path = crates/MegaTrix
-	url = https://github.com/Omni-Forge/MegaTrix
+	url = https://github.com/OmniCloudOrg/MegaTrix
