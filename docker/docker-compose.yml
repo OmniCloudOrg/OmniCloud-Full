@@ -1,0 +1,59 @@
+services:
+  agent:
+    build:
+      context: ../crates/OmniAgent/
+      dockerfile: ./Dockerfile
+    ports:
+      - "5670:8000"
+    environment:
+      - NODE_ENV=development
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+
+  orchestrator:
+    build:
+      context: ../crates/OmniOrchestrator/
+      dockerfile: ./Dockerfile
+    ports:
+      - "5671:8080"
+    environment:
+      - NODE_ENV=development
+
+  forge:
+    build:
+      context: ../crates/OmniForge/
+      dockerfile: ./Dockerfile
+    ports:
+      - "5672:8080"
+    environment:
+      - NODE_ENV=development
+
+  cosmos:
+    build:
+      context: ../services/OmniCosmos/
+      dockerfile: ./Dockerfile
+    ports:
+      - "5673:8080"
+    environment:
+      - NODE_ENV=development
+
+#  editor:
+#    build:
+#      context: ../services/OmniEditor/
+#      dockerfile: ./Dockerfile
+#    ports:
+#      - "5674:8080"
+#    environment:
+#      - NODE_ENV=development
+
+  director:
+    build:
+      context: ../crates/OmniDirector/
+      dockerfile: ./Dockerfile
+    ports:
+      - "5675:8081"
+    environment:
+      - NODE_ENV=development
+
+volumes:
+  db_data:

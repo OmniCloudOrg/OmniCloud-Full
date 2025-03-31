@@ -3,11 +3,6 @@
 */target/
 **/target/
 
-# Docker
-/docker/**
-!/docker/compose.yml
-!/docker/README.md
-
 # Executables and Archives
 *.exe
 *.zip
