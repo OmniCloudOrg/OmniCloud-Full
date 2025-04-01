@@ -14,6 +14,6 @@ repository = "https://github.com/OmniCloudOrg/OmniCloud-Full"
 description = "OmniCloud project workspace"
 
 [workspace.dependencies]
-# WE DO NOT USE WORKSPACE DEPENDENCIES OTHER THAN LIBOMNI, THIS BREAKS THE
+# WE DO NOT USE WORKSPACE DEPENDENCIES OTHER THAN LibOmni, THIS BREAKS THE
 # INDIVIDUAL REPOS ABILITY TO RUN INDEPENDENTLY OF THE WORKSPACE.
 libomni = "0.2.0"
