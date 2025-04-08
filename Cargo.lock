@@ -520,6 +520,7 @@ version = "2.9.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "5c8214115b7bf84099f1309324e63141d4c5d7cc26862f97a0a857dbefe165bd"
 dependencies = [
+ "bytemuck",
  "serde 1.0.219",
 ]
 
@@ -721,6 +722,20 @@ name = "bytemuck"
 version = "1.22.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "b6b1fc10dbac614ebc03540c9dbd60e83887fda27794998c6528f1782047d540"
+dependencies = [
+ "bytemuck_derive",
+]
+
+[[package]]
+name = "bytemuck_derive"
+version = "1.9.3"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "7ecc273b49b3205b83d648f0690daa588925572cc5063745bfe547fe7ec8e1a1"
+dependencies = [
+ "proc-macro2",
+ "quote",
+ "syn 2.0.100",
+]
 
 [[package]]
 name = "byteorder"
@@ -2104,6 +2119,30 @@ dependencies = [
  "tokio",
  "tokio-util",
  "tracing",
+]
+
+[[package]]
+name = "hadris-common"
+version = "0.0.1"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "616855420af104c190bd8010e42a57936ae2d6ecd02591e04066833e38b70a8a"
+dependencies = [
+ "bytemuck",
+]
+
+[[package]]
+name = "hadris-iso"
+version = "0.0.1"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "70bbb2213111a6f104e3738c619ec860ff31083da7d08b4bb3b5be8f8c1c1c19"
+dependencies = [
+ "bitflags 2.9.0",
+ "bytemuck",
+ "chrono",
+ "hadris-common",
+ "log",
+ "tempfile",
+ "thiserror 2.0.12",
 ]
 
 [[package]]
@@ -3586,6 +3625,7 @@ dependencies = [
  "colored 2.2.0",
  "env_logger 0.9.3",
  "futures",
+ "hadris-iso",
  "hex",
  "lazy_static",
  "log",
