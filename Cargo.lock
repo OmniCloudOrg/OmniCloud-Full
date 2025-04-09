@@ -3602,6 +3602,7 @@ dependencies = [
  "serde_json5",
  "sha2",
  "sqlx",
+ "ssh2",
  "thiserror 1.0.69",
  "tokio",
  "tracing",
