@@ -3165,6 +3165,17 @@ dependencies = [
 [[package]]
 name = "libomni"
 version = "0.2.2"
+dependencies = [
+ "chrono",
+ "serde",
+ "serde_json",
+ "sqlx",
+ "uuid",
+]
+
+[[package]]
+name = "libomni"
+version = "0.2.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "58d52ddb69c80489fb9159cf693de34e906eb64fb46682f0bf70cd6f47011dd8"
 dependencies = [
@@ -3756,7 +3767,7 @@ dependencies = [
  "flate2",
  "ignore",
  "indicatif",
- "libomni 0.2.2",
+ "libomni 0.2.2 (registry+https://github.com/rust-lang/crates.io-index)",
  "pathdiff",
  "reqwest 0.12.15",
  "serde",
@@ -3798,7 +3809,7 @@ dependencies = [
 
 [[package]]
 name = "omni-director"
-version = "0.1.4"
+version = "0.1.5"
 dependencies = [
  "anyhow",
  "chrono",
