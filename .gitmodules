@@ -25,3 +25,6 @@
 [submodule "MegaTrix"]
 	path = crates/MegaTrix
 	url = https://github.com/OmniCloudOrg/MegaTrix
+[submodule "crates/LibOmni"]
+	path = crates/LibOmni
+	url = https://github.com/OmniCloudOrg/LibOmni
