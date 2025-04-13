@@ -16,9 +16,6 @@
 [submodule "OmniOrchestrator"]
 	path = crates/OmniOrchestrator
 	url = https://github.com/OmniCloudOrg/OmniOrchestrator
-[submodule "OmniEditor"]
-	path = services/OmniEditor
-	url = https://github.com/OmniCloudOrg/OmniEditor
 [submodule "Lodestone"]
 	path = crates/Lodestone
 	url = https://github.com/OmniCloudOrg/Lodestone
