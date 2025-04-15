@@ -964,6 +964,20 @@ dependencies = [
 ]
 
 [[package]]
+name = "chrysalis_rs"
+version = "0.1.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "7fcb6982d9e22e564154d55394f33bb4dc9442c8555650ebcaf62bdaebb7bf7e"
+dependencies = [
+ "chrono",
+ "rand 0.9.0",
+ "serde",
+ "serde_json",
+ "thiserror 2.0.12",
+ "uuid",
+]
+
+[[package]]
 name = "cipher"
 version = "0.4.4"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -3152,21 +3166,10 @@ checksum = "8355be11b20d696c8f18f6cc018c4e372165b1fa8126cef092399c9951984ffa"
 
 [[package]]
 name = "libomni"
-version = "0.1.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "7d985d4b450326a05a36b9f76494d8bdf34ce67c158b4f577162e51f87478a88"
-dependencies = [
- "anyhow",
- "regex",
- "serde",
- "serde_json",
-]
-
-[[package]]
-name = "libomni"
-version = "0.2.2"
+version = "0.2.3"
 dependencies = [
  "chrono",
+ "chrysalis_rs",
  "serde",
  "serde_json",
  "sqlx",
@@ -3175,11 +3178,12 @@ dependencies = [
 
 [[package]]
 name = "libomni"
-version = "0.2.2"
+version = "0.2.3"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "58d52ddb69c80489fb9159cf693de34e906eb64fb46682f0bf70cd6f47011dd8"
+checksum = "bd9b3e7d6dc452d4558abb01389b66b919fecd7049eaf2eb8f52859959851f36"
 dependencies = [
  "chrono",
+ "chrysalis_rs",
  "serde",
  "serde_json",
  "sqlx",
@@ -3767,7 +3771,7 @@ dependencies = [
  "flate2",
  "ignore",
  "indicatif",
- "libomni 0.2.2 (registry+https://github.com/rust-lang/crates.io-index)",
+ "libomni 0.2.3 (registry+https://github.com/rust-lang/crates.io-index)",
  "pathdiff",
  "reqwest 0.12.15",
  "serde",
@@ -3785,7 +3789,7 @@ dependencies = [
 
 [[package]]
 name = "omni-agent"
-version = "0.1.0"
+version = "0.1.1"
 dependencies = [
  "bollard",
  "chrono",
@@ -3794,6 +3798,7 @@ dependencies = [
  "futures",
  "hostname",
  "lazy_static",
+ "libomni 0.2.3 (registry+https://github.com/rust-lang/crates.io-index)",
  "num_cpus",
  "reqwest 0.11.27",
  "rocket",
@@ -3820,7 +3825,7 @@ dependencies = [
  "ez_logging",
  "indicatif",
  "lazy_static",
- "libomni 0.1.0",
+ "libomni 0.2.3 (registry+https://github.com/rust-lang/crates.io-index)",
  "log",
  "once_cell",
  "rayon",
@@ -3848,7 +3853,7 @@ dependencies = [
  "futures-util",
  "hyper 1.6.0",
  "lazy_static",
- "libomni 0.1.0",
+ "libomni 0.2.3 (registry+https://github.com/rust-lang/crates.io-index)",
  "log",
  "packer_rs",
  "phf",
@@ -3885,6 +3890,7 @@ dependencies = [
  "hadris-iso",
  "hex",
  "lazy_static",
+ "libomni 0.2.3 (registry+https://github.com/rust-lang/crates.io-index)",
  "log",
  "mysql",
  "once_cell",
