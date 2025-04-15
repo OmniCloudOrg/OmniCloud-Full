@@ -52,3 +52,4 @@ Icon
 desktop.ini
 $RECYCLE.BIN/
 /OmniOrchestrator/db_data
+/docker/db_data
