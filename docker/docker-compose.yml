@@ -29,6 +29,8 @@ services:
     environment:
       MYSQL_ROOT_PASSWORD: root
       MYSQL_DATABASE: omni
+    ports:
+      - "4001:3306"
     volumes:
       - ./db_data:/var/lib/mysql
     networks:
