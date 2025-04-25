@@ -3902,6 +3902,7 @@ dependencies = [
  "mysql",
  "once_cell",
  "parking_lot",
+ "paxakos",
  "rand 0.8.5",
  "reqwest 0.11.27",
  "rocket",
@@ -4138,6 +4139,24 @@ name = "pathdiff"
 version = "0.2.3"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "df94ce210e5bc13cb6651479fa48d14f601d9858cfe0467f43ae157023b938d3"
+
+[[package]]
+name = "paxakos"
+version = "0.13.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "74de017293cf1de1b10d3b852acc347c255ad0a9347a7ce4e485ac4fcff55e53"
+dependencies = [
+ "futures",
+ "futures-timer",
+ "instant",
+ "num-traits",
+ "pin-project",
+ "serde",
+ "smallvec",
+ "snarc",
+ "thiserror 1.0.69",
+ "tracing",
+]
 
 [[package]]
 name = "pbkdf2"
@@ -5735,6 +5754,15 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "7fcf8323ef1faaee30a44a340193b1ac6814fd9b7b4e88e9d4519a3e4abe1cfd"
 dependencies = [
  "serde",
+]
+
+[[package]]
+name = "snarc"
+version = "0.1.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "86139386a5d6f6943239b0ce483b10a730981060055b77fb7b0c657a1119de7c"
+dependencies = [
+ "scopeguard",
 ]
 
 [[package]]
