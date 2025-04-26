@@ -3900,7 +3900,7 @@ dependencies = [
 
 [[package]]
 name = "omni-orchestrator"
-version = "0.1.0-in-dev-3b4d9b8a2f2cf00cac4618bc5c7d728d857336a8"
+version = "0.1.1"
 dependencies = [
  "anyhow",
  "async-trait",
