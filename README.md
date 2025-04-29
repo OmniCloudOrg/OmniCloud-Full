@@ -1,34 +1,45 @@
-# 🚧 Under Construction
-This project is actively being developed. Nothing should yet be assumed stable
-
 # OmniCloud
 
-🚀 Zero-config platform for deploying microservices anywhere - VMs, containers, or bare metal - with just 24MB RAM overhead.
+## 🚀 Zero-config platform for deploying microservices anywhere
 
 ![License](https://img.shields.io/badge/license-MIT-blue.svg)
 ![Rust](https://img.shields.io/badge/rust-stable-orange.svg)
 
-## Quick Start
+## The Problem
+
+For too long, operations teams have been forced to stack disparate tools together in increasingly complex arrangements. We've been building towers of abstraction on top of inconsistent foundations, creating fragile systems that are difficult to maintain, scale, and understand.
+
+Every new tool brings its own paradigms, configuration formats, and operational quirks. The cognitive load increases with each addition to your stack. Teams spend more time connecting and maintaining tools than solving real business problems.
+
+**We deserve better.**
+
+## Our Vision
+
+OmniCloud isn't just another tool to add to your stack. It's a comprehensive rethinking of cloud operations from first principles.
+
+We're building a platform where components are **DESIGNED** to work together from the ground up. Not awkwardly integrated after the fact. Not connected through brittle plugins or adapters. But truly composed as a unified system with consistent interfaces, behaviors, and paradigms.
+
+## How It Works
+
+The magic of OmniCloud is in its simplicity:
 
 ```bash
 # Deploy directly from your project directory
 omni up
-
-# OmniCloud automatically:
-# - Bundles your package
-# - Detects your project type
-# - Builds optimized container image
-# - Chooses best infrastructure
-# - Deploys with optimal settings
-# - Autoscales and manages your app instances
 ```
 
-## Configuration (Optional)
+That's it. OmniCloud automatically:
+- Bundles your package
+- Detects your project type
+- Builds optimized container image
+- Chooses best infrastructure
+- Deploys with optimal settings
+- Autoscales and manages your app instances
 
-Override automatic settings when needed:
+No complex configuration required. OmniCloud makes intelligent decisions for you, while still allowing overrides when needed:
 
 ```yaml
-# OmniCloud.yaml
+# OmniCloud.yaml (Optional)
 runtime: docker        # Override auto-detected runtime
 provider: aws         # Force specific provider
 resources:
@@ -36,227 +47,65 @@ resources:
   memory: 512Mi
 ```
 
-## 🚀 Quick Start
+## Core Principles
 
-### Installation
+- **Composable by Design**: Every component shares the same foundational primitives
+- **Coherent Experience**: Consistent interfaces across all aspects of the platform
+- **Open Source First**: Community-driven development with transparency at its core
+- **Scale-Agnostic**: Works the same way for startups and enterprises
+- **API-Driven**: Everything available through both UI and programmatic interfaces
+- **Minimal Overhead**: Just 24MB RAM overhead for maximum efficiency
 
-```bash
-# Using GRIP
-grip install omni-cli
+## Current Status
 
-# Or download the binary
-curl -L https://omni-forge.github.io/get | sh
-```
+🚧 **Under Construction** 🚧
 
-### Your First Deployment
-omni up and omni push will automatically create a service for you if one does not exist, however you can also be more deliberate
+This project is actively being developed. Nothing should yet be assumed stable.
 
-1. Create a new project:
-```bash
-omni new my-service
-cd my-service
-```
+We're working hard to build the foundation of something revolutionary, but we need your help.
 
-2. Deploy it:
-```bash
-omni push
-```
+## Join Us
 
-That's it! OmniCloud automatically detects your project type and deploys it to your configured provider, if there is no configuration Omni will select everything automatically.
+We're looking for contributors who are tired of the status quo. People who believe cloud operations can be fundamentally better. Developers, operators, designers, and thinkers who want to be part of creating the next generation of cloud infrastructure.
 
-## 📚 Core Concepts
+If you're interested in:
 
-### Cloud Provider Interfaces (CPIs)
+- Building components that elegantly solve real operational problems
+- Designing coherent interfaces that make complex operations intuitive
+- Creating documentation that illuminates rather than obscures
+- Testing across diverse environments to ensure rock-solid reliability
+- Extending our Cloud Provider Interfaces (CPIs) to support more infrastructure types
 
-CPIs are JSON files that define how OmniCloud interacts with infrastructure providers. They specify commands, parameters, and output parsing rules.
+...then we want to hear from you.
 
-Example VirtualBox CPI:
-```json
-{
-    "name": "my_virtualbox_cpi",
-    "type": "virt",
-    "actions": {
-        "create_vm": {
-            "command": "VBoxManage createvm --name {worker_name} --ostype {os_type} --register",
-            "params": ["worker_name", "os_type"],
-            "output_parser": {
-                "type": "regex",
-                "pattern": "UUID:\\s+([a-f0-9-]+)",
-                "capture_groups": {
-                    "worker_uuid": 1
-                }
-            },
-            "post_exec": [
-                {
-                    "command": "VBoxManage modifyvm {worker_name} --memory {memory_mb} --cpus {cpu_count}",
-                    "output_parser": {
-                        "type": "exit_code",
-                        "success_value": 0
-                    }
-                }
-            ]
-        }
-    },
-    "default_settings": {
-        "os_type": "Ubuntu_64",
-        "memory_mb": 2048,
-        "cpu_count": 2
-    }
-}
-```
+## The Power of CPIs
 
-### Supported Infrastructure Types
+At the heart of OmniCloud are our Cloud Provider Interfaces (CPIs) - the secret sauce that lets us deploy anywhere with consistent behavior. CPIs define how OmniCloud interacts with infrastructure providers through standardized interfaces.
 
-See [Providers.md](./providers.md)
+This means you can deploy the same application to AWS, VirtualBox, bare metal, or any supported provider without changing your workflow. The platform handles the complexity for you.
 
-## 🛠 Features in Detail
+## Getting Started
 
-### Dynamic Build System
-
-OmniCloud automatically creates optimized container images based on your project's file extensions:
-
-```plaintext
-my-project/
-├── src/
-│   ├── main.rs        # Detected: Rust → Uses rust-builder image
-│   └── utils.py       # Detected: Python → Adds Python runtime
-├── package.json       # Detected: Node.js → Adds Node.js runtime
-└── Cargo.toml        # Used for Rust dependencies
-```
-
-### Resource Types
-
-Create reusable infrastructure templates:
-
-```yaml
-# worker.yaml
-kind: Worker
-spec:
-  runtime: docker
-  resources:
-    cpu: 1
-    memory: 512Mi
-  scaling:
-    min: 1
-    max: 10
-    metrics:
-      - type: http_requests
-        target: 1000
-```
-
-### Runtime Configuration
-
-Configure multiple runtimes for different use cases:
-
-```yaml
-# OmniCloud.yaml
-runtimes:
-  production:
-    provider: aws
-    region: us-east-1
-    instance_type: t3.micro
-  
-  development:
-    provider: virtualbox
-    memory: 2048
-    cpus: 2
-```
-
-## 📘 CPI Reference
-
-### Structure
-- `name`: CPI identifier
-- `type`: Provider type (virt, container, metal)
-- `actions`: Available commands and their specifications
-- `default_settings`: Default configuration values
-
-### Parser Types
-- `regex`: Extract values using regular expressions
-- `exit_code`: Check command success/failure
-- `multi_regex`: Extract multiple values
-- `table`: Parse tabular output
-
-### Action Properties
-- `command`: Command template with parameter placeholders
-- `params`: Required parameters
-- `output_parser`: Output parsing rules
-- `pre_exec`/`post_exec`: Additional commands to run
-
-## 🔧 Advanced Usage
-
-### Custom Build Hooks
-
-Create custom build steps:
-
-```bash
-# .OmniCloud/hooks/pre-build
-#!/bin/bash
-npm run build
-```
-
-### Health Checks
-
-Define sophisticated health monitoring:
-
-```yaml
-health:
-  http:
-    path: /health
-    port: 8080
-  interval: 10s
-  timeout: 5s
-  retries: 3
-```
-
-### Service Discovery
-
-Automatic service discovery and registration:
-
-```yaml
-discovery:
-  service: my-api
-  tags: ["production", "v2"]
-  port: 8080
-```
-
-## 🤝 Contributing
-
-We love contributions! Here's how you can help:
-
-1. Fork the repository
-2. Create a feature branch
-3. Write your changes
-4. Write tests
-5. Submit a PR
-
-See [CONTRIBUTING.md](CONTRIBUTING.md) for detailed guidelines.
-
-## 🔍 Troubleshooting
-
-### Common Issues
-
-1. **Permission Denied**
+1. Star this repository to show your support
+2. Install OmniCloud:
    ```bash
-   sudo chown -R $(whoami) ~/.OmniCloud
+   curl -L https://get.omnicloud.sh | sh
    ```
+3. Check out our [issues](https://github.com/omnicloudorg/omnicloud/issues) for good first contributions
+5. Read our [contribution guidelines](CONTRIBUTING.md) to understand our process
 
-2. **Provider Not Found**
-   ```bash
-   omni provider install aws
-   ```
+## The Future
 
-### Logs
+Together, we're going to build something transformative. A platform that doesn't just incrementally improve cloud operations, but fundamentally reimagines it.
 
-Access debug logs:
-```bash
-omni logs --level debug
-```
+The days of stitching together unrelated tools are numbered. The future is coherent, composable, and designed with intent.
 
-
-## 📜 License
-
-MIT License - see [LICENSE](LICENSE) for details.
+Welcome to OmniCloud.
 
 ---
+
+## License
+
+OmniCloud is licensed under the [MIT License](LICENSE).
 
 Built with ❤️ using Rust. Star us on GitHub if you like OmniCloud!
