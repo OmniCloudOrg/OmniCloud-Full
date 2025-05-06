@@ -1,0 +1,142 @@
+<mxfile host="65bd71144e">
+    <diagram id="5I8ut1_n0hssTc5nfrul" name="Page-1">
+        <mxGraphModel dx="572" dy="645" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="850" pageHeight="1100" math="0" shadow="0">
+            <root>
+                <mxCell id="0"/>
+                <mxCell id="1" parent="0"/>
+                <mxCell id="4" value="" style="group;spacing=0;spacingTop=-1;align=center;spacingLeft=4;" parent="1" vertex="1" connectable="0">
+                    <mxGeometry x="80" y="40" width="220" height="20" as="geometry"/>
+                </mxCell>
+                <mxCell id="2" value="/app/&amp;lt;app_id&amp;gt;/info" style="rounded=0;whiteSpace=wrap;html=1;spacing=0;spacingTop=-1;align=left;spacingLeft=4;" parent="4" vertex="1">
+                    <mxGeometry width="220.00000000000003" height="20" as="geometry"/>
+                </mxCell>
+                <mxCell id="44" value="" style="group;spacing=0;spacingTop=-1;align=left;spacingLeft=4;" parent="1" vertex="1" connectable="0">
+                    <mxGeometry x="320" y="40" width="280" height="20" as="geometry"/>
+                </mxCell>
+                <mxCell id="45" value="&lt;span style=&quot;&quot;&gt;/app/&amp;lt;app_id&amp;gt;/release/&amp;lt;version_id&amp;gt;/upload&lt;/span&gt;" style="rounded=0;whiteSpace=wrap;html=1;spacing=0;spacingTop=-1;align=left;spacingLeft=4;" parent="44" vertex="1">
+                    <mxGeometry x="40" width="240" height="20" as="geometry"/>
+                </mxCell>
+                <mxCell id="46" value="POST" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#1ba1e2;fontColor=#ffffff;strokeColor=#006EAF;spacing=0;spacingTop=-1;align=center;" parent="44" vertex="1">
+                    <mxGeometry width="40" height="20" as="geometry"/>
+                </mxCell>
+                <mxCell id="3" value="GET" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#60a917;fontColor=#ffffff;strokeColor=#2D7600;spacing=0;spacingTop=-1;align=center;" parent="1" vertex="1">
+                    <mxGeometry x="40" y="40" width="40" height="20" as="geometry"/>
+                </mxCell>
+                <mxCell id="92" value="" style="group;spacing=0;spacingTop=-1;align=center;spacingLeft=4;" parent="1" vertex="1" connectable="0">
+                    <mxGeometry x="80" y="120" width="220" height="20" as="geometry"/>
+                </mxCell>
+                <mxCell id="93" value="/app/&amp;lt;app_id&amp;gt;/metrics" style="rounded=0;whiteSpace=wrap;html=1;spacing=0;spacingTop=-1;align=left;spacingLeft=4;" parent="92" vertex="1">
+                    <mxGeometry width="220.00000000000003" height="20" as="geometry"/>
+                </mxCell>
+                <mxCell id="94" value="GET" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#60a917;fontColor=#ffffff;strokeColor=#2D7600;spacing=0;spacingTop=-1;align=center;" parent="1" vertex="1">
+                    <mxGeometry x="40" y="120" width="40" height="20" as="geometry"/>
+                </mxCell>
+                <mxCell id="95" value="" style="group;spacing=0;spacingTop=-1;align=left;spacingLeft=4;" parent="1" vertex="1" connectable="0">
+                    <mxGeometry x="320" y="120" width="280" height="20" as="geometry"/>
+                </mxCell>
+                <mxCell id="96" value="/app/create" style="rounded=0;whiteSpace=wrap;html=1;spacing=0;spacingTop=-1;align=left;spacingLeft=4;" parent="95" vertex="1">
+                    <mxGeometry x="40" width="240" height="20" as="geometry"/>
+                </mxCell>
+                <mxCell id="97" value="POST" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#1ba1e2;fontColor=#ffffff;strokeColor=#006EAF;spacing=0;spacingTop=-1;align=center;" parent="95" vertex="1">
+                    <mxGeometry width="40" height="20" as="geometry"/>
+                </mxCell>
+                <mxCell id="99" value="Gets more advanced data about an app such as initial metrics, the parent org, the description and version data." style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=top;whiteSpace=wrap;rounded=0;" parent="1" vertex="1">
+                    <mxGeometry x="40" y="60" width="240" height="60" as="geometry"/>
+                </mxCell>
+                <mxCell id="100" value="Allows the uploading of an app release, creating a new build in the job list. Once the build has completed a new release is added automatically." style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=top;whiteSpace=wrap;rounded=0;" parent="1" vertex="1">
+                    <mxGeometry x="320" y="60" width="280" height="60" as="geometry"/>
+                </mxCell>
+                <mxCell id="101" value="Returns lightweight instance metrics (designed to be used semi-frequently in an updating webUI)" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=top;whiteSpace=wrap;rounded=0;" parent="1" vertex="1">
+                    <mxGeometry x="40" y="140" width="240" height="60" as="geometry"/>
+                </mxCell>
+                <mxCell id="102" value="Create a new app with a specified config" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=top;whiteSpace=wrap;rounded=0;" parent="1" vertex="1">
+                    <mxGeometry x="320" y="140" width="280" height="30" as="geometry"/>
+                </mxCell>
+                <mxCell id="103" value="" style="group;spacing=0;spacingTop=-1;align=center;spacingLeft=4;" parent="1" vertex="1" connectable="0">
+                    <mxGeometry x="80" y="200" width="220" height="20" as="geometry"/>
+                </mxCell>
+                <mxCell id="104" value="/app/&amp;lt;app_id&amp;gt;/instances" style="rounded=0;whiteSpace=wrap;html=1;spacing=0;spacingTop=-1;align=left;spacingLeft=4;" parent="103" vertex="1">
+                    <mxGeometry width="220.00000000000003" height="20" as="geometry"/>
+                </mxCell>
+                <mxCell id="105" value="GET" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#60a917;fontColor=#ffffff;strokeColor=#2D7600;spacing=0;spacingTop=-1;align=center;" parent="1" vertex="1">
+                    <mxGeometry x="40" y="200" width="40" height="20" as="geometry"/>
+                </mxCell>
+                <mxCell id="106" value="Returns lightweight instance list in a paginated format with basic initial metrics" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=top;whiteSpace=wrap;rounded=0;" parent="1" vertex="1">
+                    <mxGeometry x="40" y="220" width="240" height="40" as="geometry"/>
+                </mxCell>
+                <mxCell id="107" value="" style="group;spacing=0;spacingTop=-1;align=center;spacingLeft=4;" parent="1" vertex="1" connectable="0">
+                    <mxGeometry x="80" y="260" width="220" height="20" as="geometry"/>
+                </mxCell>
+                <mxCell id="108" value="/app/&amp;lt;app_id&amp;gt;/instances/&amp;lt;id&amp;gt;/metrics" style="rounded=0;whiteSpace=wrap;html=1;spacing=0;spacingTop=-1;align=left;spacingLeft=4;" parent="107" vertex="1">
+                    <mxGeometry width="220" height="20" as="geometry"/>
+                </mxCell>
+                <mxCell id="109" value="GET" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#60a917;fontColor=#ffffff;strokeColor=#2D7600;spacing=0;spacingTop=-1;align=center;" parent="1" vertex="1">
+                    <mxGeometry x="40" y="260" width="40" height="20" as="geometry"/>
+                </mxCell>
+                <mxCell id="110" value="Returns lightweight instance list in a paginated format with basic initial metrics" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=top;whiteSpace=wrap;rounded=0;" parent="1" vertex="1">
+                    <mxGeometry x="40" y="280" width="260" height="40" as="geometry"/>
+                </mxCell>
+                <mxCell id="111" value="" style="group;spacing=0;spacingTop=-1;align=center;spacingLeft=4;" parent="1" vertex="1" connectable="0">
+                    <mxGeometry x="80" y="320" width="220" height="20" as="geometry"/>
+                </mxCell>
+                <mxCell id="112" value="/app/&amp;lt;app_id&amp;gt;/instances/&amp;lt;id&amp;gt;/logs" style="rounded=0;whiteSpace=wrap;html=1;spacing=0;spacingTop=-1;align=left;spacingLeft=4;" parent="111" vertex="1">
+                    <mxGeometry width="220" height="20" as="geometry"/>
+                </mxCell>
+                <mxCell id="113" value="GET" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#60a917;fontColor=#ffffff;strokeColor=#2D7600;spacing=0;spacingTop=-1;align=center;" parent="1" vertex="1">
+                    <mxGeometry x="40" y="320" width="40" height="20" as="geometry"/>
+                </mxCell>
+                <mxCell id="114" value="Returns lightweight logs in a paginated format" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=top;whiteSpace=wrap;rounded=0;" parent="1" vertex="1">
+                    <mxGeometry x="40" y="340" width="260" height="20" as="geometry"/>
+                </mxCell>
+                <mxCell id="119" value="" style="group;spacing=0;spacingTop=-1;align=center;spacingLeft=4;" parent="1" vertex="1" connectable="0">
+                    <mxGeometry x="80" y="370" width="220" height="20" as="geometry"/>
+                </mxCell>
+                <mxCell id="120" value="/app/&amp;lt;app_id&amp;gt;/instances/&amp;lt;id&amp;gt;/details" style="rounded=0;whiteSpace=wrap;html=1;spacing=0;spacingTop=-1;align=left;spacingLeft=4;" parent="119" vertex="1">
+                    <mxGeometry width="220" height="20" as="geometry"/>
+                </mxCell>
+                <mxCell id="121" value="GET" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#60a917;fontColor=#ffffff;strokeColor=#2D7600;spacing=0;spacingTop=-1;align=center;" parent="1" vertex="1">
+                    <mxGeometry x="40" y="370" width="40" height="20" as="geometry"/>
+                </mxCell>
+                <mxCell id="122" value="Return instance details." style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=top;whiteSpace=wrap;rounded=0;" parent="1" vertex="1">
+                    <mxGeometry x="40" y="390" width="260" height="20" as="geometry"/>
+                </mxCell>
+                <mxCell id="123" value="" style="group;spacing=0;spacingTop=-1;align=center;spacingLeft=4;" parent="1" vertex="1" connectable="0">
+                    <mxGeometry x="80" y="420" width="220" height="20" as="geometry"/>
+                </mxCell>
+                <mxCell id="124" value="" style="rounded=0;whiteSpace=wrap;html=1;spacing=0;spacingTop=-1;align=left;spacingLeft=4;" parent="123" vertex="1">
+                    <mxGeometry width="220" height="20" as="geometry"/>
+                </mxCell>
+                <mxCell id="125" value="GET" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#60a917;fontColor=#ffffff;strokeColor=#2D7600;spacing=0;spacingTop=-1;align=center;" parent="1" vertex="1">
+                    <mxGeometry x="40" y="420" width="40" height="20" as="geometry"/>
+                </mxCell>
+                <mxCell id="127" value="Return instance details." style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=top;whiteSpace=wrap;rounded=0;" parent="1" vertex="1">
+                    <mxGeometry x="40" y="440" width="260" height="60" as="geometry"/>
+                </mxCell>
+                <mxCell id="128" value="" style="group;spacing=0;spacingTop=-1;align=center;spacingLeft=4;" parent="1" vertex="1" connectable="0">
+                    <mxGeometry x="660" y="40" width="220" height="20" as="geometry"/>
+                </mxCell>
+                <mxCell id="129" value="/app/&amp;lt;app_id&amp;gt;" style="rounded=0;whiteSpace=wrap;html=1;spacing=0;spacingTop=-1;align=left;spacingLeft=4;" parent="128" vertex="1">
+                    <mxGeometry width="220.00000000000003" height="20" as="geometry"/>
+                </mxCell>
+                <mxCell id="130" value="PATCH" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#6a00ff;fontColor=#ffffff;strokeColor=#3700CC;spacing=0;spacingTop=-1;align=center;" parent="1" vertex="1">
+                    <mxGeometry x="620" y="40" width="40" height="20" as="geometry"/>
+                </mxCell>
+                <mxCell id="134" value="Edit an app's details and/or configs" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=top;whiteSpace=wrap;rounded=0;" parent="1" vertex="1">
+                    <mxGeometry x="620" y="60" width="240" height="60" as="geometry"/>
+                </mxCell>
+                <mxCell id="163" value="" style="group;spacing=0;spacingTop=-1;align=center;spacingLeft=4;" parent="1" vertex="1" connectable="0">
+                    <mxGeometry x="940" y="40" width="220" height="20" as="geometry"/>
+                </mxCell>
+                <mxCell id="164" value="/app/&amp;lt;app_id&amp;gt;" style="rounded=0;whiteSpace=wrap;html=1;spacing=0;spacingTop=-1;align=left;spacingLeft=4;" parent="163" vertex="1">
+                    <mxGeometry width="220.00000000000003" height="20" as="geometry"/>
+                </mxCell>
+                <mxCell id="165" value="DEL" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#a20025;fontColor=#ffffff;strokeColor=#6F0000;spacing=0;spacingTop=-1;align=center;" parent="1" vertex="1">
+                    <mxGeometry x="900" y="40" width="40" height="20" as="geometry"/>
+                </mxCell>
+                <mxCell id="166" value="Deletes an app as well as all connected data (instances, logs, builds, etc)" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=top;whiteSpace=wrap;rounded=0;" parent="1" vertex="1">
+                    <mxGeometry x="900" y="60" width="240" height="60" as="geometry"/>
+                </mxCell>
+            </root>
+        </mxGraphModel>
+    </diagram>
+</mxfile>
