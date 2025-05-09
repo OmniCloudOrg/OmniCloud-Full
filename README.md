@@ -1,111 +1,108 @@
-# OmniCloud
+---
+
+# ☁️ OmniCloud
 
 ## 🚀 Zero-config platform for deploying microservices anywhere
 
 ![License](https://img.shields.io/badge/license-MIT-blue.svg)
 ![Rust](https://img.shields.io/badge/rust-stable-orange.svg)
 
-## The Problem
+---
 
-For too long, operations teams have been forced to stack disparate tools together in increasingly complex arrangements. We've been building towers of abstraction on top of inconsistent foundations, creating fragile systems that are difficult to maintain, scale, and understand.
+## Why OmniCloud?
 
-Every new tool brings its own paradigms, configuration formats, and operational quirks. The cognitive load increases with each addition to your stack. Teams spend more time connecting and maintaining tools than solving real business problems.
+Cloud ops shouldn’t be this hard.
 
-**We deserve better.**
+Too many teams are stuck piecing together tools that don’t really fit—each with its own configs, quirks, and headaches. It’s a fragile mess that slows you down and gets in the way of building real things.
+
+We believe there’s a better way.
 
 ## Our Vision
 
-OmniCloud isn't just another tool to add to your stack. It's a comprehensive rethinking of cloud operations from first principles.
+OmniCloud isn’t just another DevOps tool—it’s a fresh start.
 
-We're building a platform where components are **DESIGNED** to work together from the ground up. Not awkwardly integrated after the fact. Not connected through brittle plugins or adapters. But truly composed as a unified system with consistent interfaces, behaviors, and paradigms.
+We’re reimagining cloud operations from the ground up: components that are built to work together, not patched together later. Everything is consistent, predictable, and designed to *just work*, whether you’re deploying to AWS or a local server.
 
-## How It Works
+## What Makes It Different?
 
-The magic of OmniCloud is in its simplicity:
+The magic of OmniCloud is how *simple* it is to use.
 
 ```bash
-# Deploy directly from your project directory
+# From your project directory
 omni up
 ```
 
-That's it. OmniCloud automatically:
-- Bundles your package
-- Detects your project type
-- Builds optimized container image
-- Chooses best infrastructure
-- Deploys with optimal settings
-- Autoscales and manages your app instances
+That’s it. One command. OmniCloud takes care of the rest:
 
-No complex configuration required. OmniCloud makes intelligent decisions for you, while still allowing overrides when needed:
+* Detects your project type
+* Builds a lightweight, optimized container
+* Picks the best infrastructure
+* Deploys it efficiently
+* Automatically scales and manages your app
+
+Want control? You’ve got it:
 
 ```yaml
-# OmniCloud.yaml (Optional)
-runtime: docker        # Override auto-detected runtime
-provider: aws         # Force specific provider
+# OmniCloud.yaml (optional)
+runtime: docker
+provider: aws
 resources:
   cpu: 2
   memory: 512Mi
 ```
 
-## Core Principles
+## Core Values
 
-- **Composable by Design**: Every component shares the same foundational primitives
-- **Coherent Experience**: Consistent interfaces across all aspects of the platform
-- **Open Source First**: Community-driven development with transparency at its core
-- **Scale-Agnostic**: Works the same way for startups and enterprises
-- **API-Driven**: Everything available through both UI and programmatic interfaces
-- **Minimal Overhead**: Just 24MB RAM overhead for maximum efficiency
+* ✅ **Composable by Design** – All parts work together cleanly
+* ✨ **Consistent Experience** – No more switching mental models
+* ❤️ **Open Source First** – Built in public, by the community
+* 🔧 **API + UI Friendly** – Use what suits you best
+* 🧠 **Smart Defaults, Low Overhead** – Just 24MB RAM
+* 🏗 **Scales with You** – From side projects to production fleets
 
-## Current Status
+## Status
 
-🚧 **Under Construction** 🚧
+🛠 **Work in Progress**
 
-This project is actively being developed. Nothing should yet be assumed stable.
+We’re still building out the core pieces, but the foundation is coming together fast—and we’d love for you to be a part of it.
 
-We're working hard to build the foundation of something revolutionary, but we need your help.
+## Get Involved
 
-## Join Us
+Whether you're a developer, operator, designer, or just passionate about better infrastructure—we want to hear from you.
 
-We're looking for contributors who are tired of the status quo. People who believe cloud operations can be fundamentally better. Developers, operators, designers, and thinkers who want to be part of creating the next generation of cloud infrastructure.
+If you enjoy:
 
-If you're interested in:
+* Solving real-world ops pain points
+* Designing clean, elegant workflows
+* Writing clear, welcoming docs
+* Testing across platforms
+* Expanding infrastructure support (via CPIs)
 
-- Building components that elegantly solve real operational problems
-- Designing coherent interfaces that make complex operations intuitive
-- Creating documentation that illuminates rather than obscures
-- Testing across diverse environments to ensure rock-solid reliability
-- Extending our Cloud Provider Interfaces (CPIs) to support more infrastructure types
+…then join us!
 
-...then we want to hear from you.
+## What's a CPI?
 
-## The Power of CPIs
+OmniCloud uses **Cloud Provider Interfaces (CPIs)** to interact with infrastructure. These define a standard way to talk to any provider—AWS, VirtualBox, bare metal, you name it.
 
-At the heart of OmniCloud are our Cloud Provider Interfaces (CPIs) - the secret sauce that lets us deploy anywhere with consistent behavior. CPIs define how OmniCloud interacts with infrastructure providers through standardized interfaces.
+You write your app once. OmniCloud takes care of making it run *everywhere*, the same way.
 
-This means you can deploy the same application to AWS, VirtualBox, bare metal, or any supported provider without changing your workflow. The platform handles the complexity for you.
+## Get Started
 
-## Getting Started
-
-1. Star this repository to show your support
+1. ⭐ Star this repo to support the project
 2. Install OmniCloud:
+
    ```bash
    curl -L https://get.omnicloud.sh | sh
    ```
-3. Check out our [issues](https://github.com/omnicloudorg/omnicloud/issues) for good first contributions
-5. Read our [contribution guidelines](CONTRIBUTING.md) to understand our process
-
-## The Future
-
-Together, we're going to build something transformative. A platform that doesn't just incrementally improve cloud operations, but fundamentally reimagines it.
-
-The days of stitching together unrelated tools are numbered. The future is coherent, composable, and designed with intent.
-
-Welcome to OmniCloud.
+3. Check out our [issues](https://github.com/omnicloudorg/omnicloud/issues) for ways to contribute
+4. Read our [contributing guide](CONTRIBUTING.md) for how to get involved
 
 ---
 
 ## License
 
-OmniCloud is licensed under the [MIT License](LICENSE).
+OmniCloud is open source under the [MIT License](LICENSE).
 
-Built with ❤️ using Rust. Star us on GitHub if you like OmniCloud!
+Built with ❤️ in Rust. Star us if you're excited about the future of cloud!
+
+---
