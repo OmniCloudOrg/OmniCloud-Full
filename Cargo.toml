@@ -4,6 +4,7 @@ members = ["crates/*"]
  # use the makefile-defined commands, or run the cargo commands manually in the
  # crates/MegaTrix directory
 exclude = ["crates/MegaTrix"]
+resolver = "2"
 
 [workspace.package]
 version = "0.1.0"
