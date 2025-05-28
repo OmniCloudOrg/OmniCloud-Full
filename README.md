@@ -54,17 +54,30 @@
 OmniCloud takes a unique approach to building distributed systems. Instead of cramming everything into a traditional monorepo, we've created something that **feels** like a monorepo but isn't locked into that pattern.
 
 ```mermaid
+```mermaid
 graph TB
-    A[🌩️ OmniCloud-Full] --> B[🔧 LibOmni]
-    A --> C[🌐 Lodestone]
-    A --> D[🎯 OmniDirector]
-    A --> E[🗄️ OmniOrchestrator]
-    A --> F[🔨 OmniForge]
-    A --> G[🤖 OmniAgent]
-    A --> H[💻 OmniCLI]
-    A --> I[⚡ MegaTrix]
-    A --> J[🌌 OmniCosmos]
-    A --> K[✏️ OmniEditor]
+    subgraph Core
+        B[🔧 LibOmni]
+        C[🌐 Lodestone]
+        D[🎯 OmniDirector]
+        E[🗄️ OmniOrchestrator]
+        F[🔨 OmniForge]
+        G[🤖 OmniAgent]
+        H[💻 OmniCLI]
+        I[⚡ MegaTrix]
+    end
+
+    subgraph Frontend
+        J[🌌 OmniCosmos]
+        K[✏️ OmniEditor]
+    end
+
+    A[🌩️ OmniCloud-Full] 
+    A --> Core
+    A --> Frontend
+
+    Core --> J
+    Core --> K
 ```
 
 Each major component lives in its own Git repository. This means teams can work independently, release on their own schedules, and external users can pick and choose only the parts they need. But when you're developing, it all comes together seamlessly through Git submodules and a Rust workspace.
