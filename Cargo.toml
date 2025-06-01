@@ -16,4 +16,3 @@ description = "OmniCloud project workspace"
 [workspace.dependencies]
 # WE DO NOT USE WORKSPACE DEPENDENCIES OTHER THAN LibOmni, THIS BREAKS THE
 # INDIVIDUAL REPOS ABILITY TO RUN INDEPENDENTLY OF THE WORKSPACE OTHERWISE.
-libomni = "0.2.0"
