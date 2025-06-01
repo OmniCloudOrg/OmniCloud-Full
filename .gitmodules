@@ -25,3 +25,6 @@
 [submodule "crates/LibOmni"]
 	path = crates/LibOmni
 	url = https://github.com/OmniCloudOrg/LibOmni
+[submodule "crates/Lighthouse"]
+	path = crates/Lighthouse
+	url = https://github.com/OmniCloudOrg/Lighthouse
