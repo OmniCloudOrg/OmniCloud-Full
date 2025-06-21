@@ -2176,7 +2176,7 @@ dependencies = [
  "hyper 0.14.32",
  "metrics",
  "metrics-exporter-prometheus",
- "reqwest 0.12.18",
+ "reqwest 0.12.19",
  "serde",
  "serde_yaml",
  "tokio",
@@ -3007,6 +3007,22 @@ dependencies = [
 ]
 
 [[package]]
+name = "libomni"
+version = "0.3.0"
+source = "git+https://github.com/OmniCloudOrg/LibOmni?tag=v0.3.0#ce66e70197348a5f340d053d6c1e741e542aa0f5"
+dependencies = [
+ "chrono",
+ "chrysalis_rs",
+ "jsonwebtoken",
+ "log",
+ "rocket",
+ "serde",
+ "serde_json",
+ "sqlx",
+ "uuid",
+]
+
+[[package]]
 name = "libredox"
 version = "0.1.3"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -3074,6 +3090,20 @@ dependencies = [
  "tracing-subscriber",
  "wiremock",
  "yaml-rust",
+]
+
+[[package]]
+name = "lighthouse"
+version = "0.1.0"
+source = "git+https://github.com/OmniCloudOrg/Lighthouse?tag=v0.1.0#901b9afa475f85ae0f4f221daea4750da7d6601f"
+dependencies = [
+ "async-trait",
+ "futures",
+ "serde",
+ "serde_json",
+ "thiserror 1.0.69",
+ "tokio",
+ "tracing",
 ]
 
 [[package]]
@@ -3611,9 +3641,9 @@ dependencies = [
  "flate2",
  "ignore",
  "indicatif",
- "libomni",
+ "libomni 0.3.0",
  "pathdiff",
- "reqwest 0.12.18",
+ "reqwest 0.12.19",
  "serde",
  "serde_json",
  "serde_yaml",
@@ -3638,7 +3668,7 @@ dependencies = [
  "futures",
  "hostname",
  "lazy_static",
- "libomni",
+ "libomni 0.3.0",
  "num_cpus",
  "reqwest 0.11.27",
  "rocket",
@@ -3668,12 +3698,12 @@ dependencies = [
  "lazy_static",
  "lib_cpi",
  "libloading",
- "libomni",
+ "libomni 0.3.0",
  "log",
  "once_cell",
  "rayon",
  "regex",
- "reqwest 0.12.18",
+ "reqwest 0.12.19",
  "rocket",
  "run_script",
  "serde",
@@ -3696,12 +3726,12 @@ dependencies = [
  "futures-util",
  "hyper 1.6.0",
  "lazy_static",
- "libomni",
+ "libomni 0.3.0",
  "log",
  "packer_rs",
  "phf",
  "rayon",
- "reqwest 0.12.18",
+ "reqwest 0.12.19",
  "rocket",
  "rocket-multipart-form-data",
  "russh",
@@ -3713,7 +3743,7 @@ dependencies = [
  "thiserror 2.0.12",
  "tokio",
  "tower 0.5.2",
- "tower-http 0.6.4",
+ "tower-http 0.6.5",
  "tracing",
  "tracing-subscriber",
  "warp",
@@ -3736,15 +3766,15 @@ dependencies = [
  "hex",
  "jsonwebtoken",
  "lazy_static",
- "libomni",
- "lighthouse",
+ "libomni 0.3.0 (git+https://github.com/OmniCloudOrg/LibOmni?tag=v0.3.0)",
+ "lighthouse 0.1.0 (git+https://github.com/OmniCloudOrg/Lighthouse?tag=v0.1.0)",
  "log",
  "mysql",
  "once_cell",
  "parking_lot",
  "paxakos",
  "rand 0.9.1",
- "reqwest 0.12.18",
+ "reqwest 0.12.19",
  "rocket",
  "rocket-multipart-form-data",
  "rust_decimal",
@@ -4854,9 +4884,9 @@ dependencies = [
 
 [[package]]
 name = "reqwest"
-version = "0.12.18"
+version = "0.12.19"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "e98ff6b0dbbe4d5a37318f433d4fc82babd21631f194d370409ceb2e40b2f0b5"
+checksum = "a2f8e5513d63f2e5b386eb5106dc67eaf3f84e95258e210489136b8b92ad6119"
 dependencies = [
  "base64 0.22.1",
  "bytes",
@@ -4892,7 +4922,7 @@ dependencies = [
  "tokio-native-tls",
  "tokio-rustls",
  "tower 0.5.2",
- "tower-http 0.6.4",
+ "tower-http 0.6.5",
  "tower-service",
  "url",
  "wasm-bindgen",
@@ -6609,9 +6639,9 @@ dependencies = [
 
 [[package]]
 name = "tower-http"
-version = "0.6.4"
+version = "0.6.5"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "0fdb0c213ca27a9f57ab69ddb290fd80d970922355b83ae380b395d3986b8a2e"
+checksum = "5cc2d9e086a412a451384326f521c8123a99a466b329941a9403696bff9b0da2"
 dependencies = [
  "bitflags 2.9.0",
  "bytes",
