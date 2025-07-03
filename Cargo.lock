@@ -3687,6 +3687,7 @@ name = "omni-director"
 version = "0.1.5"
 dependencies = [
  "anyhow",
+ "async-trait",
  "chrono",
  "colored",
  "dashmap 6.1.0",
@@ -3694,6 +3695,7 @@ dependencies = [
  "derive_more 2.0.1",
  "dirs",
  "ez_logging",
+ "futures",
  "indicatif",
  "lazy_static",
  "lib_cpi",
@@ -3712,6 +3714,9 @@ dependencies = [
  "tempfile",
  "thiserror 2.0.12",
  "tokio",
+ "tracing",
+ "uuid",
+ "warp",
 ]
 
 [[package]]
@@ -6958,6 +6963,20 @@ name = "version_check"
 version = "0.9.5"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "0b928f33d975fc6ad9f86c8f283853ad26bdd5b10b7f1542aa2fa15e2289105a"
+
+[[package]]
+name = "virtualbox-plugin"
+version = "1.0.0"
+dependencies = [
+ "async-trait",
+ "chrono",
+ "omni-director",
+ "regex",
+ "serde",
+ "serde_json",
+ "tokio",
+ "uuid",
+]
 
 [[package]]
 name = "virtue"
