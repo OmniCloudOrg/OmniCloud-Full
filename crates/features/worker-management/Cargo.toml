@@ -8,7 +8,6 @@ crate-type = ["cdylib"]
 path = "src/lib.rs"
 
 [dependencies]
-omni-feature-traits = { path = "../../shared/feature-traits" }
 serde = { version = "1.0", features = ["derive"] }
 serde_json = "1.0"
 uuid = { version = "1.0", features = ["v4"] }
