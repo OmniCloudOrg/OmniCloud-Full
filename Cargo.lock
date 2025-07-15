@@ -2833,6 +2833,17 @@ dependencies = [
 ]
 
 [[package]]
+name = "integration-test"
+version = "0.1.0"
+dependencies = [
+ "anyhow",
+ "omni-director",
+ "omni-event-registry",
+ "serde_json",
+ "tokio",
+]
+
+[[package]]
 name = "io-enum"
 version = "1.2.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -3702,6 +3713,8 @@ dependencies = [
  "libloading",
  "libomni 0.3.0",
  "log",
+ "omni-event-registry",
+ "omni-feature-traits",
  "once_cell",
  "rayon",
  "regex",
@@ -3717,6 +3730,30 @@ dependencies = [
  "tracing",
  "uuid",
  "warp",
+]
+
+[[package]]
+name = "omni-event-registry"
+version = "0.1.0"
+dependencies = [
+ "async-trait",
+ "dashmap 6.1.0",
+ "serde",
+ "serde_json",
+ "thiserror 1.0.69",
+ "tokio",
+ "uuid",
+]
+
+[[package]]
+name = "omni-feature-traits"
+version = "0.1.0"
+dependencies = [
+ "async-trait",
+ "serde",
+ "serde_json",
+ "thiserror 1.0.69",
+ "uuid",
 ]
 
 [[package]]
@@ -6331,6 +6368,18 @@ name = "termtree"
 version = "0.5.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "8f50febec83f5ee1df3015341d8bd429f2d1cc62bcba7ea2076759d315084683"
+
+[[package]]
+name = "test-loader"
+version = "0.1.0"
+dependencies = [
+ "async-trait",
+ "libloading",
+ "omni-event-registry",
+ "omni-feature-traits",
+ "serde_json",
+ "tokio",
+]
 
 [[package]]
 name = "textwrap"

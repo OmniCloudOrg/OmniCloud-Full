@@ -3,7 +3,12 @@ members = ["crates/*"]
  # To interact with the MegaTrix section of the project you will have to either
  # use the makefile-defined commands, or run the cargo commands manually in the
  # crates/MegaTrix directory
-exclude = ["crates/MegaTrix"]
+exclude = [
+    "crates/MegaTrix",
+    "crates/features",
+    "crates/providers", 
+    "crates/shared"
+]
 
 [workspace.package]
 version = "0.1.0"
