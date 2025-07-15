@@ -1,10 +1,11 @@
 [package]
-name = "worker-management-feature"
+name = "worker-management"
 version = "0.1.0"
 edition = "2021"
 
 [lib]
 crate-type = ["cdylib"]
+path = "src/lib.rs"
 
 [dependencies]
 omni-feature-traits = { path = "../../shared/feature-traits" }
