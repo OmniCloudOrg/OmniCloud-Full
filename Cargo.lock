@@ -3638,6 +3638,7 @@ dependencies = [
  "env_logger 0.10.2",
  "libloading",
  "omni-feature-traits",
+ "omni-ffi-macros",
  "serde",
  "serde_json",
  "thiserror 2.0.12",
@@ -3670,6 +3671,13 @@ dependencies = [
  "serde_json",
  "thiserror 1.0.69",
  "uuid",
+]
+
+[[package]]
+name = "omni-ffi-macros"
+version = "0.1.0"
+dependencies = [
+ "serde_json",
 ]
 
 [[package]]
@@ -6963,20 +6971,6 @@ name = "version_check"
 version = "0.9.5"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "0b928f33d975fc6ad9f86c8f283853ad26bdd5b10b7f1542aa2fa15e2289105a"
-
-[[package]]
-name = "virtualbox-plugin"
-version = "1.0.0"
-dependencies = [
- "async-trait",
- "chrono",
- "omni-director",
- "regex",
- "serde",
- "serde_json",
- "tokio",
- "uuid",
-]
 
 [[package]]
 name = "virtue"

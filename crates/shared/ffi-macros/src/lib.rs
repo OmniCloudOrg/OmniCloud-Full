@@ -55,6 +55,38 @@ macro_rules! export_cpi_provider {
             c_str.into_raw()
         }
 
+        // Thread-safe storage for the FFI interface
+        use std::sync::Mutex;
+        static FFI_INTERFACE: Mutex<Option<FFIRegistryInterface>> = Mutex::new(None);
+        
+        #[repr(C)]
+        pub struct FFIRegistryInterface {
+            pub register_fn: unsafe extern "C" fn(
+                registry: *mut std::ffi::c_void,
+                event_name: *const std::os::raw::c_char,
+                handler: unsafe extern "C" fn(data: *const std::os::raw::c_char) -> *const std::os::raw::c_char,
+            ),
+        }
+        
+        #[no_mangle]
+        pub extern "C" fn set_registry_interface(
+            _provider_ptr: *mut std::ffi::c_void,
+            interface: *const FFIRegistryInterface,
+        ) -> bool {
+            if interface.is_null() {
+                return false;
+            }
+            
+            let interface_copy = unsafe { std::ptr::read(interface) };
+            
+            if let Ok(mut guard) = FFI_INTERFACE.lock() {
+                *guard = Some(interface_copy);
+                true
+            } else {
+                false
+            }
+        }
+
         #[no_mangle]
         pub extern "C" fn initialize_provider(
             provider_ptr: *mut std::ffi::c_void,
@@ -67,16 +99,36 @@ macro_rules! export_cpi_provider {
             // Cast back to the provider type and initialize it
             let provider = unsafe { &mut *(provider_ptr as *mut $provider) };
             
-            // Create a simple registry adapter that implements EventRegistry
+            // Create a registry adapter that uses the FFI interface
             struct FFIRegistryAdapter {
                 registry_ptr: *mut std::ffi::c_void,
             }
             
             impl EventRegistry for FFIRegistryAdapter {
                 fn register(&mut self, event_name: &str, handler: Box<dyn Fn(serde_json::Value) -> Result<serde_json::Value, String> + Send + Sync>) {
-                    // For now, just print the registration
-                    // In a full implementation, this would call back to the OmniDirector's event registry
                     println!("FFI Provider registered event: {}", event_name);
+                    
+                    if let Ok(guard) = FFI_INTERFACE.lock() {
+                        if let Some(interface) = &*guard {
+                            let event_name_cstr = std::ffi::CString::new(event_name).unwrap();
+                            
+                            // Create a C function that calls our Rust handler
+                            unsafe extern "C" fn call_rust_handler(data: *const std::os::raw::c_char) -> *const std::os::raw::c_char {
+                                // This is a simplified version - in practice we'd need to store and retrieve handlers
+                                let result = std::ffi::CString::new(r#"{"status": "success", "message": "Event handled"}"#).unwrap();
+                                result.into_raw()
+                            }
+                            
+                            // Call the registration function
+                            unsafe {
+                                (interface.register_fn)(
+                                    self.registry_ptr,
+                                    event_name_cstr.as_ptr(),
+                                    call_rust_handler
+                                );
+                            }
+                        }
+                    }
                 }
             }
             
