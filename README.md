@@ -1,11 +1,12 @@
----
 
-# ☁️ OmniCloud
+<img src="./branding/logo-wide-transparent-cropped.svg" style="max-width:85%; height:auto; display:block; margin:auto;" alt="OmniCloud Logo" />
 
-## 🚀 Zero-config platform for deploying microservices anywhere
+<h3 align="center">🚀 The Zero-config-Required Open Cloud Platform</h3>
 
-![License](https://img.shields.io/badge/license-MIT-blue.svg)
-![Rust](https://img.shields.io/badge/rust-stable-orange.svg)
+<p align="center">
+  <img src="https://img.shields.io/badge/license-MIT-blue.svg" alt="License" />
+  <img src="https://img.shields.io/badge/rust-stable-orange.svg" alt="Rust" />
+</p>
 
 ---
 
@@ -27,7 +28,7 @@ We’re reimagining cloud operations from the ground up: components that are bui
 
 The magic of OmniCloud is how *simple* it is to use.
 
-```bash
+```Shell
 # From your project directory
 omni up
 ```
@@ -42,7 +43,7 @@ That’s it. One command. OmniCloud takes care of the rest:
 
 Want control? You’ve got it:
 
-```yaml
+```YAML
 # OmniCloud.yaml (optional)
 runtime: docker
 provider: aws
@@ -91,13 +92,13 @@ You write your app once. OmniCloud takes care of making it run *everywhere*, the
 1. ⭐ Star this repo to support the project
 2. Install OmniCloud:
 
-   ```bash
+   ```Shell
    curl -L https://get.omnicloud.sh | sh
    ```
 3. Check out our [issues](https://github.com/omnicloudorg/omnicloud/issues) for ways to contribute
 4. Read our [contributing guide](CONTRIBUTING.md) for how to get involved
 
----
+***
 
 ## License
 
@@ -105,4 +106,5 @@ OmniCloud is open source under the [MIT License](LICENSE).
 
 Built with ❤️ in Rust. Star us if you're excited about the future of cloud!
 
----
+***
+
