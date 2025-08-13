@@ -1,0 +1,14 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(cargo check:*)",
+      "Bash(mv:*)",
+      "Bash(cat:*)",
+      "Bash(cargo tree:*)",
+      "Bash(timeout 120 cargo check --quiet)",
+      "Bash(timeout 60 cargo check --quiet)"
+    ],
+    "deny": [],
+    "ask": []
+  }
+}
