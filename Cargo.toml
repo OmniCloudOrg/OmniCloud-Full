@@ -10,6 +10,7 @@ exclude = [
     "crates/shared"
 ]
 
+resolver = "2"
 [workspace.package]
 version = "0.1.0"
 edition = "2021"
@@ -21,3 +22,12 @@ description = "OmniCloud project workspace"
 [workspace.dependencies]
 # WE DO NOT USE WORKSPACE DEPENDENCIES OTHER THAN LibOmni, THIS BREAKS THE
 # INDIVIDUAL REPOS ABILITY TO RUN INDEPENDENTLY OF THE WORKSPACE OTHERWISE.
+
+
+[profile.dev]
+codegen-units = 32
+incremental = true
+debug-assertions = false
+overflow-checks = false
+opt-level = 0
+lto = "thin"
