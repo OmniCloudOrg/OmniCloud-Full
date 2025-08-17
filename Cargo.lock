@@ -2979,6 +2979,22 @@ dependencies = [
 ]
 
 [[package]]
+name = "libomni"
+version = "0.3.0"
+source = "git+https://github.com/OmniCloudOrg/LibOmni#c9fa93c404025a4d5cd62491acc5dfabc6153b26"
+dependencies = [
+ "chrono",
+ "chrysalis_rs",
+ "jsonwebtoken",
+ "log",
+ "rocket",
+ "serde",
+ "serde_json",
+ "sqlx",
+ "uuid",
+]
+
+[[package]]
 name = "libredox"
 version = "0.1.9"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -3637,7 +3653,7 @@ dependencies = [
  "flate2",
  "ignore",
  "indicatif",
- "libomni",
+ "libomni 0.3.0",
  "pathdiff",
  "reqwest 0.12.23",
  "serde",
@@ -3664,7 +3680,7 @@ dependencies = [
  "futures",
  "hostname",
  "lazy_static",
- "libomni",
+ "libomni 0.3.0 (git+https://github.com/OmniCloudOrg/LibOmni)",
  "num_cpus",
  "reqwest 0.11.27",
  "rocket",
@@ -3710,7 +3726,7 @@ dependencies = [
  "futures-util",
  "hyper 1.6.0",
  "lazy_static",
- "libomni",
+ "libomni 0.3.0 (git+https://github.com/OmniCloudOrg/LibOmni)",
  "log",
  "packer_rs",
  "phf",
@@ -3750,7 +3766,7 @@ dependencies = [
  "hex",
  "jsonwebtoken",
  "lazy_static",
- "libomni",
+ "libomni 0.3.0 (git+https://github.com/OmniCloudOrg/LibOmni)",
  "lighthouse 1.0.0",
  "log",
  "mysql",

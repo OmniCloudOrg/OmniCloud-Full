@@ -1,27 +1,27 @@
 services:
-  # agent:
-  #   build:
-  #     context: ../crates/OmniAgent/
-  #     dockerfile: ./Dockerfile
-  #   ports:
-  #     - "5670:8000"
-  #   environment:
-  #     - NODE_ENV=development
-  #   volumes:
-  #     - /var/run/docker.sock:/var/run/docker.sock
+  agent:
+    build:
+      context: ../crates/OmniAgent/
+      dockerfile: ./Dockerfile
+    ports:
+      - "5670:8000"
+    environment:
+      - NODE_ENV=development
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
 
-  # orchestrator:
-  #   build:
-  #     context: ../crates/OmniOrchestrator/
-  #     dockerfile: ./Dockerfile
-  #   ports:
-  #     - "5671:8002"
-  #   environment:
-  #     - NODE_ENV=development
-  #     - DEFAULT_DATABASE_URL=mysql://root:root@orchestrator_db:3306/omni
-  #     - OMNI_ORCH_BYPASS_CONFIRM=confirm
-  #   networks:
-  #     - omni_network
+  orchestrator:
+    build:
+      context: ../crates/OmniOrchestrator/
+      dockerfile: ./Dockerfile
+    ports:
+      - "5671:8002"
+    environment:
+      - NODE_ENV=development
+      - DEFAULT_DATABASE_URL=mysql://root:root@orchestrator_db:3306
+      - OMNI_ORCH_BYPASS_CONFIRM=confirm
+    networks:
+      - omni_network
 
   orchestrator_db:
     container_name: Omni_DB_New
@@ -74,14 +74,14 @@ services:
   #   environment:
   #     - NODE_ENV=development
 
-  # cosmos:
-  #   build:
-  #     context: ../services/OmniCosmos/
-  #     dockerfile: ./Dockerfile
-  #   ports:
-  #     - "5673:3000"
-  #   environment:
-  #     - NODE_ENV=development
+  cosmos:
+    build:
+      context: ../services/OmniCosmos/
+      dockerfile: ./Dockerfile
+    ports:
+      - "5673:3000"
+    environment:
+      - NODE_ENV=development
 
 #  editor:
 #    build:
@@ -92,14 +92,14 @@ services:
 #    environment:
 #      - NODE_ENV=development
 
-  # director:
-  #   build:
-  #     context: ../crates/OmniDirector/
-  #     dockerfile: ./Dockerfile
-  #   ports:
-  #     - "5675:8081"
-  #   environment:
-  #     - NODE_ENV=development
+#  director:
+#    build:
+#      context: ../crates/OmniDirector/
+#      dockerfile: ./Dockerfile
+#    ports:
+#      - "5675:8081"
+#    environment:
+#      - NODE_ENV=development
 
 volumes:
   db_data:
