@@ -1,14 +1,13 @@
 {
   "permissions": {
     "allow": [
-      "Bash(cargo check:*)",
+      "Bash(find:*)",
+      "Bash(mkdir:*)",
       "Bash(mv:*)",
-      "Bash(cat:*)",
-      "Bash(cargo tree:*)",
-      "Bash(timeout 120 cargo check --quiet)",
-      "Bash(timeout 60 cargo check --quiet)"
+      "Bash(rm:*)",
+      "Bash(npm run type-check:*)",
+      "Bash(npm run:*)"
     ],
-    "deny": [],
-    "ask": []
+    "deny": []
   }
 }
